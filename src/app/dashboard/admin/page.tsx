@@ -1,6 +1,7 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { api } from "@/lib/api";
 import {
   Sliders,
   ShieldCheck,
@@ -119,6 +120,11 @@ export default function AdminDashboard() {
   const [humanInLoopEnforced, setHumanInLoopEnforced] = useState(true);
   const [ocrConfidence, setOcrConfidence] = useState(90);
   const [selectedModel, setSelectedModel] = useState("gemini-pro");
+  const [dbHealth, setDbHealth] = useState<any>(null);
+
+  useEffect(() => {
+    api.checkHealth().then(setDbHealth).catch(() => {});
+  }, []);
 
   const handleToggleUserStatus = (id: string) => {
     setUsers((prev) =>

@@ -15,6 +15,7 @@ import {
   Sliders,
   CheckCircle2,
 } from "lucide-react";
+import { DatabaseStatusBadge } from "./DatabaseStatusBadge";
 
 const ROLE_META: Record<
   UserRole,
@@ -89,6 +90,7 @@ export const Navbar = () => {
 
         {/* Center / Right controls */}
         <div className="flex items-center gap-3">
+          <DatabaseStatusBadge />
           {/* Quick Persona Switcher */}
           <div className="relative">
             <button
@@ -116,11 +118,10 @@ export const Navbar = () => {
                       <button
                         key={role}
                         onClick={() => handleRoleSwitch(role)}
-                        className={`flex w-full items-center justify-between px-3 py-2 text-left text-xs transition-colors ${
-                          isActive
+                        className={`flex w-full items-center justify-between px-3 py-2 text-left text-xs transition-colors ${isActive
                             ? "bg-slate-50 font-semibold text-slate-900"
                             : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"
-                        }`}
+                          }`}
                       >
                         <div className="flex items-center gap-2">
                           <Icon className="h-4 w-4 text-slate-500" />

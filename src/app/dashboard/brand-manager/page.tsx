@@ -2,6 +2,7 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
+import { api } from "@/lib/api";
 import {
   Layers,
   CheckCircle2,
@@ -83,6 +84,7 @@ export default function BrandManagerDashboard() {
   const [toneEmpathy, setToneEmpathy] = useState(90);
 
   const handleApprove = (id: string) => {
+    api.workflow.approve("d0000000-0000-0000-0000-000000000001", "Sign-off granted by Brand Manager").catch(() => {});
     setQueue((prev) =>
       prev.map((item) => (item.id === id ? { ...item, status: "approved" } : item))
     );
@@ -92,6 +94,7 @@ export default function BrandManagerDashboard() {
   };
 
   const handleRequestRevision = (id: string) => {
+    api.workflow.reject("d0000000-0000-0000-0000-000000000001", feedbackNote || "Revisions requested", "changes_requested").catch(() => {});
     setQueue((prev) =>
       prev.map((item) => (item.id === id ? { ...item, status: "changes_requested" } : item))
     );

@@ -19,6 +19,7 @@ import {
   Lock,
   BarChart3,
   Layers,
+  Database,
 } from "lucide-react";
 
 interface NavItem {
@@ -114,6 +115,25 @@ export const Sidebar = () => {
             })}
           </nav>
         </div>
+
+        {/* Database Studio Quick Link */}
+        <Link
+          href="/dashboard/database"
+          className="flex items-center justify-between rounded-xl border border-slate-200 bg-white p-3 text-xs hover:border-blue-300 hover:bg-blue-50/40 transition-all shadow-xs group"
+        >
+          <div className="flex items-center gap-2.5">
+            <div className="p-1.5 rounded-lg bg-blue-100 text-blue-700 group-hover:bg-blue-600 group-hover:text-white transition-colors">
+              <Database className="h-4 w-4" />
+            </div>
+            <div>
+              <div className="font-bold text-slate-800">Database Studio</div>
+              <div className="text-[10px] text-slate-500">Inspect 9 Tables</div>
+            </div>
+          </div>
+          <span className="px-1.5 py-0.5 rounded text-[10px] font-semibold bg-emerald-100 text-emerald-800">
+            Live
+          </span>
+        </Link>
 
         {/* Brand Governance Protection Badge */}
         <div className="rounded-xl border border-blue-100 bg-gradient-to-br from-blue-50 to-indigo-50/40 p-3.5 text-xs">

@@ -1,5 +1,6 @@
 import { create } from "zustand";
 import { User, UserRole } from "@/types/auth";
+import { api } from "@/lib/api";
 
 export const MOCK_USERS: Record<UserRole, User> = {
   creator: {
@@ -40,6 +41,7 @@ export const useAuthStore = create<AuthState>((set) => ({
   isAuthenticated: false,
   loginAs: (role, customEmail) => {
     const baseUser = MOCK_USERS[role];
+    api.auth.login(customEmail || baseUser.email, "password123").catch(() => { });
     const user: User = customEmail
       ? { ...baseUser, email: customEmail }
       : baseUser;
@@ -50,6 +52,7 @@ export const useAuthStore = create<AuthState>((set) => ({
     });
   },
   logout: () => {
+    api.auth.logout();
     set({
       currentUser: null,
       isAuthenticated: false,
