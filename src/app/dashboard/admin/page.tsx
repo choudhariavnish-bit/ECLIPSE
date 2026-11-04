@@ -9,15 +9,9 @@ import {
   Lock,
   History,
   CheckCircle2,
-  AlertOctagon,
-  Eye,
-  Key,
-  Server,
-  ToggleLeft,
-  ToggleRight,
-  Database,
-  RefreshCw,
-  UserCheck,
+  Search,
+  Plus,
+  Check,
 } from "lucide-react";
 
 interface AdminUser {
@@ -36,8 +30,8 @@ const INITIAL_USERS: AdminUser[] = [
     name: "Alex Morgan",
     email: "alex.creator@inkloom.ai",
     role: "creator",
-    department: "Content & Growth",
-    lastActive: "10 mins ago",
+    department: "Content & Communications",
+    lastActive: "12 mins ago",
     status: "active",
   },
   {
@@ -45,8 +39,8 @@ const INITIAL_USERS: AdminUser[] = [
     name: "Sarah Chen",
     email: "sarah.brand@inkloom.ai",
     role: "brand-manager",
-    department: "Global Governance",
-    lastActive: "2 mins ago",
+    department: "Global Brand Governance",
+    lastActive: "3 mins ago",
     status: "active",
   },
   {
@@ -54,14 +48,14 @@ const INITIAL_USERS: AdminUser[] = [
     name: "Marcus Vance",
     email: "marcus.admin@inkloom.ai",
     role: "admin",
-    department: "System Architecture",
+    department: "Information Security",
     lastActive: "Now",
     status: "active",
   },
   {
     id: "usr-04",
-    name: "Apex Creative Agency",
-    email: "agency-lead@apex.studio",
+    name: "Growth Agency Partner",
+    email: "contractor@agency.studio",
     role: "creator",
     department: "External Contractor",
     lastActive: "Yesterday",
@@ -69,376 +63,373 @@ const INITIAL_USERS: AdminUser[] = [
   },
 ];
 
-interface AuditLogEntry {
+interface AuditRecord {
   id: string;
   timestamp: string;
   actor: string;
   action: string;
-  target: string;
-  status: "verified" | "flagged";
+  targetResource: string;
+  hash: string;
 }
 
-const AUDIT_LOGS: AuditLogEntry[] = [
+const AUDIT_RECORDS: AuditRecord[] = [
   {
-    id: "LOG-551",
-    timestamp: "14:28:10",
+    id: "AUD-8821",
+    timestamp: "2026-11-04 14:28:10 UTC",
     actor: "Sarah Chen (Brand Manager)",
-    action: "Approved release",
-    target: "Q4 Launch Blog Post",
-    status: "verified",
+    action: "Approved release sign-off",
+    targetResource: "Q4 Product Launch Announcement",
+    hash: "0x8f2c...41e9",
   },
   {
-    id: "LOG-550",
-    timestamp: "13:45:02",
-    actor: "AI Governance Guardrail",
-    action: "Flagged unsupported claim",
-    target: "Social Carousel Slide 2",
-    status: "flagged",
+    id: "AUD-8820",
+    timestamp: "2026-11-04 13:45:02 UTC",
+    actor: "Governance Policy Engine",
+    action: "Flagged SEC-4.2 Infraction",
+    targetResource: "Social Carousel Slide 2",
+    hash: "0x1a4b...99f0",
   },
   {
-    id: "LOG-549",
-    timestamp: "11:12:44",
+    id: "AUD-8819",
+    timestamp: "2026-11-04 11:12:44 UTC",
     actor: "Marcus Vance (Admin)",
-    action: "Updated OCR sensitivity",
-    target: "AWS Textract Pipeline",
-    status: "verified",
+    action: "Calibrated OCR threshold (85%)",
+    targetResource: "Vision OCR Pipeline",
+    hash: "0x5e3d...77a2",
   },
   {
-    id: "LOG-548",
-    timestamp: "09:05:19",
+    id: "AUD-8818",
+    timestamp: "2026-11-04 09:05:19 UTC",
     actor: "Alex Morgan (Creator)",
-    action: "Submitted for review",
-    target: "Security Whitepaper v3",
-    status: "verified",
+    action: "Submitted for compliance review",
+    targetResource: "Security Advisory Note",
+    hash: "0x3c7a...22b8",
   },
 ];
 
 export default function AdminDashboard() {
+  const [activeTab, setActiveTab] = useState<"users" | "security" | "audit">("users");
   const [users, setUsers] = useState<AdminUser[]>(INITIAL_USERS);
+  const [searchQuery, setSearchQuery] = useState("");
   const [confidentialityShield, setConfidentialityShield] = useState(true);
-  const [humanInLoopEnforced, setHumanInLoopEnforced] = useState(true);
-  const [ocrConfidence, setOcrConfidence] = useState(90);
+  const [mandatorySignoff, setMandatorySignoff] = useState(true);
+  const [autoEvaluateOnType, setAutoEvaluateOnType] = useState(true);
   const [selectedModel, setSelectedModel] = useState("gemini-pro");
+  const [toastMessage, setToastMessage] = useState<string | null>(null);
 
-  const handleToggleUserStatus = (id: string) => {
+  const showNotification = (msg: string) => {
+    setToastMessage(msg);
+    setTimeout(() => setToastMessage(null), 3000);
+  };
+
+  const toggleUserStatus = (id: string) => {
     setUsers((prev) =>
-      prev.map((u) =>
-        u.id === id
-          ? { ...u, status: u.status === "active" ? "suspended" : "active" }
-          : u
-      )
+      prev.map((u) => {
+        if (u.id === id) {
+          const newStatus = u.status === "active" ? "suspended" : "active";
+          showNotification(`${u.name} status updated to ${newStatus}.`);
+          return { ...u, status: newStatus };
+        }
+        return u;
+      })
     );
   };
 
+  const handleRoleChange = (id: string, newRole: "creator" | "brand-manager" | "admin") => {
+    setUsers((prev) =>
+      prev.map((u) => (u.id === id ? { ...u, role: newRole } : u))
+    );
+    showNotification("Role assignment updated in directory.");
+  };
+
+  const filteredUsers = users.filter(
+    (u) =>
+      u.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      u.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      u.department.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
   return (
-    <div className="space-y-8">
-      {/* Top Welcome Bar */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pb-6 border-b border-slate-200">
+    <div className="space-y-6">
+      {/* Toast Notification */}
+      {toastMessage && (
+        <div className="fixed bottom-6 right-6 z-50 flex items-center gap-2.5 rounded-lg bg-slate-900 border border-slate-800 px-4 py-2.5 text-xs font-medium text-white shadow-lg animate-in fade-in slide-in-from-bottom-2">
+          <CheckCircle2 className="h-4 w-4 text-emerald-400" />
+          <span>{toastMessage}</span>
+        </div>
+      )}
+
+      {/* Header */}
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pb-4 border-b border-slate-200">
         <div>
-          <div className="flex items-center gap-2">
-            <span className="rounded-md bg-emerald-100 px-2 py-0.5 text-xs font-bold text-emerald-800">
-              Admin & Enterprise Security
-            </span>
-            <span className="text-xs text-slate-400">System Infrastructure Console</span>
+          <div className="flex items-center gap-2 text-xs font-semibold text-slate-500">
+            <span>Administration</span>
+            <span>/</span>
+            <span>Security & Governance Suite</span>
           </div>
-          <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 mt-1">
-            Enterprise Governance Control • Marcus Vance
+          <h1 className="text-xl font-bold tracking-tight text-slate-900 mt-1">
+            Enterprise Security & Access Control
           </h1>
-          <p className="text-sm text-slate-600 mt-1">
-            Configure access roles, oversee AI/OCR pipelines, protect confidential assets, and audit compliance trails.
+          <p className="text-xs text-slate-600 mt-0.5">
+            Configure access credentials, confidentiality guardrails, and inspect cryptographic audit records.
           </p>
         </div>
 
         <div className="flex items-center gap-2">
-          <div className="flex items-center gap-2 rounded-xl bg-emerald-50 border border-emerald-200 px-4 py-2">
-            <Lock className="h-4 w-4 text-emerald-600" />
-            <div>
-              <div className="text-[11px] font-medium text-emerald-700">Confidentiality Shield</div>
-              <div className="text-sm font-bold text-emerald-900">Zero Leakage Enforced</div>
-            </div>
-          </div>
+          <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-slate-200 bg-white text-xs font-semibold text-slate-700">
+            <span className="h-2 w-2 rounded-full bg-emerald-500" />
+            <span>Confidentiality Shield: Enforced</span>
+          </span>
         </div>
       </div>
 
-      {/* Enterprise System Metrics */}
-      <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
-        <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-xs">
-          <div className="flex items-center justify-between text-slate-500 text-xs">
-            <span>Total Pre-Pub Audits</span>
-            <Server className="h-4 w-4 text-emerald-600" />
-          </div>
-          <div className="text-2xl font-bold text-slate-900 mt-2">1,482</div>
-          <div className="text-[11px] text-emerald-600 mt-1 font-medium">+18% this month</div>
-        </div>
-
-        <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-xs">
-          <div className="flex items-center justify-between text-slate-500 text-xs">
-            <span>Violations Prevented</span>
-            <ShieldCheck className="h-4 w-4 text-blue-600" />
-          </div>
-          <div className="text-2xl font-bold text-slate-900 mt-2">264</div>
-          <div className="text-[11px] text-slate-500 mt-1">Before hitting public channels</div>
-        </div>
-
-        <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-xs">
-          <div className="flex items-center justify-between text-slate-500 text-xs">
-            <span>OCR & LLM P95 Latency</span>
-            <Cpu className="h-4 w-4 text-indigo-600" />
-          </div>
-          <div className="text-2xl font-bold text-slate-900 mt-2">184 ms</div>
-          <div className="text-[11px] text-emerald-600 mt-1 font-medium">Streaming enabled</div>
-        </div>
-
-        <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-xs">
-          <div className="flex items-center justify-between text-slate-500 text-xs">
-            <span>Confidentiality Leaks</span>
-            <Lock className="h-4 w-4 text-emerald-600" />
-          </div>
-          <div className="text-2xl font-bold text-slate-900 mt-2">0</div>
-          <div className="text-[11px] text-emerald-600 mt-1 font-medium">PII masking active</div>
-        </div>
+      {/* Tabs */}
+      <div className="flex border-b border-slate-200 gap-1 overflow-x-auto text-xs font-semibold">
+        <button
+          onClick={() => setActiveTab("users")}
+          className={`px-4 py-2 border-b-2 transition-colors ${
+            activeTab === "users"
+              ? "border-slate-900 text-slate-900"
+              : "border-transparent text-slate-500 hover:text-slate-900"
+          }`}
+        >
+          Access & RBAC ({users.length})
+        </button>
+        <button
+          onClick={() => setActiveTab("security")}
+          className={`px-4 py-2 border-b-2 transition-colors ${
+            activeTab === "security"
+              ? "border-slate-900 text-slate-900"
+              : "border-transparent text-slate-500 hover:text-slate-900"
+          }`}
+        >
+          Privacy & AI Parameters
+        </button>
+        <button
+          onClick={() => setActiveTab("audit")}
+          className={`px-4 py-2 border-b-2 transition-colors ${
+            activeTab === "audit"
+              ? "border-slate-900 text-slate-900"
+              : "border-transparent text-slate-500 hover:text-slate-900"
+          }`}
+        >
+          Immutable Audit Log
+        </button>
       </div>
 
-      {/* Row: AI & OCR Pipeline Settings + Confidentiality Shield */}
-      <div id="ai-config" className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* AI Model & OCR Settings */}
-        <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-xs space-y-4">
-          <div className="flex items-center justify-between pb-3 border-b border-slate-100">
+      {/* Tab 1: Access Control */}
+      {activeTab === "users" && (
+        <div className="bg-white rounded-xl border border-slate-200 p-6 shadow-xs space-y-4">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 pb-3 border-b border-slate-100">
             <div>
-              <h3 className="text-sm font-bold text-slate-900">AI & OCR Engine Calibration</h3>
-              <p className="text-xs text-slate-500">Fine-tune detection sensitivity and model inference</p>
-            </div>
-            <Cpu className="h-4 w-4 text-emerald-600" />
-          </div>
-
-          <div className="space-y-4 text-xs">
-            <div>
-              <label htmlFor="ai-model-select" className="block font-semibold text-slate-700 mb-1">
-                Governance LLM Engine
-              </label>
-              <select
-                id="ai-model-select"
-                value={selectedModel}
-                onChange={(e) => setSelectedModel(e.target.value)}
-                className="w-full rounded-lg border border-slate-300 p-2 text-xs text-slate-900 focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500 bg-white"
-              >
-                <option value="gemini-pro">Gemini 2.5 Flash / Pro (Enterprise RAG + Citations)</option>
-                <option value="claude-35">Anthropic Claude 3.5 Sonnet (Nuanced Tone Evaluation)</option>
-                <option value="local-llama">On-Premise Guardrail Llama-3-70B (Air-Gapped)</option>
-              </select>
-            </div>
-
-            <div>
-              <div className="flex justify-between font-semibold text-slate-700 mb-1">
-                <span>OCR Text Extraction Confidence Threshold</span>
-                <span>{ocrConfidence}%</span>
-              </div>
-              <input
-                type="range"
-                min="50"
-                max="99"
-                value={ocrConfidence}
-                onChange={(e) => setOcrConfidence(Number(e.target.value))}
-                className="w-full accent-emerald-600 h-1.5 bg-slate-200 rounded-lg cursor-pointer"
-              />
-              <div className="flex justify-between text-[10px] text-slate-400 mt-0.5">
-                <span>Accept Low-Res Scans (50%)</span>
-                <span>Strict High-Res Only (99%)</span>
-              </div>
-            </div>
-
-            {/* Toggle: Human in the loop */}
-            <div className="flex items-center justify-between p-3 rounded-xl border border-slate-100 bg-slate-50">
-              <div>
-                <span className="font-semibold text-slate-800 block">Strict Human-in-the-Loop Sign-Off</span>
-                <span className="text-[11px] text-slate-500">
-                  AI will suggest corrections but can never publish content without an authorized Brand Manager.
-                </span>
-              </div>
-              <button
-                type="button"
-                onClick={() => setHumanInLoopEnforced(!humanInLoopEnforced)}
-                className="text-emerald-600 hover:text-emerald-700 focus:outline-none"
-              >
-                {humanInLoopEnforced ? (
-                  <ToggleRight className="h-8 w-8 text-emerald-600" />
-                ) : (
-                  <ToggleLeft className="h-8 w-8 text-slate-400" />
-                )}
-              </button>
-            </div>
-          </div>
-        </div>
-
-        {/* Confidential Brand Materials Protection */}
-        <div id="security" className="rounded-2xl border border-slate-200 bg-white p-5 shadow-xs space-y-4">
-          <div className="flex items-center justify-between pb-3 border-b border-slate-100">
-            <div>
-              <h3 className="text-sm font-bold text-slate-900">Confidential Materials Protection</h3>
-              <p className="text-xs text-slate-500">Zero-leakage policies for unannounced products & trademarks</p>
-            </div>
-            <Lock className="h-4 w-4 text-emerald-600" />
-          </div>
-
-          <div className="space-y-3 text-xs">
-            <div className="flex items-center justify-between p-3 rounded-xl border border-slate-100 bg-slate-50">
-              <div>
-                <span className="font-semibold text-slate-800 block">Automatic PII & Secret Redaction</span>
-                <span className="text-[11px] text-slate-500">
-                  Strips internal codenames, financial figures, and unreleased trademarks before external API routing.
-                </span>
-              </div>
-              <button
-                type="button"
-                onClick={() => setConfidentialityShield(!confidentialityShield)}
-                className="text-emerald-600 hover:text-emerald-700 focus:outline-none"
-              >
-                {confidentialityShield ? (
-                  <ToggleRight className="h-8 w-8 text-emerald-600" />
-                ) : (
-                  <ToggleLeft className="h-8 w-8 text-slate-400" />
-                )}
-              </button>
-            </div>
-
-            <div className="p-3 rounded-xl border border-emerald-200/80 bg-emerald-50/50 space-y-1">
-              <span className="font-bold text-emerald-900 flex items-center gap-1.5">
-                <CheckCircle2 className="h-3.5 w-3.5 text-emerald-600" />
-                AI Transparency & Disclosure Notice
-              </span>
-              <p className="text-[11px] text-emerald-800 leading-relaxed">
-                When content reviewed by Inkloom AI is published externally, an immutable verification token is recorded to satisfy regional AI transparency standards without exposing internal IP.
+              <h2 className="text-sm font-bold uppercase tracking-wider text-slate-900">
+                Authorized Personnel Directory
+              </h2>
+              <p className="text-xs text-slate-500">
+                Grant authoring and approval permissions across organization workspaces.
               </p>
             </div>
-          </div>
-        </div>
-      </div>
 
-      {/* Row: User Access Management (RBAC) */}
-      <div id="users" className="rounded-2xl border border-slate-200 bg-white shadow-xs overflow-hidden">
-        <div className="p-5 border-b border-slate-200 bg-slate-50/50 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-          <div>
             <div className="flex items-center gap-2">
-              <Users className="h-4 w-4 text-emerald-600" />
-              <h2 className="text-base font-bold text-slate-900">
-                User Access & Role-Based Permissions (RBAC)
-              </h2>
+              <input
+                type="text"
+                placeholder="Filter members..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="w-48 rounded-lg border border-slate-200 bg-slate-50 px-2.5 py-1 text-xs text-slate-800 placeholder:text-slate-400 focus:outline-none focus:ring-1 focus:ring-slate-400"
+              />
+              <button
+                onClick={() => showNotification("Invitation link generated for user.")}
+                className="px-3 py-1 bg-slate-900 hover:bg-slate-800 text-white text-xs font-semibold rounded-lg shadow-xs"
+              >
+                Invite Member
+              </button>
             </div>
-            <p className="text-xs text-slate-500 mt-0.5">
-              Control permissions across Creators, Brand Managers, and System Admins.
-            </p>
           </div>
 
-          <div className="flex items-center gap-2">
-            <span className="text-xs text-slate-500">4 Accounts Configured</span>
-          </div>
-        </div>
+          <div className="divide-y divide-slate-100">
+            {filteredUsers.map((user) => (
+              <div key={user.id} className="py-3 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 text-xs">
+                <div className="flex items-center gap-3">
+                  <div className="h-8 w-8 rounded-full bg-slate-100 border border-slate-200 flex items-center justify-center font-bold text-slate-700">
+                    {user.name.split(" ").map((n) => n[0]).join("")}
+                  </div>
+                  <div>
+                    <span className="font-bold text-slate-900">{user.name}</span>
+                    <span className="text-slate-500 ml-2">{user.email}</span>
+                    <div className="text-[11px] text-slate-400">{user.department}</div>
+                  </div>
+                </div>
 
-        <div className="overflow-x-auto">
-          <table className="w-full text-left text-xs">
-            <thead className="bg-slate-50 text-slate-500 border-b border-slate-200">
-              <tr>
-                <th className="py-3 px-4 font-semibold">User</th>
-                <th className="py-3 px-4 font-semibold">Department</th>
-                <th className="py-3 px-4 font-semibold">Assigned Role</th>
-                <th className="py-3 px-4 font-semibold">Last Active</th>
-                <th className="py-3 px-4 font-semibold">Status</th>
-                <th className="py-3 px-4 font-semibold text-right">Actions</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-slate-100">
-              {users.map((user) => (
-                <tr key={user.id} className="hover:bg-slate-50/60 transition-colors">
-                  <td className="py-3 px-4">
-                    <div className="font-bold text-slate-900">{user.name}</div>
-                    <div className="text-[11px] text-slate-500">{user.email}</div>
-                  </td>
-                  <td className="py-3 px-4 text-slate-600">{user.department}</td>
-                  <td className="py-3 px-4">
-                    <span
-                      className={`inline-flex items-center rounded-md px-2 py-0.5 text-[10px] font-bold ${
-                        user.role === "creator"
-                          ? "bg-blue-100 text-blue-800"
-                          : user.role === "brand-manager"
-                          ? "bg-purple-100 text-purple-800"
-                          : "bg-emerald-100 text-emerald-800"
-                      }`}
-                    >
-                      {user.role}
-                    </span>
-                  </td>
-                  <td className="py-3 px-4 text-slate-500">{user.lastActive}</td>
-                  <td className="py-3 px-4">
-                    <span
-                      className={`inline-flex items-center gap-1 text-[11px] font-semibold ${
-                        user.status === "active" ? "text-emerald-700" : "text-slate-400"
-                      }`}
-                    >
-                      <span
-                        className={`h-1.5 w-1.5 rounded-full ${
-                          user.status === "active" ? "bg-emerald-600" : "bg-slate-400"
-                        }`}
-                      />
-                      {user.status}
-                    </span>
-                  </td>
-                  <td className="py-3 px-4 text-right">
-                    <button
-                      type="button"
-                      onClick={() => handleToggleUserStatus(user.id)}
-                      className="text-xs font-semibold text-blue-600 hover:text-blue-800"
-                    >
-                      {user.status === "active" ? "Suspend" : "Activate"}
-                    </button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </div>
+                <div className="flex items-center gap-4">
+                  <select
+                    value={user.role}
+                    onChange={(e) =>
+                      handleRoleChange(
+                        user.id,
+                        e.target.value as "creator" | "brand-manager" | "admin"
+                      )
+                    }
+                    className="rounded border border-slate-200 bg-slate-50 px-2 py-1 text-xs font-semibold text-slate-800 focus:outline-none"
+                  >
+                    <option value="creator">Creator / Author</option>
+                    <option value="brand-manager">Brand Manager</option>
+                    <option value="admin">System Administrator</option>
+                  </select>
 
-      {/* Row: Immutable Compliance Audit Trail */}
-      <div id="audit-logs" className="rounded-2xl border border-slate-200 bg-white p-5 shadow-xs space-y-4">
-        <div className="flex items-center justify-between pb-3 border-b border-slate-100">
-          <div>
-            <h3 className="text-sm font-bold text-slate-900">Immutable Governance Audit Log</h3>
-            <p className="text-xs text-slate-500">Cryptographically verifiable trail of all reviews, approvals, and AI detections</p>
-          </div>
-          <History className="h-4 w-4 text-slate-500" />
-        </div>
-
-        <div className="space-y-2">
-          {AUDIT_LOGS.map((log) => (
-            <div
-              key={log.id}
-              className="flex items-center justify-between p-3 rounded-xl border border-slate-100 bg-slate-50/70 text-xs"
-            >
-              <div className="flex items-center gap-3">
-                <span className="font-mono text-[11px] text-slate-400">{log.timestamp}</span>
-                <div>
-                  <span className="font-bold text-slate-900">{log.actor}</span>
-                  <span className="text-slate-500 ml-1.5">{log.action}:</span>
-                  <span className="font-medium text-slate-800 ml-1">&quot;{log.target}&quot;</span>
+                  <button
+                    onClick={() => toggleUserStatus(user.id)}
+                    className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider ${
+                      user.status === "active"
+                        ? "bg-slate-100 text-slate-800 hover:bg-slate-200"
+                        : "bg-rose-100 text-rose-800 hover:bg-rose-200"
+                    }`}
+                  >
+                    {user.status}
+                  </button>
                 </div>
               </div>
-              <div className="flex items-center gap-2">
-                <span className="font-mono text-[10px] text-slate-400">{log.id}</span>
-                <span
-                  className={`rounded-full px-2 py-0.5 text-[10px] font-bold ${
-                    log.status === "verified"
-                      ? "bg-emerald-100 text-emerald-800"
-                      : "bg-amber-100 text-amber-800"
-                  }`}
-                >
-                  {log.status}
-                </span>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Tab 2: Security & Privacy */}
+      {activeTab === "security" && (
+        <div className="space-y-6">
+          <div className="bg-white rounded-xl border border-slate-200 p-6 shadow-xs space-y-4">
+            <h2 className="text-sm font-bold uppercase tracking-wider text-slate-900">
+              Data Isolation & Privacy Guardrails
+            </h2>
+
+            <div className="space-y-3">
+              <div className="flex items-start justify-between p-3.5 rounded-lg border border-slate-200 bg-slate-50/50">
+                <div>
+                  <span className="text-xs font-bold text-slate-900 block">
+                    Confidentiality Shield (Automatic PII & Secret Redaction)
+                  </span>
+                  <p className="text-xs text-slate-500 mt-0.5">
+                    Redacts customer names, internal revenue metrics, credentials, and API keys prior to guideline evaluation.
+                  </p>
+                </div>
+                <input
+                  type="checkbox"
+                  checked={confidentialityShield}
+                  onChange={(e) => setConfidentialityShield(e.target.checked)}
+                  className="h-4 w-4 accent-slate-900 cursor-pointer mt-0.5"
+                />
+              </div>
+
+              <div className="flex items-start justify-between p-3.5 rounded-lg border border-slate-200 bg-slate-50/50">
+                <div>
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs font-bold text-slate-900 block">
+                      Intelligent Routing & Escalation Gate (Threshold ≥ 70)
+                    </span>
+                    <span className="bg-indigo-100 text-indigo-800 text-[10px] font-mono px-1.5 py-0.2 rounded font-bold">ACTIVE</span>
+                  </div>
+                  <p className="text-xs text-slate-500 mt-0.5">
+                    Requires Brand Manager sign-off <strong>only when drift exceeds 70 or on major regulatory violations</strong>. Routine drafts with drift &lt; 70 are autonomously rephrased to 100% (preserving original idea and tone) and cleared for direct posting without human bottleneck.
+                  </p>
+                </div>
+                <input
+                  type="checkbox"
+                  checked={mandatorySignoff}
+                  onChange={(e) => setMandatorySignoff(e.target.checked)}
+                  className="h-4 w-4 accent-slate-900 cursor-pointer mt-0.5"
+                />
+              </div>
+
+              <div className="flex items-start justify-between p-3.5 rounded-lg border border-slate-200 bg-slate-50/50">
+                <div>
+                  <span className="text-xs font-bold text-slate-900 block">
+                    Continuous Real-Time Evaluation
+                  </span>
+                  <p className="text-xs text-slate-500 mt-0.5">
+                    Runs background compliance analysis as authors draft in the sandbox.
+                  </p>
+                </div>
+                <input
+                  type="checkbox"
+                  checked={autoEvaluateOnType}
+                  onChange={(e) => setAutoEvaluateOnType(e.target.checked)}
+                  className="h-4 w-4 accent-slate-900 cursor-pointer mt-0.5"
+                />
               </div>
             </div>
-          ))}
+          </div>
+
+          <div className="bg-white rounded-xl border border-slate-200 p-6 shadow-xs space-y-3">
+            <h2 className="text-sm font-bold uppercase tracking-wider text-slate-900">
+              Evaluator Model Selection
+            </h2>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+              {[
+                { id: "gemini-pro", name: "Gemini 1.5 Pro", spec: "Low Latency • Multi-Modal OCR" },
+                { id: "claude-sonnet", name: "Claude 3.5 Sonnet", spec: "Executive Stylometry & Nuance" },
+                { id: "gpt-4o", name: "GPT-4o Enterprise", spec: "Strict Regulatory Matching" },
+              ].map((m) => (
+                <button
+                  key={m.id}
+                  onClick={() => {
+                    setSelectedModel(m.id);
+                    showNotification(`Active evaluation model configured to ${m.name}.`);
+                  }}
+                  className={`p-3.5 rounded-xl border text-left transition-all ${
+                    selectedModel === m.id
+                      ? "border-slate-900 bg-slate-50 ring-1 ring-slate-900/10 shadow-xs"
+                      : "border-slate-200 hover:border-slate-300 bg-white"
+                  }`}
+                >
+                  <span className="text-xs font-bold text-slate-900 block">{m.name}</span>
+                  <span className="text-[11px] text-slate-500 mt-1 block">{m.spec}</span>
+                </button>
+              ))}
+            </div>
+          </div>
         </div>
-      </div>
+      )}
+
+      {/* Tab 3: Immutable Audit Log */}
+      {activeTab === "audit" && (
+        <div className="bg-white rounded-xl border border-slate-200 p-6 shadow-xs space-y-4">
+          <div className="flex items-center justify-between pb-3 border-b border-slate-100">
+            <div>
+              <h2 className="text-sm font-bold uppercase tracking-wider text-slate-900">
+                Cryptographically Verifiable Audit Ledger
+              </h2>
+              <p className="text-xs text-slate-500">
+                Tamper-evident logs of all author submissions, manager sign-offs, and parameter adjustments.
+              </p>
+            </div>
+            <span className="font-mono text-xs text-slate-500">SHA-256 Ledger: Valid</span>
+          </div>
+
+          <div className="divide-y divide-slate-100">
+            {AUDIT_RECORDS.map((rec) => (
+              <div key={rec.id} className="py-3 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 text-xs">
+                <div>
+                  <div className="flex items-center gap-2">
+                    <span className="font-mono font-bold text-slate-700">{rec.id}</span>
+                    <span className="font-semibold text-slate-900">{rec.actor}</span>
+                    <span className="text-slate-500">— {rec.action}</span>
+                  </div>
+                  <div className="text-[11px] text-slate-400 mt-0.5">
+                    Target: {rec.targetResource}
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-4 text-right">
+                  <span className="text-slate-400 font-mono text-[11px]">{rec.timestamp}</span>
+                  <span className="font-mono text-[10px] text-slate-500 bg-slate-100 px-1.5 py-0.5 rounded">
+                    {rec.hash}
+                  </span>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
     </div>
   );
 }
-
