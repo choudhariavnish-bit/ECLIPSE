@@ -1,23 +1,17 @@
 @echo off
 setlocal enabledelayedexpansion
-title Inkloom AI - High Speed Brand Governance Platform
+title Inkloom AI - High Performance Platform
 
 echo =====================================================================
 echo           INKLOOM AI - HIGH PERFORMANCE BRAND PLATFORM
 echo =====================================================================
 echo.
 
-:: 1. Check if node_modules exists, install if missing
-if not exist "node_modules\" (
-    echo [1/4] First-time setup detected: Installing required dependencies...
-    call npm install
-    if errorlevel 1 (
-        echo [ERROR] npm install failed. Please check your internet connection.
-        pause
-        exit /b 1
-    )
-) else (
-    echo [1/4] Dependencies verified.
+:: 1. Automatically kill any stuck or orphaned process holding port 3000
+echo [1/4] Checking and clearing port 3000...
+for /f "tokens=5" %%p in ('netstat -ano ^| findstr :3000 ^| findstr LISTENING') do (
+    echo       Terminating stuck process (PID %%p) on port 3000...
+    taskkill /F /PID %%p >nul 2>&1
 )
 
 :: 2. Find local IPv4 address for multi-device network access
@@ -30,48 +24,31 @@ for /f "tokens=2 delims=:" %%a in ('ipconfig ^| findstr /i "IPv4"') do (
     )
 )
 
-echo [2/4] High-speed endpoints configured:
-echo       - Local PC:         http://localhost:3000
+echo [2/4] Network endpoints configured:
+echo       - Local Machine:    http://localhost:3000
 echo       - Any Wi-Fi Device: http://!LOCAL_IP!:3000
 echo.
 
-:: 3. Launch Google Chrome browser
-echo [3/4] Launching Google Chrome...
-set CHROME_PATH=""
-if exist "C:\Program Files\Google\Chrome\Application\chrome.exe" (
-    set CHROME_PATH="C:\Program Files\Google\Chrome\Application\chrome.exe"
-) else if exist "C:\Program Files (x86)\Google\Chrome\Application\chrome.exe" (
-    set CHROME_PATH="C:\Program Files (x86)\Google\Chrome\Application\chrome.exe"
-) else if exist "%LOCALAPPDATA%\Google\Chrome\Application\chrome.exe" (
-    set CHROME_PATH="%LOCALAPPDATA%\Google\Chrome\Application\chrome.exe"
-)
+:: 3. Smart browser launcher: monitors localhost:3000 and opens browser the exact second server responds
+echo [3/4] Background smart browser launcher activated...
+start "Inkloom Browser Launcher" /b cmd /c "for /l %%i in (1,1,60) do (curl.exe -s -I http://localhost:3000 >nul 2>&1 && (start http://localhost:3000 & exit) || ping 127.0.0.1 -n 2 >nul)"
 
-:: Wait 3 seconds before popping Chrome to let server initialize
-start /b cmd /c "ping 127.0.0.1 -n 4 >nul && (if not !CHROME_PATH!=="" (start "" !CHROME_PATH! http://localhost:3000) else (start chrome http://localhost:3000))"
-
-:: 4. Start zero-config public tunnel for access from ANY device on ANY network (No server needed)
-echo [4/4] Starting Public Cross-Network Tunnel for remote devices...
-start "Inkloom Public Tunnel (Access from ANY remote device/cellular)" cmd /c "echo Generating Public URL for mobile/remote access... && npx lt --port 3000"
+:: 4. Start zero-config public tunnel for remote/mobile access once server is active
+echo [4/4] Activating public tunnel launcher...
+start "Inkloom Public Tunnel (Access from ANY remote device/cellular)" cmd /c "echo Waiting for server on port 3000 to start... && for /l %%i in (1,1,60) do (curl.exe -s -I http://localhost:3000 >nul 2>&1 && (echo Server is ready! Generating live public URL... && npx lt --port 3000 & exit) || ping 127.0.0.1 -n 2 >nul)"
 
 echo.
 echo =====================================================================
-echo  SERVER READY! (High-Speed Rust Turbopack Mode Active)
+echo  STARTING INKLOOM SERVER (Rust Turbopack Enabled)
 echo.
 echo  Access Options:
-echo  1. On this PC:           http://localhost:3000 (Opened in Chrome)
-echo  2. Devices on same Wi-Fi: http://!LOCAL_IP!:3000
-echo  3. ANY Device anywhere:  Check the companion Tunnel window for
-echo                           the live public URL (No server needed)
-echo.
-echo  Optimizations applied:
-echo  - Rust-based Turbopack streaming (Zero compilation latency)
-echo  - Source-map network stripping (Fast mobile load times)
-echo  - Persistent live disk & Supabase database sync
-echo  - Mobile responsive drawer & bottom navigation
+echo  1. Local Machine:    http://localhost:3000 (Opens automatically)
+echo  2. Any Wi-Fi Device: http://!LOCAL_IP!:3000
+echo  3. Mobile/Cellular:  Check companion Tunnel window for public URL
 echo =====================================================================
 echo.
 echo Press Ctrl+C in this window to stop the server.
 echo.
 
-:: Start Next.js bound to all network interfaces (0.0.0.0) with Turbopack for ultra-fast multi-device performance
-call npx next dev -H 0.0.0.0 -p 3000 --turbopack --disable-source-maps
+:: Start Next.js with Turbopack for instant 2-second boot and zero lag
+call npx next dev -H 0.0.0.0 -p 3000 --turbopack
