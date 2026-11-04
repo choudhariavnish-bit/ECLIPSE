@@ -1,0 +1,54 @@
+# Render Blueprint: Inkloom AI Full-Stack Platform
+services:
+  # 1. Frontend Web Service (Next.js)
+  - type: web
+    name: inkloom-governance-frontend
+    runtime: node
+    plan: starter
+    region: oregon
+    buildCommand: npm install && npm run build
+    startCommand: npm run start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: NEXT_PUBLIC_BACKEND_URL
+        fromService:
+          type: web
+          name: inkloom-governance-backend
+          property: host
+      - key: DATABASE_URL
+        fromDatabase:
+          name: inkloom-postgres
+          property: connectionString
+      - key: JWT_SECRET
+        generateValue: true
+
+  # 2. Standalone Backend Service (Node.js + Express)
+  - type: web
+    name: inkloom-governance-backend
+    runtime: node
+    plan: starter
+    region: oregon
+    rootDir: backend
+    buildCommand: npm install && npm run build
+    startCommand: npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: DATABASE_URL
+        fromDatabase:
+          name: inkloom-postgres
+          property: connectionString
+      - key: JWT_SECRET
+        generateValue: true
+      - key: ZERO_DATA_RETENTION
+        value: "true"
+
+# 3. Managed PostgreSQL Database
+databases:
+  - name: inkloom-postgres
+    plan: free
+    region: oregon
+    databaseName: inkloom_governance
+    user: inkloom_admin
+
