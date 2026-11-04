@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import Link from "next/link";
 import { api } from "@/lib/api";
 import {
@@ -187,6 +187,28 @@ export default function CreatorDashboard() {
   const [isMajorDrift, setIsMajorDrift] = useState<boolean>(false);
   const [isPublished, setIsPublished] = useState<boolean>(false);
 
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const storedText = localStorage.getItem("inkloom_active_draft_text");
+      const storedChannel = localStorage.getItem("inkloom_active_draft_channel");
+      const storedBrand = localStorage.getItem("inkloom_active_draft_brand");
+      if (storedText) {
+        setInputText(storedText);
+        setAuditState("idle");
+        showNotification("Loaded active draft into Compliance Inspector!");
+        localStorage.removeItem("inkloom_active_draft_text");
+      }
+      if (storedChannel) {
+        setSelectedChannel(storedChannel);
+        localStorage.removeItem("inkloom_active_draft_channel");
+      }
+      if (storedBrand) {
+        showNotification("Active Rulebook switched to: " + storedBrand);
+        localStorage.removeItem("inkloom_active_draft_brand");
+      }
+    }
+  }, []);
+
   const pendingList = findings.filter((f) => f.status === "pending");
 
   // Differentiate findings by category
@@ -353,7 +375,7 @@ export default function CreatorDashboard() {
   const handlePublishDirectly = () => {
     setIsPublished(true);
     navigator.clipboard?.writeText(inputText);
-    showNotification("? Published Directly! Content copied to clipboard. No Brand Manager sign-off was needed (Drift < 70).");
+    showNotification("✓ Published Directly! Content copied to clipboard. No Brand Manager sign-off was needed (Drift < 70).");
   };
 
   const handleEscalateToManager = () => {

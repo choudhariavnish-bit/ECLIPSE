@@ -27,19 +27,20 @@ interface NavItem {
 
 const CREATOR_NAV: NavItem[] = [
   { name: "Compliance Inspector", href: "/dashboard/creator", icon: CheckSquare },
-  { name: "Active Drafts", href: "/dashboard/creator", icon: FileText, badge: "3" },
-  { name: "Brand Rulebook", href: "/dashboard/creator", icon: BookOpen },
+  { name: "Active Drafts", href: "/dashboard/drafts", icon: FileText, badge: "4" },
+  { name: "Brand Rulebook", href: "/dashboard/rulebook", icon: BookOpen },
 ];
 
 const BRAND_MANAGER_NAV: NavItem[] = [
-  { name: "Approval Pipeline", href: "/dashboard/brand-manager", icon: Layers, badge: "2" },
-  { name: "Tone & Voice Policy", href: "/dashboard/brand-manager", icon: Sliders },
-  { name: "Brand Rulebook", href: "/dashboard/brand-manager", icon: BookOpen },
+  { name: "Approval Pipeline", href: "/dashboard/brand-manager", icon: Layers, badge: "3" },
+  { name: "Active Drafts", href: "/dashboard/drafts", icon: FileText, badge: "4" },
+  { name: "Brand Rulebook", href: "/dashboard/rulebook", icon: BookOpen },
 ];
 
 const ADMIN_NAV: NavItem[] = [
   { name: "Access & RBAC", href: "/dashboard/admin", icon: Users, badge: "4" },
-  { name: "Privacy & Model Settings", href: "/dashboard/admin", icon: Cpu },
+  { name: "Brand Rulebooks", href: "/dashboard/rulebook", icon: BookOpen },
+  { name: "System Settings", href: "/dashboard/admin", icon: Cpu },
   { name: "Audit Trail Ledger", href: "/dashboard/admin", icon: History },
 ];
 
@@ -114,25 +115,31 @@ export const Sidebar = () => {
             Navigation
           </span>
           <nav className="space-y-0.5">
-            {navItems.map((item, idx) => {
+            {navItems.map((item) => {
               const Icon = item.icon;
-              const isActive = idx === 0 && pathname.startsWith(item.href);
+              const isActive = pathname === item.href;
               return (
                 <Link
                   key={item.name}
                   href={item.href}
                   className={`flex items-center justify-between rounded-lg px-2.5 py-1.5 text-xs font-medium transition-all ${
                     isActive
-                      ? "bg-slate-200/70 text-slate-900 font-bold"
+                      ? "bg-slate-900 text-white font-bold shadow-xs"
                       : "text-slate-600 hover:bg-slate-100 hover:text-slate-900"
                   }`}
                 >
                   <div className="flex items-center gap-2">
-                    <Icon className="h-3.5 w-3.5 text-slate-500" />
+                    <Icon className={`h-3.5 w-3.5 ${isActive ? "text-white" : "text-slate-500"}`} />
                     <span>{item.name}</span>
                   </div>
                   {item.badge && (
-                    <span className="rounded bg-slate-200 px-1.5 py-0.2 text-[10px] font-mono font-semibold text-slate-700">
+                    <span
+                      className={`rounded px-1.5 py-0.2 text-[10px] font-mono font-semibold ${
+                        isActive
+                          ? "bg-slate-800 text-slate-200 border border-slate-700"
+                          : "bg-slate-200 text-slate-700"
+                      }`}
+                    >
                       {item.badge}
                     </span>
                   )}
@@ -168,7 +175,7 @@ export const Sidebar = () => {
             <span>Pre-Publication Guard</span>
           </div>
           <p className="text-[11px] text-slate-600 leading-relaxed">
-            All content inspected against Inkloom Brand Rulebook v2.4 before public release.
+            All content inspected against active Brand Rulebook before public release.
           </p>
         </div>
       </div>
