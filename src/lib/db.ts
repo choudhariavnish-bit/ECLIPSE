@@ -14,10 +14,12 @@ if (connectionString) {
   try {
     pool = new Pool({
       connectionString,
-      ssl: process.env.NODE_ENV === "production" ? { rejectUnauthorized: false } : undefined,
+      ssl: connectionString.includes("supabase.co") || connectionString.includes("supabase.com") || process.env.NODE_ENV === "production"
+        ? { rejectUnauthorized: false }
+        : undefined,
       max: 10,
       idleTimeoutMillis: 30000,
-      connectionTimeoutMillis: 5000,
+      connectionTimeoutMillis: 10000,
     });
   } catch (err) {
     console.warn("[DB] Failed to initialize pg Pool:", err);
@@ -88,4 +90,3 @@ export async function checkDbConnection(): Promise<{
     details: "Using mock in-memory governance store. Set DATABASE_URL or SUPABASE_URL to connect live database.",
   };
 }
-
