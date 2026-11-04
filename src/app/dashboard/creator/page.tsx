@@ -123,7 +123,7 @@ const TEMPLATES: TemplatePreset[] = [
   },
   {
     id: "major_drift",
-    label: "Critical Claim (Major Drift ≥ 70)",
+    label: "Critical Claim (Major Drift â¥ 70)",
     channel: "Press Release & Social",
     driftScore: 86,
     isMajorDrift: true,
@@ -316,7 +316,7 @@ export default function CreatorDashboard() {
     setFindings((prev) =>
       prev.map((f) => (f.id === id ? { ...f, status: "applied" } : f))
     );
-    showNotification(`Rephrased "${finding.flaggedText}" → "${finding.suggestedFix}" (Original voice preserved)`);
+    showNotification(`Rephrased "${finding.flaggedText}" â "${finding.suggestedFix}" (Original voice preserved)`);
   };
 
   const handleDismiss = (findingId: string) => {
@@ -338,17 +338,7 @@ export default function CreatorDashboard() {
     setFindings((prev) => prev.map((f) => ({ ...f, status: "applied" })));
     setDriftScore(0);
     setIsMajorDrift(false);
-    showNotification("Score 100%! Original idea & tone preserved � Auto-approved for direct posting.");
-  };
-      } else {
-        updated = updated.replace(f.flaggedText, f.suggestedFix);
-      }
-    });
-    setInputText(updated);
-    setFindings((prev) => prev.map((f) => ({ ...f, status: "applied" })));
-    setDriftScore(0);
-    setIsMajorDrift(false);
-    showNotification("Score 100%! Original idea & tone preserved — Auto-approved for direct posting.");
+    showNotification("Score 100%! Original idea & tone preserved -- Auto-approved for direct posting.");
   };
 
   const handleSubmitForReview = async () => {
@@ -364,7 +354,6 @@ export default function CreatorDashboard() {
     setIsPublished(true);
     navigator.clipboard?.writeText(inputText);
     showNotification("? Published Directly! Content copied to clipboard. No Brand Manager sign-off was needed (Drift < 70).");
-  };
   };
 
   const handleEscalateToManager = () => {
@@ -395,7 +384,7 @@ export default function CreatorDashboard() {
     } else {
       setContentFormat("text");
     }
-    showNotification(`Loaded "${tmpl.label}" • Click "Check Content" to inspect.`);
+    showNotification(`Loaded "${tmpl.label}" â¢ Click "Check Content" to inspect.`);
   };
 
   const wordCount = inputText.trim() ? inputText.trim().split(/\s+/).length : 0;
@@ -578,7 +567,7 @@ export default function CreatorDashboard() {
               className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold shadow-xs transition-colors"
             >
               <AlertTriangle className="h-3.5 w-3.5" />
-              <span>Escalate to Brand Manager (Drift ≥ 70)</span>
+              <span>Escalate to Brand Manager (Drift â¥ 70)</span>
             </button>
           )}
 
@@ -671,7 +660,7 @@ export default function CreatorDashboard() {
                         </div>
                         <div>
                           <span className="font-bold text-slate-900 block">{posterTitle}</span>
-                          <span className="text-[10px] text-slate-400 font-mono">1200 × 675 px • PNG Graphic • High-Res</span>
+                          <span className="text-[10px] text-slate-400 font-mono">1200 x 675 px â¢ PNG Graphic â¢ High-Res</span>
                         </div>
                       </div>
 
@@ -747,7 +736,7 @@ export default function CreatorDashboard() {
                       {/* Poster Footer Sub-branding */}
                       <div className="pt-3 border-t border-slate-100 flex items-center justify-between text-[11px] text-slate-500 font-medium">
                         <span>Enterprise Brand Governance Platform</span>
-                        <span className="font-mono text-slate-400">inkloom.ai • Verified</span>
+                        <span className="font-mono text-slate-400">inkloom.ai â¢ Verified</span>
                       </div>
                     </div>
                   </div>
@@ -787,14 +776,14 @@ export default function CreatorDashboard() {
                       </div>
                       <div>
                         <div className="text-xs font-bold text-slate-900">Inkloom Official Post</div>
-                        <div className="text-[11px] text-slate-400">Target Channel: {selectedChannel} • Public</div>
+                        <div className="text-[11px] text-slate-400">Target Channel: {selectedChannel} â¢ Public</div>
                       </div>
                     </div>
                     <p className="text-xs sm:text-sm text-slate-800 leading-relaxed whitespace-pre-wrap font-sans">
                       {inputText}
                     </p>
                     <div className="pt-2 border-t border-slate-100 flex items-center justify-between text-[11px] text-slate-400">
-                      <span>142 reactions • 18 comments</span>
+                      <span>142 reactions â¢ 18 comments</span>
                       <span>Verified Brand Post</span>
                     </div>
                   </div>
@@ -831,11 +820,11 @@ export default function CreatorDashboard() {
 
               {/* Metrics Footer */}
               <div className="flex items-center justify-between text-xs text-slate-500 pt-1 border-t border-slate-100 font-mono">
-                <span>{wordCount} words • {charCount} chars</span>
+                <span>{wordCount} words â¢ {charCount} chars</span>
                 <span>
                   {auditState === "idle" ? (
                     <span className="text-indigo-600 font-sans font-semibold">
-                      Ready to check • Click &quot;Check Content&quot; above
+                      Ready to check â¢ Click &quot;Check Content&quot; above
                     </span>
                   ) : (
                     "Flesch-Kincaid: Grade 10.4 (Executive)"
@@ -870,8 +859,8 @@ export default function CreatorDashboard() {
               {filteredGlossary.slice(0, 4).map((g, i) => (
                 <div key={i} className="p-2.5 rounded-lg border border-slate-100 bg-slate-50 flex items-center justify-between">
                   <div>
-                    <span className="font-bold text-emerald-800 block">✓ {g.doUse}</span>
-                    <span className="text-rose-600 line-through text-[11px] block mt-0.5">✗ {g.avoid}</span>
+                    <span className="font-bold text-emerald-800 block">â {g.doUse}</span>
+                    <span className="text-rose-600 line-through text-[11px] block mt-0.5">â-- {g.avoid}</span>
                   </div>
                   <button
                     onClick={() => {
@@ -937,9 +926,9 @@ export default function CreatorDashboard() {
               <div className="p-5 rounded-lg border border-emerald-200 bg-emerald-50/60 text-center space-y-3">
                 <CheckCircle2 className="h-7 w-7 text-emerald-600 mx-auto" />
                 <div>
-                  <h4 className="text-xs font-bold text-emerald-950">100% Brand Compliant • Auto-Approved</h4>
+                  <h4 className="text-xs font-bold text-emerald-950">100% Brand Compliant â¢ Auto-Approved</h4>
                   <p className="text-[11px] text-emerald-700 leading-normal mt-0.5 max-w-xs mx-auto">
-                    Drift is <strong>0%</strong> (within the autonomous self-clearance threshold &lt; 70). No Brand Manager approval is needed—your original idea and tone are fully preserved.
+                    Drift is <strong>0%</strong> (within the autonomous self-clearance threshold &lt; 70). No Brand Manager approval is neededâyour original idea and tone are fully preserved.
                   </p>
                 </div>
 
@@ -964,7 +953,7 @@ export default function CreatorDashboard() {
                     <div className="flex items-center justify-between">
                       <span className="font-bold text-rose-900 flex items-center gap-1.5">
                         <AlertTriangle className="h-4 w-4 text-rose-600" />
-                        Major Policy Drift ({driftScore}%) ≥ 70 Threshold
+                        Major Policy Drift ({driftScore}%) â¥ 70 Threshold
                       </span>
                       <span className="bg-rose-200/80 text-rose-900 font-mono text-[10px] font-bold px-1.5 py-0.5 rounded">
                         MANDATORY ESCALATION
@@ -986,7 +975,7 @@ export default function CreatorDashboard() {
                       </span>
                     </div>
                     <p className="text-[11px] text-indigo-800 leading-normal">
-                      Only minor risk terms are flagged. Click <strong>&quot;Fix All&quot;</strong> to safely rephrase them into corporate compliance—<strong>your original idea, tone, and message remain 100% intact</strong>, allowing immediate direct posting!
+                      Only minor risk terms are flagged. Click <strong>&quot;Fix All&quot;</strong> to safely rephrase them into corporate complianceâ<strong>your original idea, tone, and message remain 100% intact</strong>, allowing immediate direct posting!
                     </p>
                   </div>
                 )}
