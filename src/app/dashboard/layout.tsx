@@ -1,0 +1,36 @@
+"use client";
+
+import React, { useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { Navbar } from "@/components/layout/Navbar";
+import { Sidebar } from "@/components/layout/Sidebar";
+import { useAuthStore } from "@/stores/useAuthStore";
+
+export default function DashboardLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  const router = useRouter();
+  const { isAuthenticated, currentUser, activeRole, loginAs } = useAuthStore();
+
+  useEffect(() => {
+    // If not authenticated, authenticate with default role for seamless evaluation
+    if (!isAuthenticated || !currentUser) {
+      loginAs(activeRole || "creator");
+    }
+  }, [isAuthenticated, currentUser, activeRole, loginAs]);
+
+  return (
+    <div className="min-h-screen bg-slate-50 flex flex-col">
+      <Navbar />
+      <div className="flex flex-1">
+        <Sidebar />
+        <main className="flex-1 p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto w-full">
+          {children}
+        </main>
+      </div>
+    </div>
+  );
+}
+
