@@ -189,7 +189,7 @@ ON CONFLICT (id) DO NOTHING;
 
 INSERT INTO users (id, organization_id, name, email, password, role, department)
 VALUES 
-('$11111111-1111-1111-1111-111111111111', 'a0000000-0000-0000-0000-000000000001', 'Alex Morgan', 'alex.creator@inkloom.ai', '$2b$10$wht6YVrj1HuKEcyumITfZutyIHarI5BzFEIfYi8Fa.dAUPA.mXHAO', 'creator', 'Content & Growth Marketing'),
+('11111111-1111-1111-1111-111111111111', 'a0000000-0000-0000-0000-000000000001', 'Alex Morgan', 'alex.creator@inkloom.ai', '$2b$10$wht6YVrj1HuKEcyumITfZutyIHarI5BzFEIfYi8Fa.dAUPA.mXHAO', 'creator', 'Content & Growth Marketing'),
 ('22222222-2222-2222-2222-222222222222', 'a0000000-0000-0000-0000-000000000001', 'Sarah Chen', 'sarah.brand@inkloom.ai', '$2b$10$wht6YVrj1HuKEcyumITfZutyIHarI5BzFEIfYi8Fa.dAUPA.mXHAO', 'brand-manager', 'Global Brand & Governance'),
 ('33333333-3333-3333-3333-333333333333', 'a0000000-0000-0000-0000-000000000001', 'Marcus Vance', 'marcus.admin@inkloom.ai', '$2b$10$wht6YVrj1HuKEcyumITfZutyIHarI5BzFEIfYi8Fa.dAUPA.mXHAO', 'admin', 'System Architecture & Compliance')
 ON CONFLICT (id) DO NOTHING;
