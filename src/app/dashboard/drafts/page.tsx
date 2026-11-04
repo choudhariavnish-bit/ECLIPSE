@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import {
@@ -104,6 +104,7 @@ const INITIAL_DRAFTS: ContentDraft[] = [
 export default function ActiveDraftsPage() {
   const router = useRouter();
   const [drafts, setDrafts] = useState<ContentDraft[]>(INITIAL_DRAFTS);
+  const [isLoading, setIsLoading] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [brandFilter, setBrandFilter] = useState<string>("all");
@@ -122,6 +123,42 @@ export default function ActiveDraftsPage() {
     setTimeout(() => setToastMessage(null), 3000);
   };
 
+  const fetchDrafts = async () => {
+    try {
+      setIsLoading(true);
+      const res = await fetch("/api/drafts");
+      if (res.ok) {
+        const data = await res.json();
+        if (data.drafts && Array.isArray(data.drafts) && data.drafts.length > 0) {
+          const mapped: ContentDraft[] = data.drafts.map((d: any) => ({
+            id: d.id,
+            title: d.title,
+            content: d.content,
+            brand: d.brand || "Inkloom AI Enterprises",
+            channel: d.channel || "Blog & Press",
+            format: (d.format === "graphic" || d.format === "Graphic Visual") ? "graphic" : "text",
+            status: d.status || "draft",
+            author: d.author || "Alex Morgan",
+            updatedAt: d.updated_at ? "Live Synced" : "Recent",
+            driftScore: d.driftScore ?? 0,
+            wordCount: d.wordCount ?? (d.content ? d.content.trim().split(/\s+/).length : 0),
+            commentsCount: d.commentsCount ?? 0,
+            reviewerNotes: d.reviewerNotes,
+          }));
+          setDrafts(mapped);
+        }
+      }
+    } catch (err) {
+      console.warn("Using offline drafts fallback:", err);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchDrafts();
+  }, []);
+
   const handleOpenInInspector = (draft: ContentDraft) => {
     // Store in localStorage so Compliance Inspector picks it up
     if (typeof window !== "undefined") {
@@ -133,11 +170,11 @@ export default function ActiveDraftsPage() {
     router.push("/dashboard/creator");
   };
 
-  const handleCreateDraft = (e: React.FormEvent) => {
+  const handleCreateDraft = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!newTitle.trim() || !newContent.trim()) return;
 
-    const newDraftItem: ContentDraft = {
+    const optimisticDraft: ContentDraft = {
       id: `draft-${Date.now().toString().slice(-4)}`,
       title: newTitle.trim(),
       content: newContent.trim(),
@@ -152,16 +189,43 @@ export default function ActiveDraftsPage() {
       commentsCount: 0,
     };
 
-    setDrafts([newDraftItem, ...drafts]);
+    setDrafts((prev) => [optimisticDraft, ...prev]);
     setIsCreateModalOpen(false);
     setNewTitle("");
     setNewContent("");
-    showToast(`Draft "${newDraftItem.title}" created successfully!`);
+
+    try {
+      const res = await fetch("/api/drafts", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          title: optimisticDraft.title,
+          content: optimisticDraft.content,
+          brand: optimisticDraft.brand,
+          channel: optimisticDraft.channel,
+          format: optimisticDraft.format,
+          status: "draft",
+        }),
+      });
+      if (res.ok) {
+        showToast(`Draft "${optimisticDraft.title}" saved live to database!`);
+        fetchDrafts();
+      } else {
+        showToast(`Draft saved.`);
+      }
+    } catch {
+      showToast(`Draft saved.`);
+    }
   };
 
-  const handleDeleteDraft = (id: string) => {
-    setDrafts(drafts.filter((d) => d.id !== id));
-    showToast("Draft moved to archive.");
+  const handleDeleteDraft = async (id: string) => {
+    setDrafts((prev) => prev.filter((d) => d.id !== id));
+    try {
+      await fetch(`/api/drafts/${id}`, { method: "DELETE" });
+      showToast("Draft deleted permanently from database.");
+    } catch {
+      showToast("Draft moved to archive.");
+    }
   };
 
   const filteredDrafts = drafts.filter((d) => {

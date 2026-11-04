@@ -1,0 +1,380 @@
+{
+  "organizations": [
+    {
+      "id": "a0000000-0000-0000-0000-000000000001",
+      "name": "Inkloom AI Enterprises",
+      "industry": "Enterprise AI & Cloud Governance",
+      "branding_settings": {
+        "primary_color": "#2563EB",
+        "font_family": "Inter",
+        "tone_preference": "professional"
+      },
+      "created_at": "2026-11-04T12:00:00.000Z"
+    },
+    {
+      "id": "a0000000-0000-0000-0000-000000000002",
+      "name": "LoomCraft Studio",
+      "industry": "Digital Creative Agency",
+      "branding_settings": {
+        "primary_color": "#8B5CF6",
+        "font_family": "Plus Jakarta Sans",
+        "tone_preference": "playful"
+      },
+      "created_at": "2026-11-04T12:00:00.000Z"
+    },
+    {
+      "id": "a0000000-0000-0000-0000-000000000003",
+      "name": "PulseFin Global",
+      "industry": "Banking & Financial Services",
+      "branding_settings": {
+        "primary_color": "#059669",
+        "font_family": "Roboto Mono",
+        "tone_preference": "conservative"
+      },
+      "created_at": "2026-11-04T12:00:00.000Z"
+    }
+  ],
+  "users": [
+    {
+      "id": "11111111-1111-1111-1111-111111111111",
+      "organization_id": "a0000000-0000-0000-0000-000000000001",
+      "name": "Alex Morgan",
+      "email": "alex.creator@inkloom.ai",
+      "role": "creator",
+      "department": "Content & Growth Marketing",
+      "created_at": "2026-11-04T12:00:00.000Z"
+    },
+    {
+      "id": "22222222-2222-2222-2222-222222222222",
+      "organization_id": "a0000000-0000-0000-0000-000000000001",
+      "name": "Sarah Chen",
+      "email": "sarah.brand@inkloom.ai",
+      "role": "brand-manager",
+      "department": "Global Brand & Governance",
+      "created_at": "2026-11-04T12:00:00.000Z"
+    },
+    {
+      "id": "33333333-3333-3333-3333-333333333333",
+      "organization_id": "a0000000-0000-0000-0000-000000000001",
+      "name": "Marcus Vance",
+      "email": "marcus.admin@inkloom.ai",
+      "role": "admin",
+      "department": "System Architecture & Compliance",
+      "created_at": "2026-11-04T12:00:00.000Z"
+    }
+  ],
+  "drafts": [
+    {
+      "id": "draft-001",
+      "user_id": "11111111-1111-1111-1111-111111111111",
+      "organization_id": "a0000000-0000-0000-0000-000000000001",
+      "brand": "Inkloom AI Enterprises",
+      "title": "Q4 Global Product Launch Announcement",
+      "content": "Inkloom is the market's only 100% foolproof AI automation platform with super crazy fast deployment for global brands.",
+      "channel": "Blog & Press",
+      "format": "text",
+      "status": "review_pending",
+      "author": "Alex Morgan",
+      "driftScore": 78,
+      "wordCount": 18,
+      "commentsCount": 2,
+      "reviewerNotes": "Sarah Chen: Please fix the 100% foolproof claim before we release to press wire.",
+      "created_at": "2026-11-04T12:00:00.000Z",
+      "updated_at": "2026-11-04T12:00:00.000Z"
+    },
+    {
+      "id": "draft-002",
+      "user_id": "11111111-1111-1111-1111-111111111111",
+      "organization_id": "a0000000-0000-0000-0000-000000000002",
+      "brand": "LoomCraft Studio",
+      "title": "Instagram Story Creative Carousel - Fall Promo",
+      "content": "Transform your visual branding with automated AI precision and instant multi-channel governance.",
+      "channel": "Instagram / Meta",
+      "format": "graphic",
+      "status": "changes_requested",
+      "author": "Growth Agency Partner",
+      "driftScore": 45,
+      "wordCount": 14,
+      "commentsCount": 1,
+      "reviewerNotes": "Slide 2 font contrast fails WCAG 2.1 AA (2.4:1). Change font color to #0F172A.",
+      "created_at": "2026-11-04T11:00:00.000Z",
+      "updated_at": "2026-11-04T11:00:00.000Z"
+    },
+    {
+      "id": "draft-003",
+      "user_id": "11111111-1111-1111-1111-111111111111",
+      "organization_id": "a0000000-0000-0000-0000-000000000001",
+      "brand": "Inkloom AI Enterprises",
+      "title": "Enterprise Security & SOC2 Compliance Whitepaper",
+      "content": "Inkloom delivers enterprise-grade AI brand governance with verified high-availability and zero data retention for regulated enterprises.",
+      "channel": "Whitepaper (PDF)",
+      "format": "text",
+      "status": "approved",
+      "author": "Alex Morgan",
+      "driftScore": 0,
+      "wordCount": 24,
+      "commentsCount": 0,
+      "reviewerNotes": "Fully compliant with SOC2 disclosure standards. Ready to publish.",
+      "created_at": "2026-11-03T12:00:00.000Z",
+      "updated_at": "2026-11-03T12:00:00.000Z"
+    },
+    {
+      "id": "draft-004",
+      "user_id": "11111111-1111-1111-1111-111111111111",
+      "organization_id": "a0000000-0000-0000-0000-000000000003",
+      "brand": "PulseFin Global",
+      "title": "PulseFin Q3 Earnings & Security Advisory",
+      "content": "Our algorithmic portfolio optimization delivers verified risk-adjusted yield based on audited historical benchmarks. Past performance does not guarantee future results.",
+      "channel": "Customer Advisory",
+      "format": "text",
+      "status": "draft",
+      "author": "Alex Morgan",
+      "driftScore": 12,
+      "wordCount": 22,
+      "commentsCount": 0,
+      "reviewerNotes": "",
+      "created_at": "2026-11-01T12:00:00.000Z",
+      "updated_at": "2026-11-01T12:00:00.000Z"
+    }
+  ],
+  "rules": [
+    {
+      "id": "c0000000-0000-0000-0000-000000000001",
+      "guideline_id": "b0000000-0000-0000-0000-000000000001",
+      "rule_type": "claim",
+      "name": "Absolute Guarantee Prohibition",
+      "description": "Never claim 100% foolproof or completely zero bug results.",
+      "severity": "critical",
+      "pattern": "100% foolproof",
+      "replacement": "enterprise-grade verified high-availability",
+      "is_enabled": true,
+      "created_at": "2026-11-04T12:00:00.000Z"
+    },
+    {
+      "id": "c0000000-0000-0000-0000-000000000002",
+      "guideline_id": "b0000000-0000-0000-0000-000000000001",
+      "rule_type": "tone",
+      "name": "Slang & Hyperbole Ban",
+      "description": "Informal expressions compromise brand authority in enterprise contexts.",
+      "severity": "warning",
+      "pattern": "super crazy fast",
+      "replacement": "rapid zero-downtime deployment",
+      "is_enabled": true,
+      "created_at": "2026-11-04T12:00:00.000Z"
+    }
+  ],
+  "rulebooks": [
+    {
+      "id": "brand-inkloom",
+      "name": "Inkloom AI Enterprises",
+      "tagline": "Enterprise AI & Cloud Governance",
+      "industry": "Enterprise B2B Software",
+      "primaryColor": "#2563EB",
+      "accentBg": "bg-blue-50 border-blue-200 text-blue-800",
+      "tone": { "formality": 85, "boldness": 70, "empathy": 60 },
+      "rules": [
+        {
+          "id": "r-ink-1",
+          "code": "CLM-01",
+          "category": "claim",
+          "name": "Prohibited Superlative Guarantees",
+          "description": "Absolute guarantees cannot be verified under corporate advertising compliance.",
+          "severity": "critical",
+          "pattern": "100% foolproof",
+          "replacement": "enterprise-grade verified high-availability",
+          "isEnabled": true
+        },
+        {
+          "id": "r-ink-2",
+          "code": "CLM-02",
+          "category": "claim",
+          "name": "Zero Defect Infallibility Claims",
+          "description": "Software marketing must avoid absolute infallibility claims.",
+          "severity": "critical",
+          "pattern": "zero bugs guaranteed",
+          "replacement": "rigorous 99.99% uptime resilience",
+          "isEnabled": true
+        },
+        {
+          "id": "r-ink-3",
+          "code": "TON-01",
+          "category": "tone",
+          "name": "Casual Hyperbole Restriction",
+          "description": "Informal slang compromises authoritative enterprise standing.",
+          "severity": "warning",
+          "pattern": "super crazy fast",
+          "replacement": "rapid zero-downtime deployment",
+          "isEnabled": true
+        },
+        {
+          "id": "r-ink-4",
+          "code": "LEG-01",
+          "category": "legal",
+          "name": "Mandatory SOC2 Disclosure Tag",
+          "description": "All cloud security claims must reference SOC2 Type II certifications.",
+          "severity": "info",
+          "pattern": "unhackable cloud storage",
+          "replacement": "SOC2 Type II certified zero-knowledge architecture",
+          "isEnabled": true
+        },
+        {
+          "id": "r-ink-5",
+          "code": "VIS-01",
+          "category": "visual",
+          "name": "Enterprise WCAG AA Typography",
+          "description": "All collateral must maintain minimum 12:1 typography contrast on whitepapers.",
+          "severity": "warning",
+          "pattern": "Light Gray typography on white",
+          "replacement": "Slate-900 (#0F172A) on White",
+          "isEnabled": true
+        }
+      ]
+    },
+    {
+      "id": "brand-loomcraft",
+      "name": "LoomCraft Studio",
+      "tagline": "High-Energy Design & Social Campaigns",
+      "industry": "Digital Creative Agency",
+      "primaryColor": "#8B5CF6",
+      "accentBg": "bg-purple-50 border-purple-200 text-purple-800",
+      "tone": { "formality": 35, "boldness": 90, "empathy": 85 },
+      "rules": [
+        {
+          "id": "r-loom-1",
+          "code": "TON-02",
+          "category": "tone",
+          "name": "Ban Monotonous Corporate Jargon",
+          "description": "Stiff corporate jargon kills creative engagement on modern social media.",
+          "severity": "warning",
+          "pattern": "synergistic paradigm shift",
+          "replacement": "fresh creative momentum",
+          "isEnabled": true
+        },
+        {
+          "id": "r-loom-2",
+          "code": "TON-03",
+          "category": "tone",
+          "name": "Conversational Direct Punch",
+          "description": "Speak directly to creators rather than using third-person bureaucrat speak.",
+          "severity": "info",
+          "pattern": "it is imperative that users utilize",
+          "replacement": "you can jump straight into",
+          "isEnabled": true
+        },
+        {
+          "id": "r-loom-3",
+          "code": "VIS-02",
+          "category": "visual",
+          "name": "Vibrant Palette Allowance",
+          "description": "Gradient accents permitted (Purple #8B5CF6 to Pink #EC4899).",
+          "severity": "info",
+          "pattern": "Monochrome gray only",
+          "replacement": "Multi-hue vibrant gradient permitted",
+          "isEnabled": true
+        }
+      ]
+    },
+    {
+      "id": "brand-pulsefin",
+      "name": "PulseFin Global",
+      "tagline": "Algorithmic Wealth & FinTech Compliance",
+      "industry": "Banking & Financial Services",
+      "primaryColor": "#059669",
+      "accentBg": "bg-emerald-50 border-emerald-200 text-emerald-800",
+      "tone": { "formality": 95, "boldness": 30, "empathy": 40 },
+      "rules": [
+        {
+          "id": "r-fin-1",
+          "code": "FIN-01",
+          "category": "legal",
+          "name": "SEC/FINRA: No Guaranteed Returns",
+          "description": "Promising specific return percentages is illegal under financial advertising laws.",
+          "severity": "critical",
+          "pattern": "guaranteed 500% ROI",
+          "replacement": "projected historical yield based on audited backtesting",
+          "isEnabled": true
+        },
+        {
+          "id": "r-fin-2",
+          "code": "FIN-02",
+          "category": "legal",
+          "name": "Mandatory Regulatory Footnote",
+          "description": "Every financial performance asset must include the statutory risk notice.",
+          "severity": "critical",
+          "pattern": "risk-free automated profits",
+          "replacement": "algorithmic portfolio management (Past performance does not guarantee future results)",
+          "isEnabled": true
+        },
+        {
+          "id": "r-fin-3",
+          "code": "VIS-03",
+          "category": "visual",
+          "name": "Strict WCAG AAA Contrast (7:1)",
+          "description": "Financial dashboards must support visually impaired investors under ADA standards.",
+          "severity": "critical",
+          "pattern": "Contrast under 7:1",
+          "replacement": "Strict High Contrast Dark Navy (#0A192F)",
+          "isEnabled": true
+        }
+      ]
+    },
+    {
+      "id": "brand-novahealth",
+      "name": "NovaHealth Diagnostics",
+      "tagline": "Clinical Research & Biomarker Discovery",
+      "industry": "Healthcare & Life Sciences",
+      "primaryColor": "#06B6D4",
+      "accentBg": "bg-cyan-50 border-cyan-200 text-cyan-800",
+      "tone": { "formality": 90, "boldness": 40, "empathy": 90 },
+      "rules": [
+        {
+          "id": "r-nova-1",
+          "code": "FDA-01",
+          "category": "legal",
+          "name": "FDA: No 'Miracle Cure' Phrasing",
+          "description": "Medical treatments must never be described as miraculous or foolproof.",
+          "severity": "critical",
+          "pattern": "miracle cure breakthrough",
+          "replacement": "clinically evaluated therapeutic formulation",
+          "isEnabled": true
+        },
+        {
+          "id": "r-nova-2",
+          "code": "FDA-02",
+          "category": "claim",
+          "name": "Eradication Claims Prohibition",
+          "description": "Treatments must be stated as managing symptoms unless fully FDA curative certified.",
+          "severity": "critical",
+          "pattern": "completely eradicates the disease",
+          "replacement": "demonstrates statistically significant symptom reduction",
+          "isEnabled": true
+        },
+        {
+          "id": "r-nova-3",
+          "code": "ETH-01",
+          "category": "terminology",
+          "name": "Person-First Medical Nomenclature",
+          "description": "Empathetic communication always puts the person before the condition.",
+          "severity": "warning",
+          "pattern": "diabetics and cancer victims",
+          "replacement": "individuals living with diabetes and oncology patients",
+          "isEnabled": true
+        }
+      ]
+    }
+  ],
+  "findings": [],
+  "comments": [],
+  "approvals": [],
+  "audit_logs": [
+    {
+      "id": "80000000-0000-0000-0000-000000000001",
+      "organization_id": "a0000000-0000-0000-0000-000000000001",
+      "action": "PLATFORM_INITIALIZATION",
+      "entity_type": "system",
+      "details": { "status": "Live DB Store Active" },
+      "created_at": "2026-11-04T12:00:00.000Z"
+    }
+  ]
+}
+

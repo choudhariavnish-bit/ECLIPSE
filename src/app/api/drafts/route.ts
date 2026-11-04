@@ -4,17 +4,7 @@ import { verifyToken } from "@/lib/auth";
 
 export async function GET(req: NextRequest) {
   try {
-    const authHeader = req.headers.get("authorization");
-    let userId: string | undefined;
-
-    if (authHeader && authHeader.startsWith("Bearer ")) {
-      const payload = verifyToken(authHeader.split(" ")[1]);
-      if (payload && payload.role === "creator") {
-        userId = payload.userId;
-      }
-    }
-
-    const drafts = await governanceDB.getDrafts(userId);
+    const drafts = await governanceDB.getDrafts();
     return NextResponse.json({ drafts });
   } catch (err: any) {
     return NextResponse.json({ error: err.message || "Failed to fetch drafts" }, { status: 500 });
@@ -35,7 +25,16 @@ export async function POST(req: NextRequest) {
       }
     }
 
-    const { title, content, channel = "Blog & Press", format = "Rich Article" } = await req.json();
+    const body = await req.json();
+    const {
+      title,
+      content,
+      channel = "LinkedIn & B2B Social",
+      format = "text",
+      brand = "Inkloom AI Enterprises",
+      status = "draft",
+      author = "Alex Morgan",
+    } = body;
 
     if (!title || !content) {
       return NextResponse.json({ error: "Title and content are required" }, { status: 400 });
@@ -44,11 +43,13 @@ export async function POST(req: NextRequest) {
     const newDraft = await governanceDB.createDraft({
       user_id: currentUserId,
       organization_id: orgId,
-      title,
-      content,
+      title: title.trim(),
+      content: content.trim(),
       channel,
       format,
-      status: "draft",
+      brand,
+      status,
+      author,
     });
 
     await governanceDB.logAction({
@@ -57,7 +58,7 @@ export async function POST(req: NextRequest) {
       action: "DRAFT_CREATED",
       entity_type: "drafts",
       entity_id: newDraft.id,
-      details: { title, channel },
+      details: { title, channel, brand },
     });
 
     return NextResponse.json({ message: "Draft created successfully", draft: newDraft }, { status: 201 });
@@ -65,4 +66,3 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: err.message || "Failed to create draft" }, { status: 500 });
   }
 }
-

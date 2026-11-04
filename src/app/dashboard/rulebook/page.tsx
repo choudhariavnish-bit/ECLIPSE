@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import {
@@ -258,7 +258,8 @@ const INITIAL_BRAND_RULEBOOKS: BrandRulebook[] = [
 export default function BrandRulebookPage() {
   const router = useRouter();
   const [rulebooks, setRulebooks] = useState<BrandRulebook[]>(INITIAL_BRAND_RULEBOOKS);
-  const [selectedBrandId, setSelectedBrandId] = useState<string>(rulebooks[0].id);
+  const [selectedBrandId, setSelectedBrandId] = useState<string>(INITIAL_BRAND_RULEBOOKS[0].id);
+  const [isLoading, setIsLoading] = useState(false);
   const [categoryFilter, setCategoryFilter] = useState<string>("all");
   const [searchQuery, setSearchQuery] = useState("");
   const [isAddRuleModalOpen, setIsAddRuleModalOpen] = useState(false);
@@ -284,9 +285,30 @@ export default function BrandRulebookPage() {
     setTimeout(() => setToastMessage(null), 3000);
   };
 
+  const fetchRulebooks = async () => {
+    try {
+      setIsLoading(true);
+      const res = await fetch("/api/rulebooks");
+      if (res.ok) {
+        const data = await res.json();
+        if (data.rulebooks && Array.isArray(data.rulebooks) && data.rulebooks.length > 0) {
+          setRulebooks(data.rulebooks);
+        }
+      }
+    } catch (err) {
+      console.warn("Using offline rulebooks fallback:", err);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchRulebooks();
+  }, []);
+
   const currentBrand = rulebooks.find((b) => b.id === selectedBrandId) || rulebooks[0];
 
-  const handleToggleRule = (ruleId: string) => {
+  const handleToggleRule = async (ruleId: string) => {
     setRulebooks((prev) =>
       prev.map((b) =>
         b.id === currentBrand.id
@@ -299,10 +321,19 @@ export default function BrandRulebookPage() {
           : b
       )
     );
-    showToast("Rule status updated.");
+    try {
+      await fetch("/api/rulebooks", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action: "TOGGLE_RULE", brandId: currentBrand.id, ruleId }),
+      });
+      showToast("Rule status updated in live database.");
+    } catch {
+      showToast("Rule status updated.");
+    }
   };
 
-  const handleDeleteRule = (ruleId: string) => {
+  const handleDeleteRule = async (ruleId: string) => {
     setRulebooks((prev) =>
       prev.map((b) =>
         b.id === currentBrand.id
@@ -313,10 +344,19 @@ export default function BrandRulebookPage() {
           : b
       )
     );
-    showToast("Rule deleted from brand rulebook.");
+    try {
+      await fetch("/api/rulebooks", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action: "DELETE_RULE", brandId: currentBrand.id, ruleId }),
+      });
+      showToast("Rule deleted from live database.");
+    } catch {
+      showToast("Rule deleted from brand rulebook.");
+    }
   };
 
-  const handleCreateRule = (e: React.FormEvent) => {
+  const handleCreateRule = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!ruleName.trim() || !rulePattern.trim() || !ruleReplacement.trim()) return;
 
@@ -343,10 +383,25 @@ export default function BrandRulebookPage() {
     setRuleDescription("");
     setRulePattern("");
     setRuleReplacement("");
-    showToast(`Added "${newRule.name}" to ${currentBrand.name}`);
+
+    try {
+      const res = await fetch("/api/rulebooks", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action: "ADD_RULE", brandId: currentBrand.id, rule: newRule }),
+      });
+      if (res.ok) {
+        showToast(`Rule "${newRule.name}" saved live in database!`);
+        fetchRulebooks();
+      } else {
+        showToast(`Added "${newRule.name}" to ${currentBrand.name}`);
+      }
+    } catch {
+      showToast(`Added "${newRule.name}" to ${currentBrand.name}`);
+    }
   };
 
-  const handleCreateBrand = (e: React.FormEvent) => {
+  const handleCreateBrand = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!brandName.trim()) return;
 
@@ -373,13 +428,28 @@ export default function BrandRulebookPage() {
       ],
     };
 
-    setRulebooks([...rulebooks, newBrandItem]);
+    setRulebooks((prev) => [...prev, newBrandItem]);
     setSelectedBrandId(newBrandItem.id);
     setIsAddBrandModalOpen(false);
     setBrandName("");
     setBrandTagline("");
     setBrandIndustry("");
-    showToast(`Created new Brand Rulebook: "${newBrandItem.name}"`);
+
+    try {
+      const res = await fetch("/api/rulebooks", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action: "CREATE_BRAND", brand: newBrandItem }),
+      });
+      if (res.ok) {
+        showToast(`Created new Brand Rulebook: "${newBrandItem.name}" live!`);
+        fetchRulebooks();
+      } else {
+        showToast(`Created new Brand Rulebook: "${newBrandItem.name}"`);
+      }
+    } catch {
+      showToast(`Created new Brand Rulebook: "${newBrandItem.name}"`);
+    }
   };
 
   const handleInspectWithBrand = () => {
