@@ -25,7 +25,7 @@ def test_eclipse_identity():
     assert ECLIPSE_IDENTITY["name"] == "ECLIPSE"
     assert ECLIPSE_IDENTITY["project"] == "ECLIPSE"
     assert "Google Gemini" in ECLIPSE_IDENTITY["powered_by"]
-    assert "Your name is ECLIPSE." in ECLIPSE_SYSTEM_PROMPT
+    assert "You are ECLIPSE" in ECLIPSE_SYSTEM_PROMPT
 
 def test_brand_retriever_load():
     assert brand_retriever.guidelines is not None

@@ -30,7 +30,7 @@ def run_all_tests():
     assert ECLIPSE_IDENTITY["name"] == "ECLIPSE", "Engine name must be ECLIPSE"
     assert ECLIPSE_IDENTITY["project"] == "ECLIPSE", "Project name must be ECLIPSE"
     assert "Google Gemini" in ECLIPSE_IDENTITY["powered_by"]
-    assert "Your name is ECLIPSE." in ECLIPSE_SYSTEM_PROMPT
+    assert "You are ECLIPSE" in ECLIPSE_SYSTEM_PROMPT
     print("  -> PASS: Verified ECLIPSE name & Gemini-powered identity.")
 
     # 2. Knowledge Retrieval (RAG)
