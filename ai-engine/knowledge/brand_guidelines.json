@@ -1,0 +1,102 @@
+{
+  "brand_name": "ECLIPSE",
+  "version": "1.0",
+  "last_updated": "2026-11-01",
+  "core_identity": {
+    "mission": "Empowering marketing and compliance teams to publish with total confidence through real-time brand governance.",
+    "voice_attributes": [
+      "Authoritative yet approachable",
+      "Confident and empowering",
+      "Transparent and truthful",
+      "Professional, precise, and empathetic"
+    ],
+    "unacceptable_tones": [
+      "Arrogant or condescending",
+      "Aggressive or competitor-bashing",
+      "Sensationalist, hyperbolic, or clickbait",
+      "Vague or evasive"
+    ]
+  },
+  "prohibited_terminology": [
+    {
+      "term": "unbreakable",
+      "category": "hyperbole",
+      "severity": "high",
+      "recommended_replacement": "highly resilient / fault-tolerant",
+      "rationale": "Absolute security and reliability claims cannot be guaranteed and create legal liability."
+    },
+    {
+      "term": "100% bug-free",
+      "category": "false_guarantee",
+      "severity": "critical",
+      "recommended_replacement": "rigorously tested / enterprise-hardened",
+      "rationale": "No software is 100% bug-free. Making this promise violates FTC advertising guidelines."
+    },
+    {
+      "term": "cheap",
+      "category": "brand_perception",
+      "severity": "medium",
+      "recommended_replacement": "cost-effective / affordable / high-ROI",
+      "rationale": "The word 'cheap' devalues the premium quality of the platform."
+    },
+    {
+      "term": "destroy our competitors",
+      "category": "tone_violation",
+      "severity": "high",
+      "recommended_replacement": "outperform traditional alternatives",
+      "rationale": "Aggressive or bellicose language towards competitors violates corporate conduct standards."
+    },
+    {
+      "term": "best in the world",
+      "category": "unverified_superlative",
+      "severity": "high",
+      "recommended_replacement": "industry-leading / award-winning",
+      "rationale": "Unqualified #1 or 'best in world' claims require audited third-party citations."
+    },
+    {
+      "term": "guaranteed profit",
+      "category": "legal_risk",
+      "severity": "critical",
+      "recommended_replacement": "proven return on investment potential",
+      "rationale": "Promising guaranteed financial returns violates regulatory truth-in-advertising guidelines."
+    },
+    {
+      "term": "miracle solution",
+      "category": "sensationalism",
+      "severity": "medium",
+      "recommended_replacement": "breakthrough capability",
+      "rationale": "Avoid pseudo-scientific or sensationalist buzzwords."
+    },
+    {
+      "term": "revolutionary AI that thinks like humans",
+      "category": "misleading_ai_claim",
+      "severity": "critical",
+      "recommended_replacement": "advanced generative AI governance intelligence",
+      "rationale": "Anthropomorphizing AI or claiming human-equivalent consciousness is misleading and unapproved."
+    }
+  ],
+  "formatting_rules": [
+    {
+      "id": "brand_casing",
+      "rule": "Always write 'ECLIPSE' in full capital letters. Never 'eclipse' or 'Eclipse'.",
+      "severity": "medium"
+    },
+    {
+      "id": "currency_precision",
+      "rule": "Pricing must specify currency symbol and billing cycle (e.g., '$49/month billed annually').",
+      "severity": "low"
+    }
+  ],
+  "regulatory_guidelines": [
+    {
+      "id": "ftc_endorsement",
+      "rule": "Any influencer or sponsored mention must include clear disclosure (#ad or #sponsored).",
+      "severity": "critical"
+    },
+    {
+      "id": "forward_looking",
+      "rule": "Future feature or roadmap announcements must include forward-looking statement disclaimers.",
+      "severity": "high"
+    }
+  ]
+}
