@@ -171,7 +171,11 @@
       "industry": "Enterprise B2B Software",
       "primaryColor": "#2563EB",
       "accentBg": "bg-blue-50 border-blue-200 text-blue-800",
-      "tone": { "formality": 85, "boldness": 70, "empathy": 60 },
+      "tone": {
+        "formality": 85,
+        "boldness": 70,
+        "empathy": 60
+      },
       "rules": [
         {
           "id": "r-ink-1",
@@ -237,7 +241,11 @@
       "industry": "Digital Creative Agency",
       "primaryColor": "#8B5CF6",
       "accentBg": "bg-purple-50 border-purple-200 text-purple-800",
-      "tone": { "formality": 35, "boldness": 90, "empathy": 85 },
+      "tone": {
+        "formality": 35,
+        "boldness": 90,
+        "empathy": 85
+      },
       "rules": [
         {
           "id": "r-loom-1",
@@ -281,7 +289,11 @@
       "industry": "Banking & Financial Services",
       "primaryColor": "#059669",
       "accentBg": "bg-emerald-50 border-emerald-200 text-emerald-800",
-      "tone": { "formality": 95, "boldness": 30, "empathy": 40 },
+      "tone": {
+        "formality": 95,
+        "boldness": 30,
+        "empathy": 40
+      },
       "rules": [
         {
           "id": "r-fin-1",
@@ -325,7 +337,11 @@
       "industry": "Healthcare & Life Sciences",
       "primaryColor": "#06B6D4",
       "accentBg": "bg-cyan-50 border-cyan-200 text-cyan-800",
-      "tone": { "formality": 90, "boldness": 40, "empathy": 90 },
+      "tone": {
+        "formality": 90,
+        "boldness": 40,
+        "empathy": 90
+      },
       "rules": [
         {
           "id": "r-nova-1",
@@ -372,9 +388,10 @@
       "organization_id": "a0000000-0000-0000-0000-000000000001",
       "action": "PLATFORM_INITIALIZATION",
       "entity_type": "system",
-      "details": { "status": "Live DB Store Active" },
+      "details": {
+        "status": "Live DB Store Active"
+      },
       "created_at": "2026-11-04T12:00:00.000Z"
     }
   ]
 }
-
