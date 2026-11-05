@@ -40,6 +40,20 @@
       "rationale": "The word 'cheap' devalues the premium quality of the platform."
     },
     {
+      "term": "cheapest",
+      "category": "brand_perception",
+      "severity": "high",
+      "recommended_replacement": "cost-effective / competitive pricing",
+      "rationale": "Unqualified price claims like 'cheapest' devalue enterprise reputation and require verified market proof."
+    },
+    {
+      "term": "guaranteed cheapest",
+      "category": "brand_perception",
+      "severity": "high",
+      "recommended_replacement": "highly cost-competitive",
+      "rationale": "Absolute price guarantees violate substantiation guidelines."
+    },
+    {
       "term": "destroy our competitors",
       "category": "tone_violation",
       "severity": "high",

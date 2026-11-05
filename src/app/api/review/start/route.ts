@@ -29,7 +29,7 @@ export async function POST(req: NextRequest) {
     // 1. Attempt Live Deep Review with ECLIPSE AI Engine (FastAPI + Google Gemini)
     try {
       const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 45000);
+      const timeoutId = setTimeout(() => controller.abort(), 18000);
 
       const aiRes = await fetch(`${AI_ENGINE_URL}/api/v1/review`, {
         method: "POST",

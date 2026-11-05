@@ -4,7 +4,7 @@ const AI_ENGINE_URL = process.env.AI_ENGINE_URL || "http://127.0.0.1:8000";
 
 export async function POST(req: NextRequest) {
   try {
-    const { message, history, channel } = await req.json();
+    const { message, history, channel, document_context, findings_context } = await req.json();
 
     if (!message || message.trim().length === 0) {
       return NextResponse.json({ error: "Message is required" }, { status: 400 });
@@ -21,6 +21,8 @@ export async function POST(req: NextRequest) {
           message,
           history: history || [],
           channel: channel || "general",
+          document_context: document_context || null,
+          findings_context: findings_context || null,
         }),
         signal: controller.signal,
       });

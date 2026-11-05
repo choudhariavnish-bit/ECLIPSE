@@ -88,6 +88,22 @@ export const api = {
     },
   },
 
+  // ECLIPSE AI Blog Review & Correction APIs
+  blog: {
+    async analyze(payload: { title?: string; content: string; brand_id?: string; content_type?: string; target_audience?: string }) {
+      const res = await apiClient.post("/blog/analyze", payload);
+      return res.data;
+    },
+    async correct(payload: { original_content: string; title?: string; brand_id?: string; selected_corrections?: string[]; analysis_results?: any }) {
+      const res = await apiClient.post("/blog/correct", payload);
+      return res.data;
+    },
+    async review(payload: { title?: string; content: string; brand_id?: string; content_type?: string; target_audience?: string }) {
+      const res = await apiClient.post("/blog/review", payload);
+      return res.data;
+    },
+  },
+
   // Guideline APIs
   guidelines: {
     async list() {

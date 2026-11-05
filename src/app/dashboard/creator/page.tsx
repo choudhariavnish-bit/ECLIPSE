@@ -3,6 +3,7 @@
 import React, { useState, useMemo, useEffect } from "react";
 import Link from "next/link";
 import { api } from "@/lib/api";
+import { BlogReviewStudio } from "@/components/blog/BlogReviewStudio";
 import {
   Sparkles,
   FileCheck2,
@@ -171,6 +172,7 @@ const GLOSSARY_PAIRS = [
 ];
 
 export default function CreatorDashboard() {
+  const [studioMode, setStudioMode] = useState<"social" | "blog">("social");
   const [inputText, setInputText] = useState(TEMPLATES[0].text);
   const [selectedChannel, setSelectedChannel] = useState("LinkedIn & Social");
   const [contentFormat, setContentFormat] = useState<"text" | "graphic">("text");
@@ -194,6 +196,11 @@ export default function CreatorDashboard() {
 
   useEffect(() => {
     if (typeof window !== "undefined") {
+      const hash = window.location.hash;
+      const urlParams = new URLSearchParams(window.location.search);
+      if (hash === "#blog" || urlParams.get("mode") === "blog" || localStorage.getItem("eclipse_creator_mode") === "blog") {
+        setStudioMode("blog");
+      }
       const storedText = localStorage.getItem("eclipse_active_draft_text");
       const storedChannel = localStorage.getItem("eclipse_active_draft_channel");
       const storedBrand = localStorage.getItem("eclipse_active_draft_brand");
@@ -443,7 +450,53 @@ export default function CreatorDashboard() {
         </div>
       )}
 
-      {/* Top Header Bar */}
+      {/* Primary Studio Workflow Switcher */}
+      <div className="bg-white rounded-xl border border-slate-200 p-2 shadow-xs flex flex-wrap items-center justify-between gap-3">
+        <div className="flex rounded-lg border border-slate-200 bg-slate-100 p-1 text-xs font-bold w-full sm:w-auto">
+          <button
+            onClick={() => {
+              setStudioMode("social");
+              if (typeof window !== "undefined") localStorage.setItem("eclipse_creator_mode", "social");
+            }}
+            className={`flex items-center justify-center gap-2 px-4 py-2 rounded-md transition-all flex-1 sm:flex-none ${
+              studioMode === "social"
+                ? "bg-white text-slate-900 shadow-xs"
+                : "text-slate-600 hover:text-slate-900"
+            }`}
+          >
+            <Smartphone className="h-4 w-4 text-indigo-600" />
+            <span>Short-Form & Graphics Canvas</span>
+          </button>
+          <button
+            onClick={() => {
+              setStudioMode("blog");
+              if (typeof window !== "undefined") localStorage.setItem("eclipse_creator_mode", "blog");
+            }}
+            className={`flex items-center justify-center gap-2 px-4 py-2 rounded-md transition-all flex-1 sm:flex-none ${
+              studioMode === "blog"
+                ? "bg-purple-700 text-white shadow-xs"
+                : "text-slate-600 hover:text-slate-900"
+            }`}
+          >
+            <BookOpen className="h-4 w-4 text-purple-300" />
+            <span>Blog & Article Review Studio</span>
+            <span className="px-1.5 py-0.2 rounded bg-purple-500/30 text-purple-200 text-[10px] font-mono uppercase">
+              Reasoning Engine
+            </span>
+          </button>
+        </div>
+
+        <div className="hidden md:flex items-center gap-2 text-xs text-slate-500 font-medium pr-2">
+          <ShieldCheck className="h-4 w-4 text-emerald-600" />
+          <span>ECLIPSE Zero-Data Retention Active</span>
+        </div>
+      </div>
+
+      {studioMode === "blog" ? (
+        <BlogReviewStudio />
+      ) : (
+        <>
+          {/* Top Header Bar */}
       <div className="bg-white rounded-xl border border-slate-200 p-4 shadow-xs flex flex-wrap items-center justify-between gap-4">
         {/* User Identity - Welcome without boilerplate text */}
         <div className="flex items-center gap-3">
@@ -1286,6 +1339,8 @@ export default function CreatorDashboard() {
           </div>
         </div>
       </div>
+        </>
+      )}
     </div>
   );
 }

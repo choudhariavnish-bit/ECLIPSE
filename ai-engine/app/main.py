@@ -2,8 +2,15 @@ import os
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import HTMLResponse, JSONResponse
-from schemas.request_schema import ReviewRequest, ChatRequest, ChatResponse
-from schemas.audit_schema import BrandAuditReport
+from schemas.request_schema import (
+    ReviewRequest,
+    ChatRequest,
+    ChatResponse,
+    BlogAnalyzeRequest,
+    BlogCorrectRequest,
+    BlogReviewRequest
+)
+from schemas.audit_schema import BrandAuditReport, BlogAuditReport
 from app.review_engine import review_engine
 from app.gemini_client import gemini_client
 from app.prompt_engine import PromptEngine
@@ -55,15 +62,59 @@ def review_content_endpoint(request: ReviewRequest):
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"ECLIPSE review processing error: {str(e)}")
 
+@app.post("/api/v1/blog/analyze", response_model=BlogAuditReport)
+def analyze_blog_endpoint(request: BlogAnalyzeRequest):
+    """
+    Blog Analysis Endpoint:
+    Deeply analyzes blog article for grammar, readability, tone, prohibited terms,
+    and unverified factual claims.
+    """
+    try:
+        report = review_engine.analyze_blog(request)
+        return report
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"ECLIPSE blog analysis error: {str(e)}")
+
+@app.post("/api/v1/blog/correct")
+def correct_blog_endpoint(request: BlogCorrectRequest):
+    """
+    Blog Correction Endpoint:
+    Applies recommended or user-selected corrections to generate a refined blog copy.
+    """
+    try:
+        result = review_engine.correct_blog(request)
+        return result
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"ECLIPSE blog correction error: {str(e)}")
+
+@app.post("/api/v1/blog/review", response_model=BlogAuditReport)
+def review_blog_endpoint(request: BlogReviewRequest):
+    """
+    Complete Blog Workflow Endpoint:
+    Executes end-to-end intelligent reasoning, claim verification, and autonomous
+    corrected blog generation.
+    """
+    try:
+        report = review_engine.review_blog(request)
+        return report
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"ECLIPSE blog review error: {str(e)}")
+
 @app.post("/api/v1/chat", response_model=ChatResponse)
 def chat_with_eclipse(request: ChatRequest):
     """
     Conversational ECLIPSE Brand Assistant Endpoint:
-    Consult with ECLIPSE on brand guidelines, wording questions, or claim verifications.
+    Consult with ECLIPSE on brand guidelines, wording questions, claim verifications,
+    or active document context.
     """
     try:
         history_dicts = [{"role": m.role, "content": m.content} for m in request.history] if request.history else []
-        prompt = PromptEngine.build_chat_prompt(request.message, history_dicts)
+        prompt = PromptEngine.build_chat_prompt(
+            message=request.message,
+            history=history_dicts,
+            document_context=request.document_context,
+            findings_context=request.findings_context
+        )
         response_text = gemini_client.ask_eclipse(prompt, as_json=False)
         return ChatResponse(
             engine_name="ECLIPSE",

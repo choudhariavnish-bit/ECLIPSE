@@ -384,6 +384,40 @@
   "approvals": [],
   "audit_logs": [
     {
+      "id": "23926bc2-2b60-475f-81a9-4ef5cc4d3865",
+      "created_at": "2026-11-05T16:40:44.832Z",
+      "organization_id": "a0000000-0000-0000-0000-000000000001",
+      "action": "AI_CONTENT_REVIEW_EXECUTED",
+      "entity_type": "drafts",
+      "details": {
+        "flagCount": 0,
+        "complianceScore": 100,
+        "driftScore": 0,
+        "isMajorDrift": false,
+        "engine": "ECLIPSE AI Engine (Local Heuristics)",
+        "model": "deterministic-parser",
+        "channel": "LinkedIn & Social",
+        "zeroDataRetentionWipe": true
+      }
+    },
+    {
+      "id": "177c546f-b796-45e0-b020-9474e36417c2",
+      "created_at": "2026-11-05T14:46:57.670Z",
+      "organization_id": "a0000000-0000-0000-0000-000000000001",
+      "action": "AI_CONTENT_REVIEW_EXECUTED",
+      "entity_type": "drafts",
+      "details": {
+        "flagCount": 3,
+        "complianceScore": 39,
+        "driftScore": 61,
+        "isMajorDrift": true,
+        "engine": "ECLIPSE",
+        "model": "gemini-3.1-flash-lite",
+        "channel": "social_media",
+        "zeroDataRetentionWipe": true
+      }
+    },
+    {
       "id": "e8f6c195-5791-4ac9-8fc1-b7b3b8646af9",
       "created_at": "2026-11-05T14:18:02.868Z",
       "organization_id": "a0000000-0000-0000-0000-000000000001",

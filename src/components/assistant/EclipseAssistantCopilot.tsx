@@ -60,6 +60,13 @@ export function EclipseAssistantCopilot() {
         content: m.content,
       }));
 
+      let docContext: string | null = null;
+      let findingsContext: any[] | null = null;
+      if (typeof window !== "undefined") {
+        docContext = (window as any).__ECLIPSE_DOC_CONTEXT__ || null;
+        findingsContext = (window as any).__ECLIPSE_FINDINGS_CONTEXT__ || null;
+      }
+
       const res = await fetch("/api/chat", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -67,6 +74,8 @@ export function EclipseAssistantCopilot() {
           message: text,
           history: historyPayload,
           channel: "copilot",
+          document_context: docContext,
+          findings_context: findingsContext,
         }),
       });
 
@@ -261,3 +270,4 @@ export function EclipseAssistantCopilot() {
     </>
   );
 }
+

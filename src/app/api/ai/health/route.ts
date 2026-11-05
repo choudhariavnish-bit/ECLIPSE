@@ -44,3 +44,4 @@ export async function GET() {
     message: "AI Engine offline. Start with python run_eclipse.py",
   });
 }
+
