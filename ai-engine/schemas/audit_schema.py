@@ -134,3 +134,54 @@ class BlogAuditReport(BrandAuditReport):
     readability_level: str = Field(default="Grade 8-10 (Optimal for B2B)")
     resolved_issues_count: int = Field(default=0)
     pending_issues_count: int = Field(default=0)
+
+class TextElement(BaseModel):
+    id: str = Field(description="Unique element ID")
+    text: str = Field(description="Extracted OCR text string")
+    element_type: str = Field(default="body", description="headline, subtitle, body, cta, pricing, contact, disclaimer, uncertain")
+    position_estimate: Optional[str] = Field(default=None, description="top_center, middle_left, bottom_right, etc.")
+    confidence: float = Field(default=0.95, ge=0.0, le=1.0)
+    is_uncertain: bool = Field(default=False, description="Flag for blurry or partially visible text")
+
+class VisualDesignAnalysis(BaseModel):
+    contrast_ratio: str = Field(default="12:1 (PASS)", description="Contrast ratio measurement, e.g., '2.4:1 (FAIL)'")
+    wcag_status: str = Field(default="PASS", description="PASS, FAIL, WARNING")
+    visual_hierarchy_rating: str = Field(default="Optimal", description="Optimal, Needs Improvement, Poor")
+    detected_colors: List[str] = Field(default_factory=list, description="Detected hex or color names")
+    brand_colors_aligned: bool = Field(default=True)
+    logo_detected: bool = Field(default=True)
+    logo_notes: Optional[str] = Field(default=None)
+    cta_detected: bool = Field(default=True)
+    cta_text: Optional[str] = Field(default=None)
+    cta_notes: Optional[str] = Field(default=None)
+    layout_issues: List[str] = Field(default_factory=list)
+
+class ImageCorrectionPlan(BaseModel):
+    headline_correction: Optional[Dict[str, str]] = None
+    cta_correction: Optional[Dict[str, str]] = None
+    body_corrections: List[Dict[str, str]] = Field(default_factory=list)
+    visual_recommendations: List[str] = Field(default_factory=list)
+    revised_clean_text: str = Field(default="")
+
+class ImageAuditReport(BaseModel):
+    audit_id: str = Field(description="Unique image audit report ID")
+    timestamp: str = Field(default_factory=lambda: datetime.utcnow().isoformat() + "Z")
+    engine_name: str = Field(default="ECLIPSE")
+    engine_version: str = Field(default="2.0.0")
+    model: str = Field(default="gemini-3.5-flash-lite")
+    image_filename: Optional[str] = Field(default=None)
+    detected_content_type: str = Field(default="marketing_poster")
+    brand_name_identified: str = Field(default="ECLIPSE")
+    communication_intent: str = Field(default="Promotional")
+    extracted_text: str = Field(default="", description="Full raw OCR text in reading order")
+    text_elements: List[TextElement] = Field(default_factory=list)
+    visual_design: VisualDesignAnalysis = Field(default_factory=VisualDesignAnalysis)
+    compliance_score: int = Field(ge=0, le=100, default=85)
+    quality_scores: QualityScores = Field(default_factory=QualityScores)
+    status: ReviewStatus = Field(default=ReviewStatus.APPROVED)
+    risk_level: str = Field(default="LOW", description="CRITICAL, HIGH, MEDIUM, LOW, INFO")
+    summary: str = Field(default="")
+    violations: List[Violation] = Field(default_factory=list)
+    fact_checks: List[FactCheckItem] = Field(default_factory=list)
+    correction_plan: Optional[ImageCorrectionPlan] = None
+    execution_time_ms: float = Field(default=0.0)

@@ -31,6 +31,20 @@ class BlogReviewRequest(BaseModel):
     content_type: Optional[str] = Field(default="blog", description="Content type")
     target_audience: Optional[str] = Field(default="Enterprise & B2B buyers", description="Target readership audience")
 
+class ImageScanRequest(BaseModel):
+    image_base64: Optional[str] = Field(default=None, description="Base64 encoded image string (data:image/png;base64,...)")
+    image_filename: Optional[str] = Field(default="uploaded_image.png")
+    mime_type: Optional[str] = Field(default="image/png")
+    brand_id: Optional[str] = Field(default="ECLIPSE")
+    target_audience: Optional[str] = Field(default="Enterprise & B2B buyers")
+    custom_context: Optional[str] = Field(default=None)
+
+class ImageCorrectRequest(BaseModel):
+    audit_id: Optional[str] = None
+    image_filename: Optional[str] = None
+    selected_corrections: Optional[List[str]] = None
+    audit_report: Optional[Dict[str, Any]] = None
+
 class ChatMessage(BaseModel):
     role: str = Field(description="'user' or 'assistant'")
     content: str = Field(description="Message text")

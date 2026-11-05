@@ -4,6 +4,7 @@ import React, { useState, useMemo, useEffect } from "react";
 import Link from "next/link";
 import { api } from "@/lib/api";
 import { BlogReviewStudio } from "@/components/blog/BlogReviewStudio";
+import { ImageReviewStudio } from "@/components/image/ImageReviewStudio";
 import {
   Sparkles,
   FileCheck2,
@@ -172,7 +173,7 @@ const GLOSSARY_PAIRS = [
 ];
 
 export default function CreatorDashboard() {
-  const [studioMode, setStudioMode] = useState<"social" | "blog">("social");
+  const [studioMode, setStudioMode] = useState<"image" | "social" | "blog">("image");
   const [inputText, setInputText] = useState(TEMPLATES[0].text);
   const [selectedChannel, setSelectedChannel] = useState("LinkedIn & Social");
   const [contentFormat, setContentFormat] = useState<"text" | "graphic">("text");
@@ -200,6 +201,10 @@ export default function CreatorDashboard() {
       const urlParams = new URLSearchParams(window.location.search);
       if (hash === "#blog" || urlParams.get("mode") === "blog" || localStorage.getItem("eclipse_creator_mode") === "blog") {
         setStudioMode("blog");
+      } else if (hash === "#social" || urlParams.get("mode") === "social" || localStorage.getItem("eclipse_creator_mode") === "social") {
+        setStudioMode("social");
+      } else {
+        setStudioMode("image");
       }
       const storedText = localStorage.getItem("eclipse_active_draft_text");
       const storedChannel = localStorage.getItem("eclipse_active_draft_channel");
@@ -455,31 +460,48 @@ export default function CreatorDashboard() {
         <div className="flex rounded-lg border border-slate-200 bg-slate-100 p-1 text-xs font-bold w-full sm:w-auto">
           <button
             onClick={() => {
+              setStudioMode("image");
+              if (typeof window !== "undefined") localStorage.setItem("eclipse_creator_mode", "image");
+            }}
+            className={`flex items-center justify-center gap-2 px-3.5 py-2 rounded-md transition-all flex-1 sm:flex-none ${
+              studioMode === "image"
+                ? "bg-indigo-600 text-white shadow-xs"
+                : "text-slate-600 hover:text-slate-900"
+            }`}
+          >
+            <Scan className="h-4 w-4 text-indigo-300" />
+            <span>Image & Poster Studio</span>
+            <span className="px-1.5 py-0.2 rounded bg-indigo-500/30 text-indigo-100 text-[10px] font-mono uppercase">
+              Vision OCR
+            </span>
+          </button>
+          <button
+            onClick={() => {
               setStudioMode("social");
               if (typeof window !== "undefined") localStorage.setItem("eclipse_creator_mode", "social");
             }}
-            className={`flex items-center justify-center gap-2 px-4 py-2 rounded-md transition-all flex-1 sm:flex-none ${
+            className={`flex items-center justify-center gap-2 px-3.5 py-2 rounded-md transition-all flex-1 sm:flex-none ${
               studioMode === "social"
                 ? "bg-white text-slate-900 shadow-xs"
                 : "text-slate-600 hover:text-slate-900"
             }`}
           >
-            <Smartphone className="h-4 w-4 text-indigo-600" />
-            <span>Short-Form & Graphics Canvas</span>
+            <Smartphone className="h-4 w-4 text-slate-700" />
+            <span>Short-Form & Ad Copy</span>
           </button>
           <button
             onClick={() => {
               setStudioMode("blog");
               if (typeof window !== "undefined") localStorage.setItem("eclipse_creator_mode", "blog");
             }}
-            className={`flex items-center justify-center gap-2 px-4 py-2 rounded-md transition-all flex-1 sm:flex-none ${
+            className={`flex items-center justify-center gap-2 px-3.5 py-2 rounded-md transition-all flex-1 sm:flex-none ${
               studioMode === "blog"
                 ? "bg-purple-700 text-white shadow-xs"
                 : "text-slate-600 hover:text-slate-900"
             }`}
           >
             <BookOpen className="h-4 w-4 text-purple-300" />
-            <span>Blog & Article Review Studio</span>
+            <span>Blog & Article Studio</span>
             <span className="px-1.5 py-0.2 rounded bg-purple-500/30 text-purple-200 text-[10px] font-mono uppercase">
               Reasoning Engine
             </span>
@@ -492,7 +514,9 @@ export default function CreatorDashboard() {
         </div>
       </div>
 
-      {studioMode === "blog" ? (
+      {studioMode === "image" ? (
+        <ImageReviewStudio />
+      ) : studioMode === "blog" ? (
         <BlogReviewStudio />
       ) : (
         <>

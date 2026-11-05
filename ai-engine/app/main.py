@@ -8,10 +8,13 @@ from schemas.request_schema import (
     ChatResponse,
     BlogAnalyzeRequest,
     BlogCorrectRequest,
-    BlogReviewRequest
+    BlogReviewRequest,
+    ImageScanRequest,
+    ImageCorrectRequest
 )
-from schemas.audit_schema import BrandAuditReport, BlogAuditReport
+from schemas.audit_schema import BrandAuditReport, BlogAuditReport, ImageAuditReport
 from app.review_engine import review_engine
+from app.image_engine import image_engine
 from app.gemini_client import gemini_client
 from app.prompt_engine import PromptEngine
 from app.brand_retriever import brand_retriever
@@ -99,6 +102,31 @@ def review_blog_endpoint(request: BlogReviewRequest):
         return report
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"ECLIPSE blog review error: {str(e)}")
+
+@app.post("/api/v1/image/scan", response_model=ImageAuditReport)
+def scan_image_endpoint(request: ImageScanRequest):
+    """
+    Intelligent Multimodal Image & Poster Scanning Endpoint:
+    Inspects promotional images, posters, and advertisements via Gemini Multimodal Vision,
+    extracts OCR text, checks WCAG contrast, verifies brand compliance and factual claims,
+    and returns a structured audit report with an autonomous correction plan.
+    """
+    try:
+        report = image_engine.scan_image(request)
+        return report
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"ECLIPSE image analysis error: {str(e)}")
+
+@app.post("/api/v1/image/correct")
+def correct_image_endpoint(request: ImageCorrectRequest):
+    """
+    Applies selected textual and brand corrections to the analyzed image copy.
+    """
+    try:
+        result = image_engine.correct_image(request)
+        return result
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"ECLIPSE image correction error: {str(e)}")
 
 @app.post("/api/v1/chat", response_model=ChatResponse)
 def chat_with_eclipse(request: ChatRequest):

@@ -261,6 +261,138 @@ You are ECLIPSE, the intelligent brand governance, fact-checking, and content co
         return prompt
 
     @staticmethod
+    def build_image_vision_prompt(
+        brand_id: str = "ECLIPSE",
+        target_audience: str = "Enterprise & B2B buyers",
+        rag_context: str = ""
+    ) -> str:
+        """
+        Builds the multimodal vision audit prompt for Google Gemini.
+        Instructs Gemini to inspect the image, perform OCR, analyze visual accessibility,
+        verify claims against approved facts, and generate a correction plan.
+        """
+        return f"""You are ECLIPSE, the Intelligent Multimodal Brand Governance & Fact Verification Engine.
+You are analyzing an uploaded promotional image, marketing poster, advertisement, or visual graphic.
+
+TARGET BRAND: {brand_id}
+AUDIENCE: {target_audience}
+
+APPROVED BRAND GUIDELINES & VERIFIED FACTS (RAG):
+{rag_context}
+
+YOUR MULTIMODAL AUDIT RESPONSIBILITIES:
+1. OCR & TEXT EXTRACTION:
+   - Extract ALL visible text, headline, subtitles, body copy, pricing, discounts, dates, contact details, URLs, and Calls to Action (CTA).
+   - Preserve natural reading order.
+   - Categorize text elements into: headline, subtitle, body, cta, pricing, contact, disclaimer, uncertain.
+   - Flag any blurry, partially visible, or ambiguous text as uncertain (do not invent text).
+
+2. VISUAL DESIGN & ACCESSIBILITY (WCAG 2.1 AA):
+   - Measure/evaluate text-to-background contrast ratio (min 4.5:1 for body, 3:1 for large headlines).
+   - Check if light text on light backgrounds (e.g. yellow on white) fails WCAG standards.
+   - Check visual hierarchy, font consistency, spacing, and layout overcrowding.
+   - Check logo placement, visibility, and 24px clearspace.
+   - Check CTA button prominence and readability.
+
+3. BRAND GOVERNANCE & FACT VERIFICATION:
+   - Verify brand name casing: "ECLIPSE" must be strictly all-caps.
+   - Detect prohibited terms (e.g. "100% bug-free", "guaranteed cheapest", "unbreakable", "destroy competitors").
+   - Compare factual claims against verified facts:
+     * NovaBook X1: 16 GB RAM (claims of 32 GB RAM are CONTRADICTED by FACT-007).
+     * Uptime SLA: 99.99% (claims of 100% bug-free or 100% uptime are REFUTED by FACT-001).
+     * Compliance: SOC 2 Type II and ISO/IEC 27001:2022 (FACT-003).
+     * Customers: Over 10,000 teams across 45 countries (FACT-002).
+   - Cite exact Fact IDs (e.g. FACT-001, FACT-007) when evidence applies.
+
+4. AUTONOMOUS CORRECTION PLAN:
+   - Provide compliant replacements for headlines, CTAs, and body claims.
+   - Provide concrete visual recommendations (e.g. "Switch yellow headline typography to Slate-900 on white card to achieve 12.4:1 contrast").
+   - Provide a fully revised clean copy ready for reproduction.
+
+Return valid structured JSON ONLY matching this schema:
+{{
+  "detected_content_type": "marketing_poster",
+  "brand_name_identified": "ECLIPSE",
+  "communication_intent": "Promotional product announcement",
+  "extracted_text": "Full extracted OCR text...",
+  "text_elements": [
+    {{
+      "id": "te_1",
+      "text": "Exact text line",
+      "element_type": "headline",
+      "position_estimate": "top_center",
+      "confidence": 0.98,
+      "is_uncertain": false
+    }}
+  ],
+  "visual_design": {{
+    "contrast_ratio": "2.4:1 (FAIL)",
+    "wcag_status": "FAIL",
+    "visual_hierarchy_rating": "Needs Improvement",
+    "detected_colors": ["#FBBF24", "#FFFFFF", "#1E293B"],
+    "brand_colors_aligned": false,
+    "logo_detected": true,
+    "logo_notes": "Logo present but requires higher contrast background",
+    "cta_detected": true,
+    "cta_text": "Click Here",
+    "cta_notes": "CTA lacks enterprise authority",
+    "layout_issues": [
+      "Low contrast yellow headline fails WCAG AA 4.5:1 ratio"
+    ]
+  }},
+  "summary": "Executive summary of findings and policy drift...",
+  "compliance_score": 65,
+  "risk_level": "HIGH",
+  "violations": [
+    {{
+      "id": "v_1",
+      "category": "prohibited_term",
+      "severity": "critical",
+      "problematic_text": "100% bug-free",
+      "explanation": "Absolute guarantee creates legal liability and violates FTC advertising guidelines.",
+      "guideline_reference": "ECLIPSE Prohibited Terminology Policy",
+      "rule_id": "RULE-PROHIB-100-BUG-FREE",
+      "suggestion": "enterprise-hardened"
+    }}
+  ],
+  "fact_checks": [
+    {{
+      "claim_text": "NovaBook X1 has 32 GB RAM",
+      "status": "contradicted",
+      "evidence": "NovaBook X1 is officially configured with 16 GB RAM (FACT-007).",
+      "confidence": 0.95,
+      "source_ref": "FACT-007",
+      "suggested_correction": "NovaBook X1 has 16 GB RAM"
+    }}
+  ],
+  "correction_plan": {{
+    "headline_correction": {{
+      "original": "Original headline",
+      "corrected": "Compliant revised headline",
+      "reason": "Why changed"
+    }},
+    "cta_correction": {{
+      "original": "Buy now",
+      "corrected": "Request Enterprise Demo",
+      "reason": "Why changed"
+    }},
+    "body_corrections": [
+      {{
+        "original": "32 GB RAM",
+        "corrected": "16 GB RAM",
+        "reason": "Corrects factual specification against FACT-007"
+      }}
+    ],
+    "visual_recommendations": [
+      "Switch headline typography to Slate-900 on white card for 12.4:1 contrast.",
+      "Style CTA as a high-contrast pill button."
+    ],
+    "revised_clean_text": "Complete clean copy..."
+  }}
+}}
+"""
+
+    @staticmethod
     def build_chat_prompt(
         message: str,
         history: List[Dict[str, str]] = None,

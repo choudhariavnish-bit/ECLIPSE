@@ -104,6 +104,18 @@ export const api = {
     },
   },
 
+  // ECLIPSE Multimodal Image & Poster Scanning APIs
+  image: {
+    async scan(payload: { image_base64?: string; image_filename?: string; mime_type?: string; brand_id?: string; target_audience?: string }) {
+      const res = await apiClient.post("/image/scan", payload);
+      return res.data;
+    },
+    async correct(payload: { audit_id?: string; selected_corrections?: string[]; audit_report?: any }) {
+      const res = await apiClient.post("/image/correct", payload);
+      return res.data;
+    },
+  },
+
   // Guideline APIs
   guidelines: {
     async list() {
