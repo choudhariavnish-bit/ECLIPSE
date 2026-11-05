@@ -1,9 +1,9 @@
 @echo off
 setlocal enabledelayedexpansion
-title Inkloom AI - High Performance Platform
+title Inkloom AI - Enterprise Brand Governance Platform
 
 echo =====================================================================
-echo           INKLOOM AI - HIGH PERFORMANCE BRAND PLATFORM
+echo           INKLOOM AI - ENTERPRISE GOVERNANCE PLATFORM
 echo =====================================================================
 echo.
 
@@ -26,20 +26,19 @@ for /f "tokens=2 delims=:" %%a in ('ipconfig ^| findstr /i "IPv4" 2^>nul') do (
 
 echo [2/3] Network endpoints configured:
 echo       - Local Machine:    http://localhost:3000
-echo       - Network Devices:  http://!LOCAL_IP!:3000
+echo       - Any Wi-Fi Device: http://!LOCAL_IP!:3000
 echo       - Database Studio:  http://localhost:3000/dashboard/database
 echo.
 
-:: 3. Auto-open browser in background (native cmd, zero PowerShell dependency)
+:: 3. Auto-open browser in background (native Windows cmd, zero PowerShell dependency)
 echo [3/3] Starting server & auto-launching browser...
 start "" /b cmd /c "timeout /t 3 /nobreak >nul && start http://localhost:3000"
 
-echo.
 echo =====================================================================
 echo  SERVER READY
 echo  Local:    http://localhost:3000
 echo  Database: http://localhost:3000/dashboard/database
-echo  Press Ctrl+C anytime to stop the server.
+echo  Press Ctrl+C anytime to stop.
 echo =====================================================================
 echo.
 

@@ -1,38 +1,42 @@
 @echo off
-title Inkloom AI Server
+setlocal enabledelayedexpansion
+title Inkloom AI - Production Server
 
 echo =====================================================================
-echo        INKLOOM AI - HIGH-SPEED GOVERNANCE SERVER
+echo        INKLOOM AI - PRODUCTION HIGH-SPEED SERVER
 echo =====================================================================
 echo.
 
-echo [1/3] Clearing port 3000...
-node -e "try{const out=require('child_process').execSync('netstat -ano').toString();for(const l of out.split('\n')){if(l.includes(':3000')&&l.includes('LISTENING')){const pid=l.trim().split(/\s+/).pop();if(pid&&pid!=='0'){try{require('child_process').execSync('taskkill /F /PID '+pid);}catch(e){}}}}}catch(e){}" >nul 2>&1
-
-if not exist ".next\BUILD_ID" (
-    echo [2/3] Preparing production build...
-    call node node_modules\next\dist\bin\next build
-) else (
-    echo [2/3] Verified production build...
+:: 1. Clear any stuck process holding port 3000
+echo [1/3] Checking port 3000 availability...
+for /f "tokens=5" %%p in ('netstat -ano ^| findstr :3000 ^| findstr LISTENING 2^>nul') do (
+    echo       Releasing port 3000 (PID: %%p)...
+    taskkill /F /PID %%p >nul 2>&1
 )
 
-echo [3/3] Opening browser and starting server...
-start "" cmd /c "timeout /t 2 /nobreak >nul && start http://localhost:3000"
+:: 2. Auto-open browser in background
+echo [2/3] Launching browser...
+start "" /b cmd /c "timeout /t 3 /nobreak >nul && start http://localhost:3000"
 
+:: 3. Start Production Server
+echo [3/3] Starting Production Server on http://localhost:3000 ...
 echo.
 echo =====================================================================
-echo  SERVER RUNNING
-echo  Local URL:        http://localhost:3000
-echo  Database Studio:  http://localhost:3000/dashboard/database
+echo  PRODUCTION SERVER RUNNING
+echo  Local:    http://localhost:3000
+echo  Database: http://localhost:3000/dashboard/database
 echo  Press Ctrl+C to terminate.
 echo =====================================================================
 echo.
 
-node node_modules\next\dist\bin\next start -p 3000 -H 0.0.0.0
+if exist "%~dp0node_modules\next\dist\bin\next" (
+    node "%~dp0node_modules\next\dist\bin\next" start -p 3000 -H 0.0.0.0
+) else (
+    call npm run start
+)
 
-if %errorlevel% neq 0 (
+if errorlevel 1 (
     echo.
-    echo [Inkloom] Switching to Turbopack engine...
-    node node_modules\next\dist\bin\next dev --turbo -H 0.0.0.0 -p 3000
-    if %errorlevel% neq 0 pause
+    echo [Inkloom] Server exited with error code %errorlevel%.
+    pause
 )

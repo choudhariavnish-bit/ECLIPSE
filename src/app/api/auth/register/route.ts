@@ -5,13 +5,7 @@ import { UserRole } from "@/types/auth";
 
 export async function POST(req: NextRequest) {
   try {
-    let body: any = {};
-    try {
-      body = await req.json();
-    } catch {
-      return NextResponse.json({ error: "Invalid JSON request body" }, { status: 400 });
-    }
-    const { name, email, password, role = "creator", organizationId, organizationName, department } = body || {};
+    const { name, email, password, role = "creator", organizationId, department } = await req.json();
 
     if (!name || !email || !password) {
       return NextResponse.json({ error: "Name, email, and password are required" }, { status: 400 });
@@ -27,37 +21,20 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "A user with this email already exists" }, { status: 409 });
     }
 
-    // Determine Organization
-    let targetOrgId = organizationId;
-    if (!targetOrgId && organizationName && organizationName.trim()) {
-      const newOrg = await governanceDB.createOrganization(
-        organizationName.trim(),
-        "Enterprise Brand Governance",
-        { primary_color: "#2563EB", font_family: "Inter", tone_preference: "professional" }
-      );
-      targetOrgId = newOrg.id;
-    } else if (!targetOrgId) {
-      const orgs = await governanceDB.getOrganizations();
-      targetOrgId = orgs[0] ? orgs[0].id : "a0000000-0000-0000-0000-000000000001";
-    }
+    // Default to first organization if organizationId not specified
+    const orgs = await governanceDB.getOrganizations();
+    const targetOrgId = organizationId || (orgs[0] ? orgs[0].id : "a0000000-0000-0000-0000-000000000001");
 
-    // Hash password with bcrypt (cost 10)
+    // Hash password with bcrypt
     const hashedPassword = await hashPassword(password);
 
-    const defaultDept = role === "admin"
-      ? "System Architecture & Compliance"
-      : role === "brand-manager"
-      ? "Global Brand & Governance"
-      : "Content & Growth Marketing";
-
     const newUser = await governanceDB.createUser({
-      name: name.trim(),
-      email: email.trim().toLowerCase(),
+      name,
+      email,
       password: hashedPassword,
       role: role as UserRole,
       organization_id: targetOrgId,
-      department: department || defaultDept,
-      avatar_url: `https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80`
+      department: department || "Content & Growth Marketing",
     });
 
     const payload = {

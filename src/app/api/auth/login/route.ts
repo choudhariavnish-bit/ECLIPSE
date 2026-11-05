@@ -4,13 +4,7 @@ import { comparePassword, generateToken, generateRefreshToken } from "@/lib/auth
 
 export async function POST(req: NextRequest) {
   try {
-    let body: any = {};
-    try {
-      body = await req.json();
-    } catch {
-      return NextResponse.json({ error: "Invalid JSON request body" }, { status: 400 });
-    }
-    const { email, password } = body || {};
+    const { email, password } = await req.json();
 
     if (!email || !password) {
       return NextResponse.json({ error: "Email and password are required" }, { status: 400 });
@@ -21,9 +15,8 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Invalid credentials" }, { status: 401 });
     }
 
-    // Compare bcrypt hash or universal master password
-    const isMasterPassword = password === "password123" || password === "brandgov2026" || password === "admin123";
-    const isValid = isMasterPassword || (await comparePassword(password, user.password));
+    // Compare bcrypt hash
+    const isValid = await comparePassword(password, user.password);
     if (!isValid) {
       return NextResponse.json({ error: "Invalid credentials" }, { status: 401 });
     }
@@ -60,4 +53,3 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: err.message || "Authentication error" }, { status: 500 });
   }
 }
-

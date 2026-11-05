@@ -41,7 +41,7 @@ VALUES
     'a0000000-0000-0000-0000-000000000001',
     'Alex Morgan',
     'alex.creator@inkloom.ai',
-    '$2b$10$wht6YVrj1HuKEcyumITfZutyIHarI5BzFEIfYi8Fa.dAUPA.mXHAO',
+    '$2b$10$9VU6j1ff.WY.7eGIvvWfWuJ5FyDTySoapPmHRyz.nex9S.mHEyB.G',
     'creator',
     'Content & Growth Marketing',
     'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80'
@@ -51,7 +51,7 @@ VALUES
     'a0000000-0000-0000-0000-000000000001',
     'Sarah Chen',
     'sarah.brand@inkloom.ai',
-    '$2b$10$wht6YVrj1HuKEcyumITfZutyIHarI5BzFEIfYi8Fa.dAUPA.mXHAO',
+    '$2b$10$9VU6j1ff.WY.7eGIvvWfWuJ5FyDTySoapPmHRyz.nex9S.mHEyB.G',
     'brand-manager',
     'Global Brand & Governance',
     'https://images.unsplash.com/photo-1580489944761-15a19d654956?w=150&auto=format&fit=crop&q=80'
@@ -61,7 +61,7 @@ VALUES
     'a0000000-0000-0000-0000-000000000001',
     'Marcus Vance',
     'marcus.admin@inkloom.ai',
-    '$2b$10$wht6YVrj1HuKEcyumITfZutyIHarI5BzFEIfYi8Fa.dAUPA.mXHAO',
+    '$2b$10$9VU6j1ff.WY.7eGIvvWfWuJ5FyDTySoapPmHRyz.nex9S.mHEyB.G',
     'admin',
     'System Architecture & Compliance',
     'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&auto=format&fit=crop&q=80'
