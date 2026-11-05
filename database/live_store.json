@@ -470,6 +470,227 @@
   ],
   "audit_logs": [
     {
+      "id": "bd5a0b33-1caf-45a4-b63a-5a572d076d32",
+      "created_at": "2026-11-05T13:15:46.026Z",
+      "organization_id": "a0000000-0000-0000-0000-000000000001",
+      "user_id": "11111111-1111-1111-1111-111111111111",
+      "action": "USER_LOGIN_SUCCESS",
+      "entity_type": "users",
+      "entity_id": "11111111-1111-1111-1111-111111111111",
+      "details": {
+        "role": "creator",
+        "email": "alex.creator@inkloom.ai"
+      }
+    },
+    {
+      "id": "a76fb4b4-c0c5-422b-adef-cd8e93300207",
+      "created_at": "2026-11-05T13:12:40.064Z",
+      "organization_id": "a0000000-0000-0000-0000-000000000001",
+      "user_id": "33333333-3333-3333-3333-333333333333",
+      "action": "USER_LOGIN_SUCCESS",
+      "entity_type": "users",
+      "entity_id": "33333333-3333-3333-3333-333333333333",
+      "details": {
+        "role": "admin",
+        "email": "marcus.admin@inkloom.ai"
+      }
+    },
+    {
+      "id": "8cc36d06-9289-4f34-afb6-cb9b788da7b7",
+      "created_at": "2026-11-05T13:10:35.120Z",
+      "organization_id": "a0000000-0000-0000-0000-000000000001",
+      "user_id": "33333333-3333-3333-3333-333333333333",
+      "action": "USER_LOGIN_SUCCESS",
+      "entity_type": "users",
+      "entity_id": "33333333-3333-3333-3333-333333333333",
+      "details": {
+        "role": "admin",
+        "email": "marcus.admin@inkloom.ai"
+      }
+    },
+    {
+      "id": "307865c3-1fcf-4a10-ae28-1ffbb2c3b201",
+      "created_at": "2026-11-05T13:08:55.727Z",
+      "organization_id": "a0000000-0000-0000-0000-000000000001",
+      "user_id": "33333333-3333-3333-3333-333333333333",
+      "action": "USER_LOGIN_SUCCESS",
+      "entity_type": "users",
+      "entity_id": "33333333-3333-3333-3333-333333333333",
+      "details": {
+        "role": "admin",
+        "email": "marcus.admin@inkloom.ai"
+      }
+    },
+    {
+      "id": "9a804cf4-9312-4bb7-9eaf-5c4e2fa43cb5",
+      "created_at": "2026-11-05T13:08:24.794Z",
+      "organization_id": "a0000000-0000-0000-0000-000000000001",
+      "user_id": "22222222-2222-2222-2222-222222222222",
+      "action": "USER_LOGIN_SUCCESS",
+      "entity_type": "users",
+      "entity_id": "22222222-2222-2222-2222-222222222222",
+      "details": {
+        "role": "brand-manager",
+        "email": "sarah.brand@inkloom.ai"
+      }
+    },
+    {
+      "id": "2cd7c9ed-258d-4050-88c8-c1a3ed9fe8c3",
+      "created_at": "2026-11-05T13:06:43.806Z",
+      "organization_id": "a0000000-0000-0000-0000-000000000001",
+      "user_id": "22222222-2222-2222-2222-222222222222",
+      "action": "USER_LOGIN_SUCCESS",
+      "entity_type": "users",
+      "entity_id": "22222222-2222-2222-2222-222222222222",
+      "details": {
+        "role": "brand-manager",
+        "email": "sarah.brand@inkloom.ai"
+      }
+    },
+    {
+      "id": "6c119c14-3378-4576-ac79-490ff82c3e52",
+      "created_at": "2026-11-05T13:06:20.039Z",
+      "organization_id": "a0000000-0000-0000-0000-000000000001",
+      "user_id": "33333333-3333-3333-3333-333333333333",
+      "action": "USER_LOGIN_SUCCESS",
+      "entity_type": "users",
+      "entity_id": "33333333-3333-3333-3333-333333333333",
+      "details": {
+        "role": "admin",
+        "email": "marcus.admin@inkloom.ai"
+      }
+    },
+    {
+      "id": "7c89b782-147c-494f-b7ee-850692226673",
+      "created_at": "2026-11-05T13:04:27.629Z",
+      "organization_id": "a0000000-0000-0000-0000-000000000001",
+      "user_id": "33333333-3333-3333-3333-333333333333",
+      "action": "USER_LOGIN_SUCCESS",
+      "entity_type": "users",
+      "entity_id": "33333333-3333-3333-3333-333333333333",
+      "details": {
+        "role": "admin",
+        "email": "marcus.admin@inkloom.ai"
+      }
+    },
+    {
+      "id": "4f6b5c44-752a-4701-b52a-64bc824fcd14",
+      "created_at": "2026-11-05T13:03:50.428Z",
+      "organization_id": "a0000000-0000-0000-0000-000000000001",
+      "user_id": "22222222-2222-2222-2222-222222222222",
+      "action": "USER_LOGIN_SUCCESS",
+      "entity_type": "users",
+      "entity_id": "22222222-2222-2222-2222-222222222222",
+      "details": {
+        "role": "brand-manager",
+        "email": "sarah.brand@inkloom.ai"
+      }
+    },
+    {
+      "id": "98ea3fb7-c4f2-42af-b509-6c503dfb24f1",
+      "created_at": "2026-11-05T13:03:43.770Z",
+      "organization_id": "a0000000-0000-0000-0000-000000000001",
+      "user_id": "22222222-2222-2222-2222-222222222222",
+      "action": "USER_LOGIN_SUCCESS",
+      "entity_type": "users",
+      "entity_id": "22222222-2222-2222-2222-222222222222",
+      "details": {
+        "role": "brand-manager",
+        "email": "sarah.brand@inkloom.ai"
+      }
+    },
+    {
+      "id": "b6ad62a4-f36c-4400-851e-a55b0d5c776a",
+      "created_at": "2026-11-05T13:03:43.362Z",
+      "organization_id": "a0000000-0000-0000-0000-000000000001",
+      "user_id": "22222222-2222-2222-2222-222222222222",
+      "action": "USER_LOGIN_SUCCESS",
+      "entity_type": "users",
+      "entity_id": "22222222-2222-2222-2222-222222222222",
+      "details": {
+        "role": "brand-manager",
+        "email": "sarah.brand@inkloom.ai"
+      }
+    },
+    {
+      "id": "a1dbff47-60dc-4208-973d-62223bbf1377",
+      "created_at": "2026-11-05T13:03:43.025Z",
+      "organization_id": "a0000000-0000-0000-0000-000000000001",
+      "user_id": "22222222-2222-2222-2222-222222222222",
+      "action": "USER_LOGIN_SUCCESS",
+      "entity_type": "users",
+      "entity_id": "22222222-2222-2222-2222-222222222222",
+      "details": {
+        "role": "brand-manager",
+        "email": "sarah.brand@inkloom.ai"
+      }
+    },
+    {
+      "id": "e0896525-965a-4938-932d-f035cea9b14a",
+      "created_at": "2026-11-05T13:03:42.801Z",
+      "organization_id": "a0000000-0000-0000-0000-000000000001",
+      "user_id": "22222222-2222-2222-2222-222222222222",
+      "action": "USER_LOGIN_SUCCESS",
+      "entity_type": "users",
+      "entity_id": "22222222-2222-2222-2222-222222222222",
+      "details": {
+        "role": "brand-manager",
+        "email": "sarah.brand@inkloom.ai"
+      }
+    },
+    {
+      "id": "63591bc8-b752-4e6f-9e7d-55b9046de18f",
+      "created_at": "2026-11-05T13:03:22.619Z",
+      "organization_id": "a0000000-0000-0000-0000-000000000001",
+      "user_id": "11111111-1111-1111-1111-111111111111",
+      "action": "USER_LOGIN_SUCCESS",
+      "entity_type": "users",
+      "entity_id": "11111111-1111-1111-1111-111111111111",
+      "details": {
+        "role": "creator",
+        "email": "alex.creator@inkloom.ai"
+      }
+    },
+    {
+      "id": "92f6751d-4ce6-412b-a953-d21454280781",
+      "created_at": "2026-11-05T13:03:06.411Z",
+      "organization_id": "a0000000-0000-0000-0000-000000000001",
+      "user_id": "11111111-1111-1111-1111-111111111111",
+      "action": "USER_LOGIN_SUCCESS",
+      "entity_type": "users",
+      "entity_id": "11111111-1111-1111-1111-111111111111",
+      "details": {
+        "role": "creator",
+        "email": "alex.creator@inkloom.ai"
+      }
+    },
+    {
+      "id": "7b235119-7dce-420b-a714-07ab1ff2255c",
+      "created_at": "2026-11-05T13:03:06.393Z",
+      "organization_id": "a0000000-0000-0000-0000-000000000001",
+      "user_id": "11111111-1111-1111-1111-111111111111",
+      "action": "USER_LOGIN_SUCCESS",
+      "entity_type": "users",
+      "entity_id": "11111111-1111-1111-1111-111111111111",
+      "details": {
+        "role": "creator",
+        "email": "alex.creator@inkloom.ai"
+      }
+    },
+    {
+      "id": "ab1390a7-ba5f-4ceb-bba8-eff403079f44",
+      "created_at": "2026-11-05T13:03:06.357Z",
+      "organization_id": "a0000000-0000-0000-0000-000000000001",
+      "user_id": "11111111-1111-1111-1111-111111111111",
+      "action": "USER_LOGIN_SUCCESS",
+      "entity_type": "users",
+      "entity_id": "11111111-1111-1111-1111-111111111111",
+      "details": {
+        "role": "creator",
+        "email": "alex.creator@inkloom.ai"
+      }
+    },
+    {
       "id": "80000000-0000-0000-0000-000000000001",
       "organization_id": "a0000000-0000-0000-0000-000000000001",
       "user_id": "33333333-3333-3333-3333-333333333333",

@@ -32,9 +32,23 @@ async function viewDatabase() {
     console.log("To connect live Supabase: Run connect-supabase.bat\n");
   }
 
+  const storeFile = path.join(__dirname, "live_store.json");
+  let liveStore = null;
+  if (fs.existsSync(storeFile)) {
+    try {
+      liveStore = JSON.parse(fs.readFileSync(storeFile, "utf-8"));
+    } catch(e) {}
+  }
+
   console.log("=====================================================================");
   console.log("1. TABLE: organizations");
-  console.table([
+  const orgs = (liveStore && liveStore.organizations) ? liveStore.organizations.map(o => ({
+    id: o.id.substring(0, 18) + "...",
+    name: o.name,
+    industry: o.industry,
+    primary_color: o.branding_settings?.primary_color || "#2563EB",
+    tone_preference: o.branding_settings?.tone_preference || "professional"
+  })) : [
     {
       id: "a0000000-0000-0000-0000-000000000001",
       name: "Inkloom AI Enterprises",
@@ -42,17 +56,25 @@ async function viewDatabase() {
       primary_color: "#2563EB",
       tone_preference: "professional-confident"
     }
-  ]);
+  ];
+  console.table(orgs);
 
-  console.log("\n2. TABLE: users (3 Active Personas with bcrypt passwords)");
-  console.table([
+  console.log("\n2. TABLE: users (Active Personas & Registered Accounts with bcrypt)");
+  const users = (liveStore && liveStore.users) ? liveStore.users.map(u => ({
+    id: u.id.substring(0, 18) + "...",
+    name: u.name,
+    email: u.email,
+    role: u.role,
+    department: u.department || "General",
+    password_hash: u.password ? (u.password.substring(0, 12) + "... (bcrypt)") : "$2b$10$... (Cost 10)"
+  })) : [
     {
       id: "11111111-1111-...",
       name: "Alex Morgan",
       email: "alex.creator@inkloom.ai",
       role: "creator",
       department: "Content & Growth Marketing",
-      password_hash: "$2b$10$wht... (Cost 10)"
+      password_hash: "$2b$10$Qlq... (Cost 10)"
     },
     {
       id: "22222222-2222-...",
@@ -60,7 +82,7 @@ async function viewDatabase() {
       email: "sarah.brand@inkloom.ai",
       role: "brand-manager",
       department: "Global Brand & Governance",
-      password_hash: "$2b$10$wht... (Cost 10)"
+      password_hash: "$2b$10$Qlq... (Cost 10)"
     },
     {
       id: "33333333-3333-...",
@@ -68,9 +90,10 @@ async function viewDatabase() {
       email: "marcus.admin@inkloom.ai",
       role: "admin",
       department: "System Architecture & Compliance",
-      password_hash: "$2b$10$wht... (Cost 10)"
+      password_hash: "$2b$10$Qlq... (Cost 10)"
     }
-  ]);
+  ];
+  console.table(users);
 
   console.log("\n3. TABLE: guidelines (Official Brand Voice Codex)");
   console.table([

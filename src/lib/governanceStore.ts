@@ -381,7 +381,7 @@ const DEFAULT_STORE = {
       organization_id: "a0000000-0000-0000-0000-000000000001",
       name: "Alex Morgan",
       email: "alex.creator@inkloom.ai",
-      password: "$2b$10$wht6YVrj1HuKEcyumITfZutyIHarI5BzFEIfYi8Fa.dAUPA.mXHAO",
+      password: "$2b$10$QlqTuVyYHXVHV.PHVD2MOemEBMneEGmx.oZOTxlXIT/d4VDOtAXra",
       role: "creator" as UserRole,
       department: "Content & Growth Marketing",
       avatar_url: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80",
@@ -392,7 +392,7 @@ const DEFAULT_STORE = {
       organization_id: "a0000000-0000-0000-0000-000000000001",
       name: "Sarah Chen",
       email: "sarah.brand@inkloom.ai",
-      password: "$2b$10$wht6YVrj1HuKEcyumITfZutyIHarI5BzFEIfYi8Fa.dAUPA.mXHAO",
+      password: "$2b$10$QlqTuVyYHXVHV.PHVD2MOemEBMneEGmx.oZOTxlXIT/d4VDOtAXra",
       role: "brand-manager" as UserRole,
       department: "Global Brand & Governance",
       avatar_url: "https://images.unsplash.com/photo-1580489944761-15a19d654956?w=150&auto=format&fit=crop&q=80",
@@ -403,7 +403,7 @@ const DEFAULT_STORE = {
       organization_id: "a0000000-0000-0000-0000-000000000001",
       name: "Marcus Vance",
       email: "marcus.admin@inkloom.ai",
-      password: "$2b$10$wht6YVrj1HuKEcyumITfZutyIHarI5BzFEIfYi8Fa.dAUPA.mXHAO",
+      password: "$2b$10$QlqTuVyYHXVHV.PHVD2MOemEBMneEGmx.oZOTxlXIT/d4VDOtAXra",
       role: "admin" as UserRole,
       department: "System Architecture & Compliance",
       avatar_url: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&auto=format&fit=crop&q=80",
@@ -639,15 +639,12 @@ function initStore() {
 const fallbackStore = initStore();
 
 function persistStore() {
+  if (process.env.NEXT_PHASE === "phase-production-build") return;
   try {
     const dir = path.dirname(STORE_PATH);
     if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
-    const tmp = STORE_PATH + ".tmp";
-    fs.writeFileSync(tmp, JSON.stringify(fallbackStore, null, 2), "utf-8");
-    if (fs.existsSync(tmp)) fs.renameSync(tmp, STORE_PATH);
-  } catch (err) {
-    console.warn("[LiveDB] Failed to persist to disk:", err);
-  }
+    fs.writeFileSync(STORE_PATH, JSON.stringify(fallbackStore, null, 2), "utf-8");
+  } catch (err) {}
 }
 
 // Initial sync to disk
@@ -679,10 +676,42 @@ export const governanceDB = {
     return newOrg;
   },
 
-  // Users
+    // Users
+  async getUsers(): Promise<DBUser[]> {
+    const rows = await query<DBUser>("SELECT id, organization_id, name, email, role, department, avatar_url, created_at FROM users ORDER BY created_at DESC;");
+    if (rows && rows.length > 0) return rows;
+    if (supabase) {
+      try {
+        const { data } = await supabase.from('users').select('id, organization_id, name, email, role, department, avatar_url, created_at').order('created_at', { ascending: false });
+        if (data && data.length > 0) return data as DBUser[];
+      } catch (err) {
+        // fallback
+      }
+    }
+    return fallbackStore.users.map((u: any) => ({
+      id: u.id,
+      organization_id: u.organization_id,
+      name: u.name,
+      email: u.email,
+      password: u.password,
+      role: u.role,
+      department: u.department,
+      avatar_url: u.avatar_url,
+      created_at: u.created_at,
+    }));
+  },
+
   async findUserByEmail(email: string): Promise<DBUser | null> {
     const rows = await query<DBUser>("SELECT * FROM users WHERE email = $1 LIMIT 1;", [email]);
     if (rows && rows.length > 0) return rows[0];
+    if (supabase) {
+      try {
+        const { data } = await supabase.from('users').select('*').eq('email', email).maybeSingle();
+        if (data) return data as DBUser;
+      } catch (err) {
+        // fallback
+      }
+    }
     return fallbackStore.users.find((u: any) => u.email.toLowerCase() === email.toLowerCase()) || null;
   },
 
@@ -692,15 +721,37 @@ export const governanceDB = {
     const newUser: DBUser = { id, created_at, ...user };
 
     if (pool) {
-      const res = await query<DBUser>(
-        `INSERT INTO users (id, organization_id, name, email, password, role, department, avatar_url)
-         VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING *;`,
-        [id, user.organization_id, user.name, user.email, user.password, user.role, user.department, user.avatar_url]
-      );
-      if (res && res[0]) return res[0];
+      try {
+        const res = await query<DBUser>(
+          `INSERT INTO users (id, organization_id, name, email, password, role, department, avatar_url)
+           VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING *;`,
+          [id, user.organization_id, user.name, user.email, user.password, user.role, user.department, user.avatar_url]
+        );
+        if (res && res[0]) return res[0];
+      } catch (err) {
+        console.warn("[DB Pool] Failed to insert user into PostgreSQL:", err);
+      }
     }
 
-    fallbackStore.users.push(newUser);
+    if (supabase) {
+      try {
+        await supabase.from('users').insert({
+          id,
+          organization_id: user.organization_id,
+          name: user.name,
+          email: user.email,
+          password: user.password,
+          role: user.role,
+          department: user.department,
+          avatar_url: user.avatar_url,
+          created_at,
+        });
+      } catch (err) {
+        console.warn("[Supabase] Failed to insert user into Supabase:", err);
+      }
+    }
+
+    fallbackStore.users.unshift(newUser);
     persistStore();
     return newUser;
   },
