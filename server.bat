@@ -14,9 +14,9 @@ for /f "tokens=5" %%p in ('netstat -ano ^| findstr :3000 ^| findstr LISTENING 2^
     taskkill /F /PID %%p >nul 2>&1
 )
 
-:: 2. Auto-open browser
+:: 2. Auto-open browser in background
 echo [2/3] Launching browser...
-start /b powershell -NoProfile -ExecutionPolicy Bypass -Command "Start-Sleep -Seconds 2; try { Start-Process 'http://localhost:3000' } catch { cmd /c start http://localhost:3000 }"
+start "" /b cmd /c "timeout /t 3 /nobreak >nul && start http://localhost:3000"
 
 :: 3. Start Production Server
 echo [3/3] Starting Production Server on http://localhost:3000 ...
@@ -32,5 +32,11 @@ echo.
 if exist "%~dp0node_modules\next\dist\bin\next" (
     node "%~dp0node_modules\next\dist\bin\next" start -p 3000 -H 0.0.0.0
 ) else (
-    node_modules\.bin\next.cmd start -p 3000 -H 0.0.0.0
+    call npm run start
+)
+
+if errorlevel 1 (
+    echo.
+    echo [Inkloom] Server exited with error code %errorlevel%.
+    pause
 )

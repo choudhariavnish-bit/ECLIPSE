@@ -152,12 +152,24 @@ ALTER TABLE public.comments ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.approvals ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.audit_logs ENABLE ROW LEVEL SECURITY;
 
--- Standard Public Access Policies
+-- Standard Public Access Policies (Idempotent)
+DROP POLICY IF EXISTS "Allow public read of active guidelines" ON public.guidelines;
 CREATE POLICY "Allow public read of active guidelines" ON public.guidelines FOR SELECT USING (true);
-CREATE POLICY "Allow public read of active rules" ON public.rules FOR SELECT USING (true);
-CREATE POLICY "Allow authenticated user drafts" ON public.drafts FOR ALL USING (true);
-CREATE POLICY "Allow findings access" ON public.findings FOR ALL USING (true);
-CREATE POLICY "Allow comments access" ON public.comments FOR ALL USING (true);
-CREATE POLICY "Allow approvals access" ON public.approvals FOR ALL USING (true);
-CREATE POLICY "Allow audit logs view" ON public.audit_logs FOR SELECT USING (true);
 
+DROP POLICY IF EXISTS "Allow public read of active rules" ON public.rules;
+CREATE POLICY "Allow public read of active rules" ON public.rules FOR SELECT USING (true);
+
+DROP POLICY IF EXISTS "Allow authenticated user drafts" ON public.drafts;
+CREATE POLICY "Allow authenticated user drafts" ON public.drafts FOR ALL USING (true);
+
+DROP POLICY IF EXISTS "Allow findings access" ON public.findings;
+CREATE POLICY "Allow findings access" ON public.findings FOR ALL USING (true);
+
+DROP POLICY IF EXISTS "Allow comments access" ON public.comments;
+CREATE POLICY "Allow comments access" ON public.comments FOR ALL USING (true);
+
+DROP POLICY IF EXISTS "Allow approvals access" ON public.approvals;
+CREATE POLICY "Allow approvals access" ON public.approvals FOR ALL USING (true);
+
+DROP POLICY IF EXISTS "Allow audit logs view" ON public.audit_logs;
+CREATE POLICY "Allow audit logs view" ON public.audit_logs FOR SELECT USING (true);

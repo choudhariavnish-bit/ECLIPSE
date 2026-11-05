@@ -30,25 +30,28 @@ echo       - Network Devices:  http://!LOCAL_IP!:3000
 echo       - Database Studio:  http://localhost:3000/dashboard/database
 echo.
 
-:: 3. Auto-open browser after server spins up
-echo [3/3] Launching browser & starting server...
-start /b powershell -NoProfile -ExecutionPolicy Bypass -Command "Start-Sleep -Seconds 2; try { Start-Process 'http://localhost:3000' } catch { cmd /c start http://localhost:3000 }"
-
-:: 4. Background Public Tunnel (Optional / Non-blocking)
-if exist "%~dp0node_modules\localtunnel\bin\lt.js" (
-    start "Inkloom Public Tunnel" /min cmd /c "timeout /t 3 /nobreak >nul && node \"%~dp0node_modules\localtunnel\bin\lt.js\" --port 3000"
-)
+:: 3. Auto-open browser in background (native cmd, zero PowerShell dependency)
+echo [3/3] Starting server & auto-launching browser...
+start "" /b cmd /c "timeout /t 3 /nobreak >nul && start http://localhost:3000"
 
 echo.
 echo =====================================================================
 echo  SERVER READY
+echo  Local:    http://localhost:3000
+echo  Database: http://localhost:3000/dashboard/database
 echo  Press Ctrl+C anytime to stop the server.
 echo =====================================================================
 echo.
 
-:: 5. Launch Next.js directly via Node (100%% bulletproof against npx/PowerShell script bugs)
+:: 4. Launch Next.js directly via Node (immune to npx/PowerShell bugs)
 if exist "%~dp0node_modules\next\dist\bin\next" (
     node "%~dp0node_modules\next\dist\bin\next" dev -H 0.0.0.0 -p 3000
 ) else (
-    node_modules\.bin\next.cmd dev -H 0.0.0.0 -p 3000
+    call npm run dev
+)
+
+if errorlevel 1 (
+    echo.
+    echo [Inkloom] Server exited with error code %errorlevel%.
+    pause
 )

@@ -219,10 +219,12 @@ ALTER TABLE approvals ENABLE ROW LEVEL SECURITY;
 ALTER TABLE audit_logs ENABLE ROW LEVEL SECURITY;
 
 -- Guidelines: All organization members can read; Brand Managers & Admins can write
+DROP POLICY IF EXISTS "Guidelines are viewable by organization users" ON guidelines;
 CREATE POLICY "Guidelines are viewable by organization users"
 ON guidelines FOR SELECT
 USING (TRUE);
 
+DROP POLICY IF EXISTS "Guidelines can be edited by brand managers and admins" ON guidelines;
 CREATE POLICY "Guidelines can be edited by brand managers and admins"
 ON guidelines FOR ALL
 USING (
@@ -234,10 +236,12 @@ USING (
 );
 
 -- Rules: All organization members can read; Brand Managers & Admins can manage
+DROP POLICY IF EXISTS "Rules are viewable by all users" ON rules;
 CREATE POLICY "Rules are viewable by all users"
 ON rules FOR SELECT
 USING (TRUE);
 
+DROP POLICY IF EXISTS "Rules can be managed by brand managers and admins" ON rules;
 CREATE POLICY "Rules can be managed by brand managers and admins"
 ON rules FOR ALL
 USING (
@@ -249,6 +253,7 @@ USING (
 );
 
 -- Drafts: Creators can view & edit their own drafts; Brand Managers and Admins can view all drafts
+DROP POLICY IF EXISTS "Users can view relevant drafts" ON drafts;
 CREATE POLICY "Users can view relevant drafts"
 ON drafts FOR SELECT
 USING (
@@ -260,12 +265,14 @@ USING (
     )
 );
 
+DROP POLICY IF EXISTS "Creators can create drafts" ON drafts;
 CREATE POLICY "Creators can create drafts"
 ON drafts FOR INSERT
 WITH CHECK (
     user_id = auth.uid()
 );
 
+DROP POLICY IF EXISTS "Creators can update their drafts" ON drafts;
 CREATE POLICY "Creators can update their drafts"
 ON drafts FOR UPDATE
 USING (
@@ -278,6 +285,7 @@ USING (
 );
 
 -- Approvals: Only Brand Managers and Admins can create approvals
+DROP POLICY IF EXISTS "Approvals can be created by brand managers and admins" ON approvals;
 CREATE POLICY "Approvals can be created by brand managers and admins"
 ON approvals FOR INSERT
 WITH CHECK (
@@ -288,11 +296,13 @@ WITH CHECK (
     )
 );
 
+DROP POLICY IF EXISTS "Approvals viewable by all members" ON approvals;
 CREATE POLICY "Approvals viewable by all members"
 ON approvals FOR SELECT
 USING (TRUE);
 
 -- Audit logs: Read-only for Admins
+DROP POLICY IF EXISTS "Audit logs readable by admins" ON audit_logs;
 CREATE POLICY "Audit logs readable by admins"
 ON audit_logs FOR SELECT
 USING (

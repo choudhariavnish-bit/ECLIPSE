@@ -176,19 +176,23 @@ ALTER TABLE audit_logs ENABLE ROW LEVEL SECURITY;
 -- Base Public Read/Write Policies for Service Role & Application Access
 DROP POLICY IF EXISTS "Allow public read of active guidelines" ON guidelines;
 CREATE POLICY "Allow public read of active guidelines" ON guidelines FOR SELECT USING (true);
+
 DROP POLICY IF EXISTS "Allow public read of active rules" ON rules;
 CREATE POLICY "Allow public read of active rules" ON rules FOR SELECT USING (true);
+
 DROP POLICY IF EXISTS "Allow authenticated user drafts" ON drafts;
 CREATE POLICY "Allow authenticated user drafts" ON drafts FOR ALL USING (true);
+
 DROP POLICY IF EXISTS "Allow findings access" ON findings;
 CREATE POLICY "Allow findings access" ON findings FOR ALL USING (true);
+
 DROP POLICY IF EXISTS "Allow comments access" ON comments;
+CREATE POLICY "Allow comments access" ON comments FOR ALL USING (true);
+
 DROP POLICY IF EXISTS "Allow approvals access" ON approvals;
 CREATE POLICY "Allow approvals access" ON approvals FOR ALL USING (true);
+
 DROP POLICY IF EXISTS "Allow audit logs view" ON audit_logs;
-CREATE POLICY "Allow audit logs view" ON audit_logs FOR SELECT USING (true);
-CREATE POLICY "Allow comments access" ON comments FOR ALL USING (true);
-CREATE POLICY "Allow approvals access" ON approvals FOR ALL USING (true);
 CREATE POLICY "Allow audit logs view" ON audit_logs FOR SELECT USING (true);
 
 -- Seed Initial Data
