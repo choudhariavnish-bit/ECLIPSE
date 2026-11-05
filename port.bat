@@ -24,3 +24,4 @@ echo  - Press Ctrl+C to terminate.
 echo.
 
 node node_modules\next\dist\bin\next start -p 5000 -H 0.0.0.0
+
