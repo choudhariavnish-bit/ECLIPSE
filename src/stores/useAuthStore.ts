@@ -122,14 +122,16 @@ export const useAuthStore = create<AuthState>((set) => ({
   },
 
   switchRole: (role) => {
-    const user = MOCK_USERS[role];
-    if (typeof window !== "undefined") {
-      localStorage.setItem("inkloom_user", JSON.stringify(user));
-    }
-    set({
-      currentUser: user,
-      activeRole: role,
-      isAuthenticated: true,
+    set((state) => {
+      const user = state.currentUser ? { ...state.currentUser, role } : MOCK_USERS[role];
+      if (typeof window !== "undefined") {
+        localStorage.setItem("inkloom_user", JSON.stringify(user));
+      }
+      return {
+        currentUser: user,
+        activeRole: role,
+        isAuthenticated: true,
+      };
     });
   },
 }));

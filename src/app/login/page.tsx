@@ -1,6 +1,7 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { useAuthStore, MOCK_USERS } from "@/stores/useAuthStore";
@@ -58,11 +59,26 @@ export default function LoginPage() {
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
+  const [dbUsers, setDbUsers] = useState<any[]>([]);
 
-  const openRoleModal = (role: UserRole) => {
+  const fetchDbUsers = async () => {
+    try {
+      const res = await fetch("/api/database/tables?table=users");
+      const data = await res.json();
+      if (data && Array.isArray(data.rows)) {
+        setDbUsers(data.rows);
+      }
+    } catch (e) {}
+  };
+
+  useEffect(() => {
+    fetchDbUsers();
+  }, []);
+
+  const openRoleModal = (role: UserRole, specificEmail?: string) => {
     setActiveModalRole(role);
     setModalTab("signin");
-    setSignInEmail(MOCK_USERS[role].email);
+    setSignInEmail(specificEmail || MOCK_USERS[role].email);
     setSignInPassword("password123");
     setSignUpEmail("");
     setSignUpName("");
@@ -135,6 +151,7 @@ export default function LoginPage() {
 
       if (res.success && res.user) {
         setSuccessMessage(`Account created & saved to database! Redirecting...`);
+        fetchDbUsers();
         setTimeout(() => {
           router.push(`/dashboard/${res.user?.role || activeModalRole}`);
         }, 700);
@@ -184,6 +201,38 @@ export default function LoginPage() {
           <br className="hidden sm:inline" />
           <span className="text-blue-400 font-medium"> Click your role card </span> to Log In or Sign Up directly with the database.
         </p>
+
+        {/* Live Database Accounts Banner */}
+        {dbUsers.length > 0 && (
+          <div className="mt-5 inline-flex flex-wrap items-center justify-center gap-2 rounded-2xl bg-slate-900/90 border border-slate-800 px-4 py-2 text-xs shadow-md backdrop-blur-md">
+            <span className="flex items-center gap-1.5 text-slate-300 font-medium">
+              <Database className="h-3.5 w-3.5 text-blue-400" />
+              <span>Live Database ({dbUsers.length} Users):</span>
+            </span>
+            <div className="flex flex-wrap items-center gap-1.5">
+              {dbUsers.map((u: any) => (
+                <button
+                  key={u.id}
+                  onClick={() => openRoleModal(u.role || "creator", u.email)}
+                  className={`px-2 py-0.5 rounded-full text-[11px] font-semibold transition-all cursor-pointer flex items-center gap-1 border ${
+                    u.email === "anushkabhaykar@gmail.com"
+                      ? "bg-purple-500/20 text-purple-300 border-purple-500/40 hover:bg-purple-500/30"
+                      : "bg-blue-500/10 text-blue-300 border-blue-400/20 hover:bg-blue-500/25"
+                  }`}
+                >
+                  <span>{u.name}</span>
+                  <span className="text-[9px] text-slate-400 font-mono">({u.role})</span>
+                </button>
+              ))}
+            </div>
+            <Link
+              href="/dashboard/database"
+              className="text-xs font-semibold text-blue-400 hover:text-blue-300 flex items-center gap-1 pl-2 border-l border-slate-700 hover:underline"
+            >
+              <span>Database Studio &rarr;</span>
+            </Link>
+          </div>
+        )}
       </motion.div>
 
       {/* 3D Interactive Role Cards Grid */}
@@ -593,6 +642,63 @@ export default function LoginPage() {
                       <ArrowRight className="h-4 w-4" />
                     </button>
                   </div>
+
+                  {/* Registered Database Accounts for this role */}
+                  {(() => {
+                    const roleAccounts = dbUsers.filter((u: any) => u.role === activeModalRole);
+                    if (roleAccounts.length === 0) return null;
+                    return (
+                      <div className="rounded-2xl border border-slate-800 bg-slate-950/40 p-3 space-y-2">
+                        <div className="flex items-center justify-between text-[11px] font-bold text-slate-400 uppercase tracking-wider">
+                          <span className="flex items-center gap-1.5 text-blue-300">
+                            <Database className="h-3 w-3 text-blue-400" />
+                            Registered Accounts in Database ({roleAccounts.length})
+                          </span>
+                          <span className="text-[10px] text-emerald-400 font-mono">1-Click Select</span>
+                        </div>
+                        <div className="space-y-1.5 max-h-36 overflow-y-auto pr-1">
+                          {roleAccounts.map((u: any) => {
+                            const isSelected = signInEmail.toLowerCase() === u.email.toLowerCase();
+                            return (
+                              <button
+                                key={u.id}
+                                type="button"
+                                onClick={() => {
+                                  setSignInEmail(u.email);
+                                  setSignInPassword("password123");
+                                }}
+                                className={`w-full p-2.5 rounded-xl border text-left flex items-center justify-between transition-all ${
+                                  isSelected
+                                    ? "bg-blue-600/20 border-blue-500 text-white shadow-xs"
+                                    : "bg-slate-900/60 border-slate-800 hover:border-slate-700 text-slate-300"
+                                }`}
+                              >
+                                <div className="flex items-center gap-2.5 min-w-0">
+                                  <div className="h-7 w-7 rounded-lg bg-blue-500/20 text-blue-400 flex items-center justify-center font-bold text-xs uppercase shrink-0">
+                                    {u.name?.charAt(0) || "U"}
+                                  </div>
+                                  <div className="min-w-0">
+                                    <div className="text-xs font-semibold text-white truncate flex items-center gap-1.5">
+                                      <span>{u.name}</span>
+                                      {u.email === "anushkabhaykar@gmail.com" && (
+                                        <span className="px-1.5 py-0.2 rounded text-[9px] bg-purple-500/20 text-purple-300 border border-purple-500/30 font-bold shrink-0">
+                                          Your Account
+                                        </span>
+                                      )}
+                                    </div>
+                                    <div className="text-[10px] text-slate-400 font-mono truncate">{u.email}</div>
+                                  </div>
+                                </div>
+                                <span className={`text-[11px] font-semibold shrink-0 ml-2 ${isSelected ? "text-blue-400 font-bold" : "text-slate-500"}`}>
+                                  {isSelected ? "Selected ✓" : "Select &rarr;"}
+                                </span>
+                              </button>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    );
+                  })()}
 
                   <div className="relative flex py-1 items-center">
                     <div className="flex-grow border-t border-slate-800" />
