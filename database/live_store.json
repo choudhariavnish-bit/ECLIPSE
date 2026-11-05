@@ -536,6 +536,19 @@
   ],
   "audit_logs": [
     {
+      "id": "607485fb-e9d0-4e24-88f0-6add2f5d0dbe",
+      "created_at": "2026-11-05T18:01:02.383Z",
+      "organization_id": "a0000000-0000-0000-0000-000000000001",
+      "user_id": "11111111-1111-1111-1111-111111111111",
+      "action": "USER_LOGIN_SUCCESS",
+      "entity_type": "users",
+      "entity_id": "11111111-1111-1111-1111-111111111111",
+      "details": {
+        "role": "creator",
+        "email": "alex.creator@inkloom.ai"
+      }
+    },
+    {
       "id": "e650daa7-4b31-4dbc-97c2-10fa1a47fed8",
       "created_at": "2026-11-05T17:26:24.523Z",
       "organization_id": "a0000000-0000-0000-0000-000000000001",
