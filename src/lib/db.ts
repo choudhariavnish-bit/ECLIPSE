@@ -51,7 +51,7 @@ export async function query<T = any>(text: string, params: any[] = []): Promise<
       return res.rows as T[];
     } catch (err) {
       console.error("[DB Query Error]:", err);
-      throw err;
+      return null;
     }
   }
   return null;

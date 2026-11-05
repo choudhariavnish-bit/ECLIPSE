@@ -1,6 +1,28 @@
 {
   "organizations": [
     {
+      "id": "2b4a9886-f876-4330-860e-97a48bada4c3",
+      "name": "Reed Global Health",
+      "industry": "Enterprise Brand Governance",
+      "branding_settings": {
+        "primary_color": "#2563EB",
+        "font_family": "Inter",
+        "tone_preference": "professional"
+      },
+      "created_at": "2026-11-05T16:46:54.609Z"
+    },
+    {
+      "id": "2d7dc6f0-9436-4710-8bf4-8e90a5093b6c",
+      "name": "Probe Org",
+      "industry": "Enterprise Brand Governance",
+      "branding_settings": {
+        "primary_color": "#2563EB",
+        "font_family": "Inter",
+        "tone_preference": "professional"
+      },
+      "created_at": "2026-11-05T15:40:26.905Z"
+    },
+    {
       "id": "a0000000-0000-0000-0000-000000000001",
       "name": "Inkloom AI Enterprises",
       "industry": "Enterprise AI & Cloud Governance",
@@ -35,6 +57,28 @@
     }
   ],
   "users": [
+    {
+      "id": "fd2659a6-4db0-4540-a593-0c27e62aa2c4",
+      "created_at": "2026-11-05T16:46:54.688Z",
+      "name": "Dr. Evelyn Reed",
+      "email": "probe_1793897205407@inkloom.ai",
+      "password": "$2b$10$5inEZ.YRDcL2RG6TGYX8fOMl9Hnu89o0CidzCjQxcRtx.976BuPnC",
+      "role": "brand-manager",
+      "organization_id": "2b4a9886-f876-4330-860e-97a48bada4c3",
+      "department": "Global Brand & Governance",
+      "avatar_url": "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80"
+    },
+    {
+      "id": "ff376714-40d3-467a-b4da-a667a5a27930",
+      "created_at": "2026-11-05T15:40:26.999Z",
+      "name": "Probe User",
+      "email": "probe1793893217636@inkloom.ai",
+      "password": "$2b$10$1yXyFG2Rw5ZUKVN6qQ6IE.ZgavH3CzL7wN3umx77lNPt5ffbhDIHK",
+      "role": "creator",
+      "organization_id": "2d7dc6f0-9436-4710-8bf4-8e90a5093b6c",
+      "department": "Content & Growth Marketing",
+      "avatar_url": "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80"
+    },
     {
       "id": "11111111-1111-1111-1111-111111111111",
       "organization_id": "a0000000-0000-0000-0000-000000000001",
@@ -469,6 +513,71 @@
     }
   ],
   "audit_logs": [
+    {
+      "id": "173d41b4-caeb-4fe6-a9a5-44e47ddafebb",
+      "created_at": "2026-11-05T16:46:54.791Z",
+      "organization_id": "2b4a9886-f876-4330-860e-97a48bada4c3",
+      "user_id": "fd2659a6-4db0-4540-a593-0c27e62aa2c4",
+      "action": "USER_LOGIN_SUCCESS",
+      "entity_type": "users",
+      "entity_id": "fd2659a6-4db0-4540-a593-0c27e62aa2c4",
+      "details": {
+        "role": "brand-manager",
+        "email": "probe_1793897205407@inkloom.ai"
+      }
+    },
+    {
+      "id": "f21d14f3-35d4-4cf8-a4c2-266cd3e1b067",
+      "created_at": "2026-11-05T16:46:54.690Z",
+      "organization_id": "2b4a9886-f876-4330-860e-97a48bada4c3",
+      "user_id": "fd2659a6-4db0-4540-a593-0c27e62aa2c4",
+      "action": "USER_REGISTERED",
+      "entity_type": "users",
+      "entity_id": "fd2659a6-4db0-4540-a593-0c27e62aa2c4",
+      "details": {
+        "role": "brand-manager",
+        "email": "probe_1793897205407@inkloom.ai"
+      }
+    },
+    {
+      "id": "c9cd2ad5-a116-4c07-a7e0-a669e5fb8330",
+      "created_at": "2026-11-05T16:46:54.230Z",
+      "organization_id": "a0000000-0000-0000-0000-000000000001",
+      "user_id": "11111111-1111-1111-1111-111111111111",
+      "action": "USER_LOGIN_SUCCESS",
+      "entity_type": "users",
+      "entity_id": "11111111-1111-1111-1111-111111111111",
+      "details": {
+        "role": "creator",
+        "email": "alex.creator@inkloom.ai"
+      }
+    },
+    {
+      "id": "4c612460-4e48-4f5e-92ea-bdd962b0562f",
+      "created_at": "2026-11-05T15:40:27.001Z",
+      "organization_id": "2d7dc6f0-9436-4710-8bf4-8e90a5093b6c",
+      "user_id": "ff376714-40d3-467a-b4da-a667a5a27930",
+      "action": "USER_REGISTERED",
+      "entity_type": "users",
+      "entity_id": "ff376714-40d3-467a-b4da-a667a5a27930",
+      "details": {
+        "role": "creator",
+        "email": "probe1793893217636@inkloom.ai"
+      }
+    },
+    {
+      "id": "cd2b77f9-85c3-4acd-9112-cbf2baab8708",
+      "created_at": "2026-11-05T15:40:26.321Z",
+      "organization_id": "a0000000-0000-0000-0000-000000000001",
+      "user_id": "11111111-1111-1111-1111-111111111111",
+      "action": "USER_LOGIN_SUCCESS",
+      "entity_type": "users",
+      "entity_id": "11111111-1111-1111-1111-111111111111",
+      "details": {
+        "role": "creator",
+        "email": "alex.creator@inkloom.ai"
+      }
+    },
     {
       "id": "202ab614-277a-42fe-8f80-101688ba8f54",
       "created_at": "2026-11-05T15:03:16.483Z",

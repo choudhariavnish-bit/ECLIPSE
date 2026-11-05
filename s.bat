@@ -7,7 +7,7 @@ echo =====================================================================
 echo.
 
 :: 1. Ultra-fast port check & release (sub-50ms)
-node -e "const s=require('net').createConnection(3000,'127.0.0.1',()=>{s.destroy();require('child_process').exec('for /f \"tokens=5\" %%p in (\'netstat -ano -p tcp ^| findstr :3000 ^| findstr LISTENING\') do taskkill /f /pid %%p');});s.on('error',()=>{s.destroy();});" >nul 2>&1
+node -e "try{const out=require('child_process').execSync('netstat -ano').toString();for(const l of out.split('\n')){if(l.includes(':3000')&&l.includes('LISTENING')){const pid=l.trim().split(/\s+/).pop();if(pid&&pid!=='0'){try{require('child_process').execSync('taskkill /F /PID '+pid);}catch(e){}}}}}catch(e){}" >nul 2>&1
 
 :: 2. Auto-launch browser
 start "" cmd /c "timeout /t 2 /nobreak >nul && start http://localhost:3000"

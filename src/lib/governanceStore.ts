@@ -1,7 +1,17 @@
+import crypto from "crypto";
 import { pool, supabase, query } from "./db";
 import { UserRole } from "@/types/auth";
 import fs from "fs";
 import path from "path";
+
+function getSafeUUID(): string {
+  try {
+    if (crypto && typeof crypto.randomUUID === "function") {
+      return crypto.randomUUID();
+    }
+  } catch (e) {}
+  return "id-" + Date.now().toString(36) + "-" + Math.random().toString(36).substring(2, 9);
+}
 
 export interface DBOrganization {
   id: string;
@@ -659,7 +669,7 @@ export const governanceDB = {
   },
 
   async createOrganization(name: string, industry: string, branding: any): Promise<DBOrganization> {
-    const id = crypto.randomUUID();
+    const id = getSafeUUID();
     const created_at = new Date().toISOString();
     const newOrg: DBOrganization = { id, name, industry, branding_settings: branding, created_at };
 
@@ -716,7 +726,7 @@ export const governanceDB = {
   },
 
   async createUser(user: Omit<DBUser, "id" | "created_at">): Promise<DBUser> {
-    const id = crypto.randomUUID();
+    const id = getSafeUUID();
     const created_at = new Date().toISOString();
     const newUser: DBUser = { id, created_at, ...user };
 
@@ -764,7 +774,7 @@ export const governanceDB = {
   },
 
   async createGuideline(guideline: Omit<DBGuideline, "id" | "created_at">): Promise<DBGuideline> {
-    const id = crypto.randomUUID();
+    const id = getSafeUUID();
     const created_at = new Date().toISOString();
     const newGuideline: DBGuideline = { id, created_at, ...guideline };
 
@@ -788,7 +798,7 @@ export const governanceDB = {
   },
 
   async createRule(rule: Omit<DBRule, "id" | "created_at">): Promise<DBRule> {
-    const id = crypto.randomUUID();
+    const id = getSafeUUID();
     const created_at = new Date().toISOString();
     const newRule: DBRule = { id, created_at, ...rule };
 
@@ -920,7 +930,7 @@ export const governanceDB = {
   },
 
   async createFinding(finding: Omit<DBFinding, "id" | "created_at">): Promise<DBFinding> {
-    const id = crypto.randomUUID();
+    const id = getSafeUUID();
     const created_at = new Date().toISOString();
     const newFinding: DBFinding = { id, created_at, ...finding };
 
@@ -955,7 +965,7 @@ export const governanceDB = {
   },
 
   async addComment(comment: Omit<DBComment, "id" | "created_at">): Promise<DBComment> {
-    const id = crypto.randomUUID();
+    const id = getSafeUUID();
     const created_at = new Date().toISOString();
     const newComment: DBComment = { id, created_at, ...comment };
 
@@ -981,7 +991,7 @@ export const governanceDB = {
   },
 
   async recordApproval(approval: Omit<DBApproval, "id" | "timestamp">): Promise<DBApproval> {
-    const id = crypto.randomUUID();
+    const id = getSafeUUID();
     const timestamp = new Date().toISOString();
     const newApproval: DBApproval = { id, timestamp, ...approval };
 
@@ -1053,7 +1063,7 @@ export const governanceDB = {
 
   // Audit Logs
   async logAction(log: Omit<DBAuditLog, "id" | "created_at">): Promise<DBAuditLog> {
-    const id = crypto.randomUUID();
+    const id = getSafeUUID();
     const created_at = new Date().toISOString();
     const newLog: DBAuditLog = { id, created_at, ...log };
 
