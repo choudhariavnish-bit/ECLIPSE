@@ -384,6 +384,23 @@
   "approvals": [],
   "audit_logs": [
     {
+      "id": "e8f6c195-5791-4ac9-8fc1-b7b3b8646af9",
+      "created_at": "2026-11-05T14:18:02.868Z",
+      "organization_id": "a0000000-0000-0000-0000-000000000001",
+      "action": "AI_CONTENT_REVIEW_EXECUTED",
+      "entity_type": "drafts",
+      "details": {
+        "flagCount": 0,
+        "complianceScore": 100,
+        "driftScore": 0,
+        "isMajorDrift": false,
+        "engine": "ECLIPSE AI Engine (Local Heuristics)",
+        "model": "deterministic-parser",
+        "channel": "social_media",
+        "zeroDataRetentionWipe": true
+      }
+    },
+    {
       "id": "80000000-0000-0000-0000-000000000001",
       "organization_id": "a0000000-0000-0000-0000-000000000001",
       "action": "PLATFORM_INITIALIZATION",

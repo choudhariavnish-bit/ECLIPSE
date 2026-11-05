@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { Navbar } from "@/components/layout/Navbar";
 import { Sidebar } from "@/components/layout/Sidebar";
 import { MobileNav } from "@/components/layout/MobileNav";
+import { EclipseAssistantCopilot } from "@/components/assistant/EclipseAssistantCopilot";
 import { useAuthStore } from "@/stores/useAuthStore";
 
 export default function DashboardLayout({
@@ -32,6 +33,7 @@ export default function DashboardLayout({
         </main>
       </div>
       <MobileNav />
+      <EclipseAssistantCopilot />
     </div>
   );
 }

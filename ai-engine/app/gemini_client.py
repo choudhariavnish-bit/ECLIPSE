@@ -80,6 +80,7 @@ class GeminiClientWrapper:
                         config=config
                     )
                     if response and response.text:
+                        self.model = model_candidate
                         return response.text
                 except Exception as e:
                     err_msg = str(e)
