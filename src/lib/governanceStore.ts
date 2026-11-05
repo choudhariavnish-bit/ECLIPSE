@@ -620,7 +620,8 @@ const DEFAULT_STORE = {
 function initStore() {
   try {
     if (fs.existsSync(STORE_PATH)) {
-      const raw = fs.readFileSync(STORE_PATH, "utf-8");
+      const raw = (fs.readFileSync(STORE_PATH, "utf-8") || "").trim();
+      if (!raw) return { ...DEFAULT_STORE, rulebooks: INITIAL_BRAND_RULEBOOKS };
       const parsed = JSON.parse(raw);
       if (parsed && Array.isArray(parsed.drafts) && Array.isArray(parsed.rules)) {
         if (!parsed.rulebooks || !Array.isArray(parsed.rulebooks) || parsed.rulebooks.length === 0) {
@@ -641,7 +642,9 @@ function persistStore() {
   try {
     const dir = path.dirname(STORE_PATH);
     if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
-    fs.writeFileSync(STORE_PATH, JSON.stringify(fallbackStore, null, 2), "utf-8");
+    const tmp = STORE_PATH + ".tmp";
+    fs.writeFileSync(tmp, JSON.stringify(fallbackStore, null, 2), "utf-8");
+    if (fs.existsSync(tmp)) fs.renameSync(tmp, STORE_PATH);
   } catch (err) {
     console.warn("[LiveDB] Failed to persist to disk:", err);
   }

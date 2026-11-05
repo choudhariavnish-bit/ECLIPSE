@@ -9,7 +9,7 @@
         "font_family": "Inter",
         "tone_preference": "professional"
       },
-      "created_at": "2026-11-04T12:00:00.000Z"
+      "created_at": "2026-11-05T12:07:23.488Z"
     },
     {
       "id": "a0000000-0000-0000-0000-000000000002",
@@ -20,7 +20,7 @@
         "font_family": "Plus Jakarta Sans",
         "tone_preference": "playful"
       },
-      "created_at": "2026-11-04T12:00:00.000Z"
+      "created_at": "2026-11-05T12:07:23.490Z"
     },
     {
       "id": "a0000000-0000-0000-0000-000000000003",
@@ -31,7 +31,7 @@
         "font_family": "Roboto Mono",
         "tone_preference": "conservative"
       },
-      "created_at": "2026-11-04T12:00:00.000Z"
+      "created_at": "2026-11-05T12:07:23.490Z"
     }
   ],
   "users": [
@@ -40,27 +40,109 @@
       "organization_id": "a0000000-0000-0000-0000-000000000001",
       "name": "Alex Morgan",
       "email": "alex.creator@inkloom.ai",
+      "password": "$2b$10$wht6YVrj1HuKEcyumITfZutyIHarI5BzFEIfYi8Fa.dAUPA.mXHAO",
       "role": "creator",
       "department": "Content & Growth Marketing",
-      "created_at": "2026-11-04T12:00:00.000Z"
+      "avatar_url": "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80",
+      "created_at": "2026-11-05T12:07:23.490Z"
     },
     {
       "id": "22222222-2222-2222-2222-222222222222",
       "organization_id": "a0000000-0000-0000-0000-000000000001",
       "name": "Sarah Chen",
       "email": "sarah.brand@inkloom.ai",
+      "password": "$2b$10$wht6YVrj1HuKEcyumITfZutyIHarI5BzFEIfYi8Fa.dAUPA.mXHAO",
       "role": "brand-manager",
       "department": "Global Brand & Governance",
-      "created_at": "2026-11-04T12:00:00.000Z"
+      "avatar_url": "https://images.unsplash.com/photo-1580489944761-15a19d654956?w=150&auto=format&fit=crop&q=80",
+      "created_at": "2026-11-05T12:07:23.490Z"
     },
     {
       "id": "33333333-3333-3333-3333-333333333333",
       "organization_id": "a0000000-0000-0000-0000-000000000001",
       "name": "Marcus Vance",
       "email": "marcus.admin@inkloom.ai",
+      "password": "$2b$10$wht6YVrj1HuKEcyumITfZutyIHarI5BzFEIfYi8Fa.dAUPA.mXHAO",
       "role": "admin",
       "department": "System Architecture & Compliance",
-      "created_at": "2026-11-04T12:00:00.000Z"
+      "avatar_url": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&auto=format&fit=crop&q=80",
+      "created_at": "2026-11-05T12:07:23.490Z"
+    }
+  ],
+  "guidelines": [
+    {
+      "id": "b0000000-0000-0000-0000-000000000001",
+      "organization_id": "a0000000-0000-0000-0000-000000000001",
+      "title": "Inkloom Global Brand & Voice Guidelines",
+      "content": "Standards for claims, tone of voice, visual margins, and WCAG AA accessibility.",
+      "version": "2.4.0",
+      "created_at": "2026-11-05T12:07:23.490Z"
+    },
+    {
+      "id": "b0000000-0000-0000-0000-000000000002",
+      "organization_id": "a0000000-0000-0000-0000-000000000002",
+      "title": "LoomCraft Studio Creative Guidelines",
+      "content": "High-energy social campaigns, viral short-form copy, and vibrant graphics.",
+      "version": "1.2.0",
+      "created_at": "2026-11-05T12:07:23.490Z"
+    },
+    {
+      "id": "b0000000-0000-0000-0000-000000000003",
+      "organization_id": "a0000000-0000-0000-0000-000000000003",
+      "title": "PulseFin Regulatory & Statutory Rulebook",
+      "content": "SEC, FINRA, and global banking compliance for financial collateral.",
+      "version": "3.1.0",
+      "created_at": "2026-11-05T12:07:23.490Z"
+    }
+  ],
+  "rules": [
+    {
+      "id": "c0000000-0000-0000-0000-000000000001",
+      "guideline_id": "b0000000-0000-0000-0000-000000000001",
+      "rule_type": "claim",
+      "name": "Prohibited Superlative Claims",
+      "description": "Absolute superlative claims cannot be validated under FTC advertising guidelines.",
+      "severity": "critical",
+      "pattern": "100% foolproof",
+      "replacement": "enterprise-grade AI automation with verified high-availability",
+      "is_enabled": true,
+      "created_at": "2026-11-05T12:07:23.490Z"
+    },
+    {
+      "id": "c0000000-0000-0000-0000-000000000002",
+      "guideline_id": "b0000000-0000-0000-0000-000000000001",
+      "rule_type": "tone",
+      "name": "Tone Matrix: Casual Hyperbole",
+      "description": "Informal hyperbole clashes with authoritative enterprise tone.",
+      "severity": "warning",
+      "pattern": "super crazy fast",
+      "replacement": "rapid zero-downtime deployment",
+      "is_enabled": true,
+      "created_at": "2026-11-05T12:07:23.490Z"
+    },
+    {
+      "id": "c0000000-0000-0000-0000-000000000003",
+      "guideline_id": "b0000000-0000-0000-0000-000000000002",
+      "rule_type": "tone",
+      "name": "Ban Monotonous Corporate Jargon",
+      "description": "Stiff corporate jargon kills creative engagement on modern social media.",
+      "severity": "warning",
+      "pattern": "synergistic paradigm shift",
+      "replacement": "fresh creative momentum",
+      "is_enabled": true,
+      "created_at": "2026-11-05T12:07:23.490Z"
+    },
+    {
+      "id": "c0000000-0000-0000-0000-000000000004",
+      "guideline_id": "b0000000-0000-0000-0000-000000000003",
+      "rule_type": "claim",
+      "name": "SEC/FINRA: No Guaranteed Returns",
+      "description": "Promising specific return percentages is illegal under financial advertising laws.",
+      "severity": "critical",
+      "pattern": "guaranteed 500% ROI",
+      "replacement": "projected historical yield based on audited backtesting",
+      "is_enabled": true,
+      "created_at": "2026-11-05T12:07:23.490Z"
     }
   ],
   "drafts": [
@@ -79,8 +161,8 @@
       "wordCount": 18,
       "commentsCount": 2,
       "reviewerNotes": "Sarah Chen: Please fix the 100% foolproof claim before we release to press wire.",
-      "created_at": "2026-11-04T12:00:00.000Z",
-      "updated_at": "2026-11-04T12:00:00.000Z"
+      "created_at": "2026-11-05T11:57:23.490Z",
+      "updated_at": "2026-11-05T11:57:23.490Z"
     },
     {
       "id": "draft-002",
@@ -97,8 +179,8 @@
       "wordCount": 14,
       "commentsCount": 1,
       "reviewerNotes": "Slide 2 font contrast fails WCAG 2.1 AA (2.4:1). Change font color to #0F172A.",
-      "created_at": "2026-11-04T11:00:00.000Z",
-      "updated_at": "2026-11-04T11:00:00.000Z"
+      "created_at": "2026-11-05T10:07:23.490Z",
+      "updated_at": "2026-11-05T10:07:23.490Z"
     },
     {
       "id": "draft-003",
@@ -115,8 +197,8 @@
       "wordCount": 24,
       "commentsCount": 0,
       "reviewerNotes": "Fully compliant with SOC2 disclosure standards. Ready to publish.",
-      "created_at": "2026-11-03T12:00:00.000Z",
-      "updated_at": "2026-11-03T12:00:00.000Z"
+      "created_at": "2026-11-04T12:07:23.490Z",
+      "updated_at": "2026-11-04T12:07:23.490Z"
     },
     {
       "id": "draft-004",
@@ -133,34 +215,8 @@
       "wordCount": 22,
       "commentsCount": 0,
       "reviewerNotes": "",
-      "created_at": "2026-11-01T12:00:00.000Z",
-      "updated_at": "2026-11-01T12:00:00.000Z"
-    }
-  ],
-  "rules": [
-    {
-      "id": "c0000000-0000-0000-0000-000000000001",
-      "guideline_id": "b0000000-0000-0000-0000-000000000001",
-      "rule_type": "claim",
-      "name": "Absolute Guarantee Prohibition",
-      "description": "Never claim 100% foolproof or completely zero bug results.",
-      "severity": "critical",
-      "pattern": "100% foolproof",
-      "replacement": "enterprise-grade verified high-availability",
-      "is_enabled": true,
-      "created_at": "2026-11-04T12:00:00.000Z"
-    },
-    {
-      "id": "c0000000-0000-0000-0000-000000000002",
-      "guideline_id": "b0000000-0000-0000-0000-000000000001",
-      "rule_type": "tone",
-      "name": "Slang & Hyperbole Ban",
-      "description": "Informal expressions compromise brand authority in enterprise contexts.",
-      "severity": "warning",
-      "pattern": "super crazy fast",
-      "replacement": "rapid zero-downtime deployment",
-      "is_enabled": true,
-      "created_at": "2026-11-04T12:00:00.000Z"
+      "created_at": "2026-11-02T12:07:23.490Z",
+      "updated_at": "2026-11-02T12:07:23.490Z"
     }
   ],
   "rulebooks": [
@@ -236,7 +292,7 @@
     },
     {
       "id": "brand-loomcraft",
-      "name": "LoomCraft Studio",
+      "name": "LoomCraft Creative Studio",
       "tagline": "High-Energy Design & Social Campaigns",
       "industry": "Digital Creative Agency",
       "primaryColor": "#8B5CF6",
@@ -379,19 +435,51 @@
       ]
     }
   ],
-  "findings": [],
-  "comments": [],
-  "approvals": [],
+  "findings": [
+    {
+      "id": "e0000000-0000-0000-0000-000000000001",
+      "draft_id": "d0000000-0000-0000-0000-000000000001",
+      "rule_id": "c0000000-0000-0000-0000-000000000001",
+      "issue": "Absolute superlative guarantee not permitted under advertising compliance.",
+      "severity": "critical",
+      "suggestion": "enterprise-grade AI automation with verified high-availability",
+      "highlight_text": "100% foolproof AI automation",
+      "category": "claim",
+      "status": "pending",
+      "created_at": "2026-11-05T12:07:23.490Z"
+    }
+  ],
+  "comments": [
+    {
+      "id": "f0000000-0000-0000-0000-000000000001",
+      "draft_id": "d0000000-0000-0000-0000-000000000001",
+      "reviewer_id": "22222222-2222-2222-2222-222222222222",
+      "comment": "Please apply the AI suggestion on the superlative claim before we issue final sign-off.",
+      "created_at": "2026-11-05T12:07:23.490Z"
+    }
+  ],
+  "approvals": [
+    {
+      "id": "90000000-0000-0000-0000-000000000001",
+      "draft_id": "d0000000-0000-0000-0000-000000000001",
+      "approved_by": "11111111-1111-1111-1111-111111111111",
+      "status": "submitted",
+      "notes": "Submitted draft for pre-publication governance sign-off.",
+      "timestamp": "2026-11-05T12:07:23.490Z"
+    }
+  ],
   "audit_logs": [
     {
       "id": "80000000-0000-0000-0000-000000000001",
       "organization_id": "a0000000-0000-0000-0000-000000000001",
-      "action": "PLATFORM_INITIALIZATION",
-      "entity_type": "system",
+      "user_id": "33333333-3333-3333-3333-333333333333",
+      "action": "ORGANIZATION_INITIALIZE",
+      "entity_type": "organization",
+      "entity_id": "a0000000-0000-0000-0000-000000000001",
       "details": {
-        "status": "Live DB Store Active"
+        "name": "Inkloom AI Enterprises"
       },
-      "created_at": "2026-11-04T12:00:00.000Z"
+      "created_at": "2026-11-05T12:07:23.490Z"
     }
   ]
 }
