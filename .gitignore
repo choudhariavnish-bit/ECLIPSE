@@ -1,5 +1,6 @@
 # dependencies
 /node_modules
+node_modules/
 /.pnp
 .pnp.js
 .yarn/install-state.gz
@@ -34,7 +35,12 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
-
 # database data files (data is saved in database and not in project)
 database/*.json
 database/live_store.json
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/

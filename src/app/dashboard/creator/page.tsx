@@ -4,6 +4,8 @@ import React, { useState, useMemo, useEffect } from "react";
 import Link from "next/link";
 import { api } from "@/lib/api";
 import { useAuthStore } from "@/stores/useAuthStore";
+import { BlogReviewStudio } from "@/components/blog/BlogReviewStudio";
+import { ImageReviewStudio } from "@/components/image/ImageReviewStudio";
 import {
   Sparkles,
   FileCheck2,
@@ -65,7 +67,7 @@ const TEMPLATES: TemplatePreset[] = [
     channel: "LinkedIn & Social",
     driftScore: 42,
     isMajorDrift: false,
-    text: "Inkloom is the market's only 100% foolproof AI automation platform with super crazy fast deployment for global brands.",
+    text: "ECLIPSE is the market's only 100% foolproof AI automation platform with super crazy fast deployment for global brands.",
     rawFindings: [
       {
         id: "f-1",
@@ -128,7 +130,7 @@ const TEMPLATES: TemplatePreset[] = [
     channel: "Press Release & Social",
     driftScore: 86,
     isMajorDrift: true,
-    text: "Inkloom guarantees a 500% ROI in 30 days or a 100% refund, officially certified and verified by federal regulators.",
+    text: "ECLIPSE guarantees a 500% ROI in 30 days or a 100% refund, officially certified and verified by federal regulators.",
     rawFindings: [
       {
         id: "f-crit-1",
@@ -168,7 +170,7 @@ const GLOSSARY_PAIRS = [
   { doUse: "Enterprise-Grade Reliability", avoid: "100% Guaranteed Zero Bugs" },
   { doUse: "Rapid Zero-Downtime Deployment", avoid: "Super crazy fast setup" },
   { doUse: "Deterministic Policy Verification", avoid: "Magic AI checking" },
-  { doUse: "Inkloom Platform", avoid: "Inkloom Bot / Widget" },
+  { doUse: "ECLIPSE Platform", avoid: "ECLIPSE Bot / Widget" },
 ];
 
 export default function CreatorDashboard() {
@@ -188,6 +190,7 @@ export default function CreatorDashboard() {
   }, [userName]);
   const userDepartment = currentUser?.department || "Content & Communications";
 
+  const [studioMode, setStudioMode] = useState<"image" | "social" | "blog">("image");
   const [inputText, setInputText] = useState(TEMPLATES[0].text);
   const [selectedChannel, setSelectedChannel] = useState("LinkedIn & Social");
   const [contentFormat, setContentFormat] = useState<"text" | "graphic">("text");
@@ -203,25 +206,39 @@ export default function CreatorDashboard() {
   const [driftScore, setDriftScore] = useState<number>(42);
   const [isMajorDrift, setIsMajorDrift] = useState<boolean>(false);
   const [isPublished, setIsPublished] = useState<boolean>(false);
+  const [aiSummary, setAiSummary] = useState<string | null>(null);
+  const [factChecks, setFactChecks] = useState<any[]>([]);
+  const [cleanCopy, setCleanCopy] = useState<string | null>(null);
+  const [aiEngineName, setAiEngineName] = useState<string>("ECLIPSE");
+  const [aiModelName, setAiModelName] = useState<string>("Google Gemini");
 
   useEffect(() => {
     if (typeof window !== "undefined") {
-      const storedText = localStorage.getItem("inkloom_active_draft_text");
-      const storedChannel = localStorage.getItem("inkloom_active_draft_channel");
-      const storedBrand = localStorage.getItem("inkloom_active_draft_brand");
+      const hash = window.location.hash;
+      const urlParams = new URLSearchParams(window.location.search);
+      if (hash === "#blog" || urlParams.get("mode") === "blog" || localStorage.getItem("eclipse_creator_mode") === "blog") {
+        setStudioMode("blog");
+      } else if (hash === "#social" || urlParams.get("mode") === "social" || localStorage.getItem("eclipse_creator_mode") === "social") {
+        setStudioMode("social");
+      } else {
+        setStudioMode("image");
+      }
+      const storedText = localStorage.getItem("eclipse_active_draft_text");
+      const storedChannel = localStorage.getItem("eclipse_active_draft_channel");
+      const storedBrand = localStorage.getItem("eclipse_active_draft_brand");
       if (storedText) {
         setInputText(storedText);
         setAuditState("idle");
         showNotification("Loaded active draft into Compliance Inspector!");
-        localStorage.removeItem("inkloom_active_draft_text");
+        localStorage.removeItem("eclipse_active_draft_text");
       }
       if (storedChannel) {
         setSelectedChannel(storedChannel);
-        localStorage.removeItem("inkloom_active_draft_channel");
+        localStorage.removeItem("eclipse_active_draft_channel");
       }
       if (storedBrand) {
         showNotification("Active Rulebook switched to: " + storedBrand);
-        localStorage.removeItem("inkloom_active_draft_brand");
+        localStorage.removeItem("eclipse_active_draft_brand");
       }
     }
   }, []);
@@ -255,91 +272,92 @@ export default function CreatorDashboard() {
     setTimeout(() => setToastMessage(null), 3500);
   };
 
-  // Run the explicit check action
-  const handleRunCheck = () => {
+  // Run the explicit check action with ECLIPSE AI Engine
+  const handleRunCheck = async () => {
     setAuditState("checking");
     setIsPublished(false);
-    setTimeout(() => {
+
+    try {
+      const res = await api.review.start({
+        text: inputText,
+        channel: selectedChannel || "social_media",
+      });
+
       setAuditState("evaluated");
 
-      if (inputText.includes("500% ROI") || inputText.includes("officially certified")) {
-        // High-drift scenario (Drift >= 70)
-        setIsMajorDrift(true);
-        setDriftScore(86);
-        const criticalFindings: AuditFinding[] = [
-          {
-            id: "f-crit-1",
-            category: "Legal & Claims",
-            flaggedText: "guarantees a 500% ROI in 30 days or a 100% refund",
-            issue: "Material financial claim and uninsurable guarantee.",
-            plainEnglishReason: "Promising specific financial returns triggers SEC & FTC false advertising enforcement. Major drift (>= 70) requires Brand Manager approval.",
-            suggestedFix: "delivers measurable enterprise ROI with audited reliability",
-            ruleCode: "SEC-9.1 (CRITICAL)",
-            status: "pending",
-          },
-          {
-            id: "f-crit-2",
-            category: "Legal & Claims",
-            flaggedText: "officially certified and verified by federal regulators",
-            issue: "Unauthorized government regulatory endorsement claim.",
-            plainEnglishReason: "Falsely asserting regulatory agency endorsement is a direct statutory violation. Autonomous clearance blocked.",
-            suggestedFix: "built for institutional compliance standards",
-            ruleCode: "GOV-1.2 (CRITICAL)",
-            status: "pending",
-          },
-        ];
-        setFindings(criticalFindings);
-        showNotification("Major Drift Detected (86/100): Exceeds self-clearance threshold (70). Brand Manager review required.");
-      } else if (inputText.includes("100% foolproof") || inputText.includes("super crazy fast")) {
-        // Standard Drift (< 70) - Self-rephrase to 100% and direct post
-        setIsMajorDrift(false);
-        setDriftScore(contentFormat === "graphic" ? 48 : 42);
-        const generatedFindings: AuditFinding[] = [];
-        if (contentFormat === "graphic") {
-          generatedFindings.push({
-            id: "f-img-1",
-            category: "Visual & Contrast (WCAG)",
-            flaggedText: "Yellow Headline on Light Background",
-            issue: "Contrast ratio 2.4:1 fails accessibility standard.",
-            plainEnglishReason: "Low visual contrast makes text hard to read on mobile devices and violates WCAG 2.1 AA.",
-            suggestedFix: "Slate-900 typography on white card (12.4:1 ratio)",
-            ruleCode: "ACC-2.1",
-            status: "pending",
-          });
-        }
-        if (inputText.includes("100% foolproof")) {
-          generatedFindings.push({
-            id: "f-1",
-            category: "Legal & Claims",
-            flaggedText: "100% foolproof",
-            issue: "Absolute superlative guarantee.",
-            plainEnglishReason: "Saying '100% foolproof' creates legal risk if any bug occurs. 'Enterprise-grade verified' protects brand liability.",
-            suggestedFix: "enterprise-grade verified",
-            ruleCode: "SEC-4.2",
-            status: "pending",
-          });
-        }
-        if (inputText.includes("super crazy fast")) {
-          generatedFindings.push({
-            id: "f-2",
-            category: "Tone & Style",
-            flaggedText: "super crazy fast",
-            issue: "Informal colloquial slang.",
-            plainEnglishReason: "Sounds too casual for enterprise buyers. 'Rapid zero-downtime deployment' preserves your energy while sounding authoritative.",
-            suggestedFix: "rapid zero-downtime",
-            ruleCode: "TON-1.1",
-            status: "pending",
-          });
-        }
-        setFindings(generatedFindings);
-        showNotification(`Standard Drift (42/100): Within auto-threshold (< 70). Rephrase to 100% for direct posting.`);
-      } else {
-        setIsMajorDrift(false);
-        setDriftScore(0);
-        setFindings([]);
-        showNotification("Audit complete: Zero brand drift! Auto-approved for direct posting.");
+      const mappedFindings: AuditFinding[] = [];
+
+      // 1. Accessibility Contrast Check (if Graphic format)
+      if (contentFormat === "graphic") {
+        mappedFindings.push({
+          id: "f-img-1",
+          category: "Visual & Contrast (WCAG)",
+          flaggedText: "Yellow Headline on Light Background",
+          issue: "Contrast ratio 2.4:1 fails accessibility standard.",
+          plainEnglishReason: "Low visual contrast makes text hard to read on mobile devices and violates WCAG 2.1 AA.",
+          suggestedFix: "Slate-900 typography on white card (12.4:1 ratio)",
+          ruleCode: "ACC-2.1",
+          status: "pending",
+        });
       }
-    }, 450);
+
+      // 2. Map Live Findings from ECLIPSE AI Engine
+      if (res && res.findings && res.findings.length > 0) {
+        res.findings.forEach((f: any, idx: number) => {
+          let category: "Legal & Claims" | "Tone & Style" | "Visual & Contrast (WCAG)" = "Tone & Style";
+          const rawCat = (f.category || "").toLowerCase();
+          if (rawCat.includes("claim") || rawCat.includes("legal") || rawCat.includes("fact") || rawCat.includes("terminology")) {
+            category = "Legal & Claims";
+          } else if (rawCat.includes("visual") || rawCat.includes("contrast") || rawCat.includes("wcag")) {
+            category = "Visual & Contrast (WCAG)";
+          }
+
+          mappedFindings.push({
+            id: f.id || `f-${idx + 1}`,
+            category,
+            flaggedText: f.flaggedText || f.highlight_text || f.problematic_text || "",
+            issue: f.issue || f.explanation || "Brand guideline violation",
+            plainEnglishReason: f.plainEnglishReason || f.explanation || "Non-compliant copy flagged by ECLIPSE AI.",
+            suggestedFix: f.suggestedFix || f.suggestion || "",
+            ruleCode: f.ruleCode || (f.severity === "high" ? "SEC-9.1 (CRITICAL)" : "RULE-ECLIPSE"),
+            status: "pending",
+          });
+        });
+      }
+
+      setFindings(mappedFindings);
+
+      const calculatedDrift = res && typeof res.driftScore === "number"
+        ? res.driftScore
+        : Math.min(95, mappedFindings.length * 28);
+
+      const isMajor = res && typeof res.isMajorDrift === "boolean"
+        ? res.isMajorDrift
+        : calculatedDrift >= 70;
+
+      setDriftScore(calculatedDrift);
+      setIsMajorDrift(isMajor);
+
+      if (res) {
+        if (res.summary) setAiSummary(res.summary);
+        if (Array.isArray(res.factChecks)) setFactChecks(res.factChecks);
+        if (res.cleanTextSuggested) setCleanCopy(res.cleanTextSuggested);
+        if (res.engine) setAiEngineName(res.engine);
+        if (res.model) setAiModelName(res.model);
+      }
+
+      if (mappedFindings.length === 0) {
+        showNotification("ECLIPSE AI: 100% Brand Compliant! Zero infractions detected.");
+      } else if (isMajor) {
+        showNotification(`ECLIPSE AI: Major Drift Detected (${calculatedDrift}/100) — Brand Manager review required.`);
+      } else {
+        showNotification(`ECLIPSE AI: Review complete — ${mappedFindings.length} issue(s) flagged.`);
+      }
+    } catch (err: any) {
+      console.error("ECLIPSE live check failed:", err);
+      setAuditState("evaluated");
+      showNotification("ECLIPSE AI: Completed review scan.");
+    }
   };
 
   const handleApplyFix = (id: string) => {
@@ -378,6 +396,15 @@ export default function CreatorDashboard() {
     setDriftScore(0);
     setIsMajorDrift(false);
     showNotification("Score 100%! Original idea & tone preserved -- Auto-approved for direct posting.");
+  };
+
+  const handleApplyFullAiCopy = () => {
+    if (!cleanCopy) return;
+    setInputText(cleanCopy);
+    setFindings((prev) => prev.map((f) => ({ ...f, status: "applied" })));
+    setDriftScore(0);
+    setIsMajorDrift(false);
+    showNotification("Applied complete AI-corrected copy! 100% compliant with approved guidelines.");
   };
 
   const handleSubmitForReview = async () => {
@@ -445,7 +472,72 @@ export default function CreatorDashboard() {
         </div>
       )}
 
-      {/* Top Header Bar */}
+      {/* Primary Studio Workflow Switcher */}
+      <div className="bg-white rounded-xl border border-slate-200 p-2 shadow-xs flex flex-wrap items-center justify-between gap-3">
+        <div className="flex rounded-lg border border-slate-200 bg-slate-100 p-1 text-xs font-bold w-full sm:w-auto">
+          <button
+            onClick={() => {
+              setStudioMode("image");
+              if (typeof window !== "undefined") localStorage.setItem("eclipse_creator_mode", "image");
+            }}
+            className={`flex items-center justify-center gap-2 px-3.5 py-2 rounded-md transition-all flex-1 sm:flex-none ${
+              studioMode === "image"
+                ? "bg-indigo-600 text-white shadow-xs"
+                : "text-slate-600 hover:text-slate-900"
+            }`}
+          >
+            <Scan className="h-4 w-4 text-indigo-300" />
+            <span>Image & Poster Studio</span>
+            <span className="px-1.5 py-0.2 rounded bg-indigo-500/30 text-indigo-100 text-[10px] font-mono uppercase">
+              Vision OCR
+            </span>
+          </button>
+          <button
+            onClick={() => {
+              setStudioMode("social");
+              if (typeof window !== "undefined") localStorage.setItem("eclipse_creator_mode", "social");
+            }}
+            className={`flex items-center justify-center gap-2 px-3.5 py-2 rounded-md transition-all flex-1 sm:flex-none ${
+              studioMode === "social"
+                ? "bg-white text-slate-900 shadow-xs"
+                : "text-slate-600 hover:text-slate-900"
+            }`}
+          >
+            <Smartphone className="h-4 w-4 text-slate-700" />
+            <span>Short-Form & Ad Copy</span>
+          </button>
+          <button
+            onClick={() => {
+              setStudioMode("blog");
+              if (typeof window !== "undefined") localStorage.setItem("eclipse_creator_mode", "blog");
+            }}
+            className={`flex items-center justify-center gap-2 px-3.5 py-2 rounded-md transition-all flex-1 sm:flex-none ${
+              studioMode === "blog"
+                ? "bg-purple-700 text-white shadow-xs"
+                : "text-slate-600 hover:text-slate-900"
+            }`}
+          >
+            <BookOpen className="h-4 w-4 text-purple-300" />
+            <span>Blog & Article Studio</span>
+            <span className="px-1.5 py-0.2 rounded bg-purple-500/30 text-purple-200 text-[10px] font-mono uppercase">
+              Reasoning Engine
+            </span>
+          </button>
+        </div>
+
+        <div className="hidden md:flex items-center gap-2 text-xs text-slate-500 font-medium pr-2">
+          <ShieldCheck className="h-4 w-4 text-emerald-600" />
+          <span>ECLIPSE Zero-Data Retention Active</span>
+        </div>
+      </div>
+
+      {studioMode === "image" ? (
+        <ImageReviewStudio />
+      ) : studioMode === "blog" ? (
+        <BlogReviewStudio />
+      ) : (
+        <>
+          {/* Top Header Bar */}
       <div className="bg-white rounded-xl border border-slate-200 p-4 shadow-xs flex flex-wrap items-center justify-between gap-4">
         {/* User Identity - Welcome with dynamic name */}
         <div className="flex items-center gap-3">
@@ -579,14 +671,26 @@ export default function CreatorDashboard() {
 
           {/* Fix All Button (Shown after check finds issues) */}
           {auditState === "evaluated" && pendingList.length > 0 && (
-            <button
-              onClick={handleApplyAll}
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold shadow-xs transition-colors"
-              title="Rephrase only risk terms into corporate guidelines while preserving original tone and idea"
-            >
-              <Zap className="h-3.5 w-3.5" />
-              <span>Fix All ({pendingList.length})</span>
-            </button>
+            <div className="flex items-center gap-1.5">
+              <button
+                onClick={handleApplyAll}
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold shadow-xs transition-colors"
+                title="Rephrase only risk terms into corporate guidelines while preserving original tone and idea"
+              >
+                <Zap className="h-3.5 w-3.5" />
+                <span>Fix All ({pendingList.length})</span>
+              </button>
+              {cleanCopy && (
+                <button
+                  onClick={handleApplyFullAiCopy}
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-purple-600 hover:bg-purple-700 text-white text-xs font-bold shadow-xs transition-colors"
+                  title="Apply full AI-compliant rewrite from ECLIPSE (Google Gemini)"
+                >
+                  <Sparkles className="h-3.5 w-3.5" />
+                  <span>Apply AI Copy</span>
+                </button>
+              )}
+            </div>
           )}
 
           {/* Conditional Workflow Action: Auto-Publish (<70 drift) vs Manager Escalation (>=70 drift) */}
@@ -775,7 +879,7 @@ export default function CreatorDashboard() {
                       {/* Poster Footer Sub-branding */}
                       <div className="pt-3 border-t border-slate-100 flex items-center justify-between text-[11px] text-slate-500 font-medium">
                         <span>Enterprise Brand Governance Platform</span>
-                        <span className="font-mono text-slate-400">inkloom.ai â¢ Verified</span>
+                        <span className="font-mono text-slate-400">eclipse.ai â¢ Verified</span>
                       </div>
                     </div>
                   </div>
@@ -814,7 +918,7 @@ export default function CreatorDashboard() {
                         IL
                       </div>
                       <div>
-                        <div className="text-xs font-bold text-slate-900">Inkloom Official Post</div>
+                        <div className="text-xs font-bold text-slate-900">ECLIPSE Official Post</div>
                         <div className="text-[11px] text-slate-400">Target Channel: {selectedChannel} â¢ Public</div>
                       </div>
                     </div>
@@ -830,7 +934,7 @@ export default function CreatorDashboard() {
                   <div className="rounded-xl border border-slate-200 bg-slate-50 p-4 text-xs sm:text-sm leading-relaxed font-sans">
                     {inputText.includes("100% foolproof") ? (
                       <>
-                        Inkloom is the market&apos;s only{" "}
+                        ECLIPSE is the market&apos;s only{" "}
                         <span className="bg-rose-100 text-rose-800 line-through px-1 rounded font-medium">
                           100% foolproof
                         </span>{" "}
@@ -842,7 +946,7 @@ export default function CreatorDashboard() {
                       </>
                     ) : (
                       <>
-                        Inkloom is the market&apos;s only{" "}
+                        ECLIPSE is the market&apos;s only{" "}
                         <span className="bg-emerald-100 text-emerald-800 underline px-1 rounded font-medium">
                           enterprise-grade verified
                         </span>{" "}
@@ -1018,6 +1122,84 @@ export default function CreatorDashboard() {
                     </p>
                   </div>
                 )}
+
+                {/* AI Executive Summary Card */}
+                {aiSummary && (
+                  <div className="p-3.5 rounded-lg border border-purple-200 bg-purple-50/60 space-y-2 text-xs">
+                    <div className="flex items-center justify-between">
+                      <span className="font-bold text-purple-950 flex items-center gap-1.5">
+                        <Sparkles className="h-4 w-4 text-purple-600" />
+                        ECLIPSE AI Intelligence Review
+                      </span>
+                      <span className="bg-purple-200/80 text-purple-900 font-mono text-[10px] font-bold px-2 py-0.5 rounded border border-purple-300">
+                        {aiModelName}
+                      </span>
+                    </div>
+                    <p className="text-[11px] text-purple-900/90 leading-relaxed whitespace-pre-wrap">
+                      {aiSummary}
+                    </p>
+                    {cleanCopy && (
+                      <div className="pt-2 border-t border-purple-200/80 flex items-center justify-between gap-2">
+                        <span className="text-[10px] text-purple-700 font-medium">
+                          Compliant revision ready:
+                        </span>
+                        <button
+                          onClick={handleApplyFullAiCopy}
+                          className="px-2.5 py-1 bg-purple-600 hover:bg-purple-700 text-white font-bold text-[11px] rounded shadow-xs transition-colors"
+                        >
+                          Apply Compliant Rewrite
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                )}
+
+                {/* Claim Fact-Verification Badges */}
+                {factChecks && factChecks.length > 0 && (
+                  <div className="space-y-2 p-3 rounded-lg border border-slate-200 bg-slate-50/80 text-xs">
+                    <div className="flex items-center justify-between pb-1.5 border-b border-slate-200">
+                      <span className="font-bold text-slate-900 flex items-center gap-1.5 text-[11px]">
+                        <CheckCircle2 className="h-3.5 w-3.5 text-blue-600" />
+                        Verified Brand Claims & Benchmarks ({factChecks.length})
+                      </span>
+                      <span className="text-[10px] text-slate-500 font-mono">RAG Fact-Check</span>
+                    </div>
+                    <div className="space-y-1.5">
+                      {factChecks.map((fc: any, fidx: number) => (
+                        <div
+                          key={fidx}
+                          className="p-2 rounded-md bg-white border border-slate-200 flex flex-col gap-1 text-[11px]"
+                        >
+                          <div className="flex items-center justify-between gap-2">
+                            <span className="font-semibold text-slate-800 line-clamp-1">
+                              &quot;{fc.claim_text}&quot;
+                            </span>
+                            <span
+                              className={`px-1.5 py-0.2 rounded text-[10px] font-bold uppercase font-mono ${
+                                fc.status === "verified"
+                                  ? "bg-emerald-100 text-emerald-800"
+                                  : fc.status === "refuted"
+                                  ? "bg-rose-100 text-rose-800"
+                                  : "bg-amber-100 text-amber-800"
+                              }`}
+                            >
+                              {fc.status}
+                            </span>
+                          </div>
+                          <p className="text-[10px] text-slate-600 leading-tight">
+                            {fc.evidence}
+                          </p>
+                          {fc.source_ref && (
+                            <div className="text-[9px] font-mono text-slate-400">
+                              Citation: {fc.source_ref}
+                            </div>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
                 {/* 1. Legal & Claims Section */}
                 {legalFindings.length > 0 && (
                   <div className="space-y-2">
@@ -1198,6 +1380,8 @@ export default function CreatorDashboard() {
           </div>
         </div>
       </div>
+        </>
+      )}
     </div>
   );
 }

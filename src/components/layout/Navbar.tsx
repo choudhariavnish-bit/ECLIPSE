@@ -19,6 +19,7 @@ import {
   Users,
 } from "lucide-react";
 import { DatabaseStatusBadge } from "./DatabaseStatusBadge";
+import { AiEngineStatusBadge } from "./AiEngineStatusBadge";
 
 const ROLE_META: Record<
   UserRole,
@@ -110,6 +111,7 @@ export const Navbar = () => {
 
           {/* Center / Right controls */}
           <div className="flex items-center gap-2 sm:gap-3">
+            <AiEngineStatusBadge />
             {/* Database Studio status badge is visible strictly for Administrators */}
             {activeRole === "admin" && <DatabaseStatusBadge />}
 
