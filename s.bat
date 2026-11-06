@@ -9,7 +9,8 @@ if errorlevel 1 (
     exit /b 1
 )
 
-start "Inkloom Browser Waiter" /min node scripts\open-browser.js http://localhost:3000
+:: Launch browser after 4 seconds (once Next.js finishes compiling)
+start "" /b cmd /c "timeout /t 4 /nobreak >nul && start http://localhost:3000"
 
 node node_modules\next\dist\bin\next dev -p 3000
 
