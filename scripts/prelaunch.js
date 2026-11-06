@@ -56,3 +56,4 @@ console.log("===================================================================
 console.log("  IMPORTANT: KEEP THIS TERMINAL WINDOW OPEN WHILE USING INKLOOM!");
 console.log("  (Minimizing this window is completely fine. Closing it stops the server.)");
 console.log("=====================================================================\n");
+

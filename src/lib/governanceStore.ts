@@ -617,7 +617,27 @@ const DEFAULT_STORE = {
 };
 
 // Pure in-memory fallback (data is never written to project files)
-const fallbackStore = { ...DEFAULT_STORE, rulebooks: INITIAL_BRAND_RULEBOOKS };
+const globalForStore = globalThis as unknown as {
+  __INKLOOM_STORE__?: typeof DEFAULT_STORE & { rulebooks: typeof INITIAL_BRAND_RULEBOOKS };
+};
+
+if (!globalForStore.__INKLOOM_STORE__) {
+  globalForStore.__INKLOOM_STORE__ = {
+    ...DEFAULT_STORE,
+    users: [...DEFAULT_STORE.users],
+    organizations: [...DEFAULT_STORE.organizations],
+    guidelines: [...DEFAULT_STORE.guidelines],
+    rules: [...DEFAULT_STORE.rules],
+    drafts: [...DEFAULT_STORE.drafts],
+    findings: [...DEFAULT_STORE.findings],
+    comments: [...DEFAULT_STORE.comments],
+    approvals: [...DEFAULT_STORE.approvals],
+    audit_logs: [...DEFAULT_STORE.audit_logs],
+    rulebooks: [...INITIAL_BRAND_RULEBOOKS],
+  };
+}
+
+const fallbackStore = globalForStore.__INKLOOM_STORE__;
 
 function persistStore() {
   // No-op: Data is saved strictly in PostgreSQL / Supabase database

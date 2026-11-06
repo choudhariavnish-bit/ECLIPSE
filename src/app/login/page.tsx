@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { motion, AnimatePresence } from "framer-motion";
@@ -30,6 +31,7 @@ import {
   Star,
   Activity,
   Server,
+  Database,
 } from "lucide-react";
 
 interface LoginFormInputs {
@@ -61,13 +63,27 @@ export default function LoginPage() {
     setActiveModalRole(null);
   };
 
-  const onSubmit = (data: LoginFormInputs) => {
+  const onSubmit = async (data: LoginFormInputs) => {
     if (!activeModalRole) return;
+    try {
+      await fetch("/api/auth/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: data.email, password: data.password || "brandgov2026" }),
+      });
+    } catch {}
     loginAs(activeModalRole, data.email);
     router.push(`/dashboard/${activeModalRole}`);
   };
 
-  const handleInstantDemoLogin = (role: UserRole) => {
+  const handleInstantDemoLogin = async (role: UserRole) => {
+    try {
+      await fetch("/api/auth/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: MOCK_USERS[role].email, password: "password123" }),
+      });
+    } catch {}
     loginAs(role);
     router.push(`/dashboard/${role}`);
   };
@@ -108,6 +124,19 @@ export default function LoginPage() {
           <br className="hidden sm:inline" />
           <span className="text-blue-400 font-medium"> Click your role card </span> to open its dedicated 3D authentication portal.
         </p>
+
+        {/* Database Studio Link */}
+        <div className="mt-5 flex items-center justify-center gap-3">
+          <Link
+            href="/dashboard/database"
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-xl border border-cyan-500/40 bg-slate-900/90 hover:bg-slate-800 text-xs font-mono text-cyan-300 shadow-lg shadow-cyan-500/10 hover:border-cyan-400 transition-all group"
+          >
+            <Database className="h-4 w-4 text-cyan-400 group-hover:rotate-12 transition-transform" />
+            <span className="font-semibold">Live Database Studio</span>
+            <span className="text-[10px] text-slate-400">(9 Tables & Audit Logs)</span>
+            <span className="h-2 w-2 rounded-full bg-emerald-400 animate-pulse ml-1" />
+          </Link>
+        </div>
       </motion.div>
 
       {/* 3D Interactive Role Cards Grid */}
