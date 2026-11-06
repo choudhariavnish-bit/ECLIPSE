@@ -2,19 +2,16 @@
 
 import React from "react";
 import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
 import { useAuthStore } from "@/stores/useAuthStore";
-import { UserRole } from "@/types/auth";
 import {
   FileText,
   ShieldCheck,
-  Sliders,
   Users,
   Cpu,
   History,
   CheckSquare,
   Layers,
-  Database,
   BookOpen,
 } from "lucide-react";
 
@@ -46,70 +43,34 @@ const ADMIN_NAV: NavItem[] = [
 
 export const Sidebar = () => {
   const pathname = usePathname();
-  const router = useRouter();
-  const { activeRole, switchRole } = useAuthStore();
+  const { activeRole } = useAuthStore();
 
   let navItems = CREATOR_NAV;
+  let roleTitle = "Author Studio";
 
   if (activeRole === "brand-manager") {
     navItems = BRAND_MANAGER_NAV;
+    roleTitle = "Brand Manager Portal";
   } else if (activeRole === "admin") {
     navItems = ADMIN_NAV;
+    roleTitle = "Security & Admin";
   }
-
-  const handleRoleSwitch = (role: UserRole, targetPath: string) => {
-    switchRole(role);
-    router.push(targetPath);
-  };
 
   return (
     <aside className="w-56 border-r border-slate-200 bg-slate-50/50 min-h-[calc(100vh-3.5rem)] flex flex-col justify-between p-3 hidden md:flex">
       <div className="space-y-5">
-        {/* Workspace Quick Switcher */}
-        <div className="space-y-1">
-          <span className="px-2 text-[10px] font-bold uppercase tracking-wider text-slate-400">
-            Workspaces
-          </span>
-          <div className="space-y-0.5">
-            <button
-              onClick={() => handleRoleSwitch("creator", "/dashboard/creator")}
-              className={`w-full flex items-center justify-between px-2.5 py-1.5 rounded-lg text-xs font-semibold transition-all ${
-                activeRole === "creator"
-                  ? "bg-white text-slate-900 border border-slate-200 shadow-xs"
-                  : "text-slate-600 hover:bg-slate-100 hover:text-slate-900"
-              }`}
-            >
-              <span>Author Studio</span>
-              {activeRole === "creator" && <span className="h-1.5 w-1.5 rounded-full bg-slate-900" />}
-            </button>
-
-            <button
-              onClick={() => handleRoleSwitch("brand-manager", "/dashboard/brand-manager")}
-              className={`w-full flex items-center justify-between px-2.5 py-1.5 rounded-lg text-xs font-semibold transition-all ${
-                activeRole === "brand-manager"
-                  ? "bg-white text-slate-900 border border-slate-200 shadow-xs"
-                  : "text-slate-600 hover:bg-slate-100 hover:text-slate-900"
-              }`}
-            >
-              <span>Brand Manager</span>
-              {activeRole === "brand-manager" && <span className="h-1.5 w-1.5 rounded-full bg-slate-900" />}
-            </button>
-
-            <button
-              onClick={() => handleRoleSwitch("admin", "/dashboard/admin")}
-              className={`w-full flex items-center justify-between px-2.5 py-1.5 rounded-lg text-xs font-semibold transition-all ${
-                activeRole === "admin"
-                  ? "bg-white text-slate-900 border border-slate-200 shadow-xs"
-                  : "text-slate-600 hover:bg-slate-100 hover:text-slate-900"
-              }`}
-            >
-              <span>Security & Admin</span>
-              {activeRole === "admin" && <span className="h-1.5 w-1.5 rounded-full bg-slate-900" />}
-            </button>
+        {/* Active Role Indicator (Strict RBAC - No cross-role switching) */}
+        <div className="px-3 py-2.5 rounded-xl bg-white border border-slate-200 shadow-xs">
+          <div className="text-[10px] font-bold uppercase tracking-wider text-slate-400">
+            Your Workspace
+          </div>
+          <div className="flex items-center gap-2 mt-1">
+            <span className="h-2 w-2 rounded-full bg-emerald-500" />
+            <span className="text-xs font-bold text-slate-800">{roleTitle}</span>
           </div>
         </div>
 
-        {/* Section Navigation */}
+        {/* Section Navigation - Strictly filtered by role */}
         <div className="space-y-1">
           <span className="px-2 text-[10px] font-bold uppercase tracking-wider text-slate-400">
             Navigation
@@ -148,25 +109,6 @@ export const Sidebar = () => {
             })}
           </nav>
         </div>
-
-        {/* Database Studio Quick Link */}
-        <Link
-          href="/dashboard/database"
-          className="flex items-center justify-between rounded-xl border border-slate-200 bg-white p-3 text-xs hover:border-blue-300 hover:bg-blue-50/40 transition-all shadow-xs group"
-        >
-          <div className="flex items-center gap-2.5">
-            <div className="p-1.5 rounded-lg bg-blue-100 text-blue-700 group-hover:bg-blue-600 group-hover:text-white transition-colors">
-              <Database className="h-4 w-4" />
-            </div>
-            <div>
-              <div className="font-bold text-slate-800">Database Studio</div>
-              <div className="text-[10px] text-slate-500">Inspect 9 Tables</div>
-            </div>
-          </div>
-          <span className="px-1.5 py-0.5 rounded text-[10px] font-semibold bg-emerald-100 text-emerald-800">
-            Live
-          </span>
-        </Link>
 
         {/* Brand Governance Protection Badge */}
         <div className="rounded-xl border border-blue-100 bg-gradient-to-br from-blue-50 to-indigo-50/40 p-3.5 text-xs">

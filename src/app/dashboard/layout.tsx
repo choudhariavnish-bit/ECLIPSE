@@ -1,11 +1,12 @@
 "use client";
 
-import React, { useEffect } from "react";
-import { useRouter } from "next/navigation";
+import React, { useEffect, useState } from "react";
+import { useRouter, usePathname } from "next/navigation";
 import { Navbar } from "@/components/layout/Navbar";
 import { Sidebar } from "@/components/layout/Sidebar";
 import { MobileNav } from "@/components/layout/MobileNav";
 import { useAuthStore } from "@/stores/useAuthStore";
+import { ShieldAlert } from "lucide-react";
 
 export default function DashboardLayout({
   children,
@@ -13,14 +14,60 @@ export default function DashboardLayout({
   children: React.ReactNode;
 }) {
   const router = useRouter();
-  const { isAuthenticated, currentUser, activeRole, loginAs } = useAuthStore();
+  const pathname = usePathname();
+  const { isAuthenticated, currentUser, activeRole } = useAuthStore();
+  const [isAuthorized, setIsAuthorized] = useState(false);
 
   useEffect(() => {
-    // If not authenticated, authenticate with default role for seamless evaluation
+    // 1. Authentication check
     if (!isAuthenticated || !currentUser) {
-      loginAs(activeRole || "creator");
+      router.replace("/login");
+      return;
     }
-  }, [isAuthenticated, currentUser, activeRole, loginAs]);
+
+    // 2. Strict Role-Based Access Control (RBAC)
+    // Creator cannot see brand-manager or admin
+    // Brand Manager cannot see creator or admin
+    // Admin cannot see creator or brand-manager
+    if (activeRole === "creator") {
+      if (
+        pathname.startsWith("/dashboard/brand-manager") ||
+        pathname.startsWith("/dashboard/admin")
+      ) {
+        router.replace("/dashboard/creator");
+        return;
+      }
+    } else if (activeRole === "brand-manager") {
+      if (
+        pathname.startsWith("/dashboard/creator") ||
+        pathname.startsWith("/dashboard/admin")
+      ) {
+        router.replace("/dashboard/brand-manager");
+        return;
+      }
+    } else if (activeRole === "admin") {
+      if (
+        pathname.startsWith("/dashboard/creator") ||
+        pathname.startsWith("/dashboard/brand-manager")
+      ) {
+        router.replace("/dashboard/admin");
+        return;
+      }
+    }
+
+    setIsAuthorized(true);
+  }, [isAuthenticated, currentUser, activeRole, pathname, router]);
+
+  if (!isAuthenticated || !currentUser || !isAuthorized) {
+    return (
+      <div className="min-h-screen bg-slate-900 flex flex-col items-center justify-center text-white">
+        <div className="flex flex-col items-center gap-3">
+          <div className="h-8 w-8 animate-spin rounded-full border-4 border-blue-500 border-t-transparent" />
+          <p className="text-xs font-mono text-slate-400">Verifying RBAC permissions...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-slate-50 flex flex-col">

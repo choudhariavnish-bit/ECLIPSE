@@ -3,49 +3,44 @@
 import React from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useAuthStore } from "@/stores/useAuthStore";
 import {
   CheckSquare,
   FileText,
   BookOpen,
   Layers,
-  Database,
+  Users,
+  Cpu,
+  History,
 } from "lucide-react";
 
 export const MobileNav = () => {
   const pathname = usePathname();
+  const { activeRole } = useAuthStore();
 
-  const NAV_ITEMS = [
-    {
-      name: "Inspector",
-      href: "/dashboard/creator",
-      icon: CheckSquare,
-      badge: null,
-    },
-    {
-      name: "Drafts",
-      href: "/dashboard/drafts",
-      icon: FileText,
-      badge: "4",
-    },
-    {
-      name: "Rulebook",
-      href: "/dashboard/rulebook",
-      icon: BookOpen,
-      badge: null,
-    },
-    {
-      name: "Approvals",
-      href: "/dashboard/brand-manager",
-      icon: Layers,
-      badge: "3",
-    },
-    {
-      name: "Database",
-      href: "/dashboard/database",
-      icon: Database,
-      badge: null,
-    },
+  const CREATOR_ITEMS = [
+    { name: "Inspector", href: "/dashboard/creator", icon: CheckSquare, badge: null },
+    { name: "Drafts", href: "/dashboard/drafts", icon: FileText, badge: "4" },
+    { name: "Rulebook", href: "/dashboard/rulebook", icon: BookOpen, badge: null },
   ];
+
+  const BRAND_MANAGER_ITEMS = [
+    { name: "Approvals", href: "/dashboard/brand-manager", icon: Layers, badge: "3" },
+    { name: "Drafts", href: "/dashboard/drafts", icon: FileText, badge: "4" },
+    { name: "Rulebook", href: "/dashboard/rulebook", icon: BookOpen, badge: null },
+  ];
+
+  const ADMIN_ITEMS = [
+    { name: "Access", href: "/dashboard/admin", icon: Users, badge: "4" },
+    { name: "Rulebook", href: "/dashboard/rulebook", icon: BookOpen, badge: null },
+  ];
+
+  const items =
+    activeRole === "brand-manager"
+      ? BRAND_MANAGER_ITEMS
+      : activeRole === "admin"
+      ? ADMIN_ITEMS
+      : CREATOR_ITEMS;
 
   return (
     <nav
@@ -53,7 +48,7 @@ export const MobileNav = () => {
       className="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-md border-t border-slate-200 px-2 py-1.5 shadow-[0_-4px_20px_rgba(0,0,0,0.06)]"
     >
       <div className="flex items-center justify-around max-w-lg mx-auto">
-        {NAV_ITEMS.map((item) => {
+        {items.map((item) => {
           const Icon = item.icon;
           const isActive = pathname === item.href;
           return (
@@ -82,4 +77,3 @@ export const MobileNav = () => {
     </nav>
   );
 };
-
