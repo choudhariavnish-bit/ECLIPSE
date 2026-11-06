@@ -19,18 +19,16 @@ function launchBrowser() {
   hasLaunched = true;
 
   console.log(`\n=============================================================`);
-  console.log(` [Inkloom] Local server is live!`);
-  console.log(` [Inkloom] Launching browser to: ${TARGET_URL}`);
+  console.log(` [Inkloom] Local server is live and answering requests!`);
+  console.log(` [Inkloom] Launching browser: ${TARGET_URL}`);
   console.log(`=============================================================\n`);
 
-  // Use cmd /c start so Windows handles the default browser without blocking
-  exec(`start "" "${TARGET_URL}"`, (err) => {
+  exec(`start ${TARGET_URL}`, (err) => {
     if (err) {
       console.log(`[Inkloom] Could not auto-launch browser: ${err.message}`);
       console.log(`[Inkloom] Please open ${TARGET_URL} manually in Chrome or Edge.`);
     }
-    // Give OS 1.5 seconds to register the browser process before this launcher script exits
-    setTimeout(() => process.exit(0), 1500);
+    setTimeout(() => process.exit(0), 1200);
   });
 }
 
@@ -38,25 +36,32 @@ function probe() {
   if (hasLaunched) return;
   attempts++;
 
+  // 1. Try 127.0.0.1 directly (instant, no DNS)
   const req = http.get("http://127.0.0.1:3000", (res) => {
-    // Any status (200, 301, 302, 307, 308, 404) means the HTTP server is up and serving!
     launchBrowser();
   });
 
   req.on("error", () => {
-    if (attempts < MAX_ATTEMPTS) {
-      setTimeout(probe, INTERVAL_MS);
-    } else {
-      console.log(`\n[Inkloom] Timed out waiting for server after 36s.`);
-      console.log(`[Inkloom] Please check the console output and open ${TARGET_URL} manually.`);
-      process.exit(1);
-    }
+    // 2. Fallback: try localhost (handles IPv6 dual-stack)
+    const req2 = http.get("http://localhost:3000", (res) => {
+      launchBrowser();
+    });
+
+    req2.on("error", () => {
+      if (attempts < MAX_ATTEMPTS) {
+        setTimeout(probe, INTERVAL_MS);
+      } else {
+        console.log(`\n[Inkloom] Timed out waiting for server after 36s.`);
+        console.log(`[Inkloom] Please open ${TARGET_URL} manually in your browser.`);
+        process.exit(1);
+      }
+    });
+
+    req2.setTimeout(500, () => req2.destroy());
   });
 
-  req.setTimeout(1000, () => {
-    req.destroy();
-  });
+  req.setTimeout(500, () => req.destroy());
 }
 
-// Start probing after a tiny 500ms initial breather
+// Start probing after initial 500ms breather
 setTimeout(probe, 500);
