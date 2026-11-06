@@ -34,3 +34,7 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
+
+# database data files (data is saved in database and not in project)
+database/*.json
+database/live_store.json

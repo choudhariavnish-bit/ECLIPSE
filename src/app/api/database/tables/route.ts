@@ -16,38 +16,17 @@ export async function GET(req: NextRequest) {
         rows = await governanceDB.getOrganizations();
         break;
       case "users": {
-        const users = await governanceDB.getOrganizations(); // fallback
-        // safe user view (mask password hashes)
-        const orgs = await governanceDB.getOrganizations();
-        rows = [
-          {
-            id: "11111111-1111-1111-1111-111111111111",
-            organization_id: "a0000000-0000-0000-0000-000000000001",
-            name: "Alex Morgan",
-            email: "alex.creator@inkloom.ai",
-            password_hash: "$2b$10$wht...[bcrypt 10 rounds]",
-            role: "creator",
-            department: "Content & Growth Marketing",
-          },
-          {
-            id: "22222222-2222-2222-2222-222222222222",
-            organization_id: "a0000000-0000-0000-0000-000000000001",
-            name: "Sarah Chen",
-            email: "sarah.brand@inkloom.ai",
-            password_hash: "$2b$10$wht...[bcrypt 10 rounds]",
-            role: "brand-manager",
-            department: "Global Brand & Governance",
-          },
-          {
-            id: "33333333-3333-3333-3333-333333333333",
-            organization_id: "a0000000-0000-0000-0000-000000000001",
-            name: "Marcus Vance",
-            email: "marcus.admin@inkloom.ai",
-            password_hash: "$2b$10$wht...[bcrypt 10 rounds]",
-            role: "admin",
-            department: "System Architecture & Compliance",
-          },
-        ];
+        const users = await governanceDB.getUsers();
+        rows = users.map((u) => ({
+          id: u.id,
+          organization_id: u.organization_id,
+          name: u.name,
+          email: u.email,
+          role: u.role,
+          department: u.department,
+          password_hash: "$2b$10$9VU... [bcrypt 10 rounds]",
+          created_at: u.created_at,
+        }));
         break;
       }
       case "guidelines":
@@ -61,38 +40,24 @@ export async function GET(req: NextRequest) {
         break;
       case "findings": {
         const drafts = await governanceDB.getDrafts();
-        rows = await governanceDB.getFindingsByDraft(drafts[0]?.id || "d0000000-0000-0000-0000-000000000001");
+        const targetId = drafts[0]?.id || "d0000000-0000-0000-0000-000000000001";
+        rows = await governanceDB.getFindingsByDraft(targetId);
         break;
       }
       case "comments": {
         const drafts = await governanceDB.getDrafts();
-        rows = await governanceDB.getComments(drafts[0]?.id || "d0000000-0000-0000-0000-000000000001");
+        const targetId = drafts[0]?.id || "d0000000-0000-0000-0000-000000000001";
+        rows = await governanceDB.getComments(targetId);
         break;
       }
       case "approvals": {
-        // approvals list
-        rows = [
-          {
-            id: "90000000-0000-0000-0000-000000000001",
-            draft_id: "d0000000-0000-0000-0000-000000000001",
-            approved_by: "11111111-1111-1111-1111-111111111111",
-            status: "submitted",
-            notes: "Submitted draft for pre-publication governance sign-off.",
-            timestamp: "2026-11-04T10:20:00Z",
-          },
-          {
-            id: "90000000-0000-0000-0000-000000000002",
-            draft_id: "d0000000-0000-0000-0000-000000000002",
-            approved_by: "22222222-2222-2222-2222-222222222222",
-            status: "approved",
-            notes: "Compliant with brand identity standards. All facts cited.",
-            timestamp: "2026-11-04T10:25:00Z",
-          },
-        ];
+        const drafts = await governanceDB.getDrafts();
+        const targetId = drafts[0]?.id || "d0000000-0000-0000-0000-000000000001";
+        rows = await governanceDB.getApprovalsByDraft(targetId);
         break;
       }
       case "audit_logs":
-        rows = await governanceDB.getAuditLogs(25);
+        rows = await governanceDB.getAuditLogs(50);
         break;
       default:
         rows = [];
@@ -108,4 +73,3 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ error: err.message || "Failed to load database rows" }, { status: 500 });
   }
 }
-

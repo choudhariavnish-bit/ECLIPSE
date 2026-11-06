@@ -134,7 +134,7 @@ export interface DBAuditLog {
 }
 
 // Disk persistence path for live database store
-const STORE_PATH = path.join(process.cwd(), "database", "live_store.json");
+// Data is stored exclusively in PostgreSQL / Supabase, not on disk
 
 export const INITIAL_BRAND_RULEBOOKS: BrandRulebook[] = [
   {
@@ -616,39 +616,12 @@ const DEFAULT_STORE = {
   ] as DBAuditLog[],
 };
 
-// Initialize from disk or default
-function initStore() {
-  try {
-    if (fs.existsSync(STORE_PATH)) {
-      const raw = (fs.readFileSync(STORE_PATH, "utf-8") || "").trim();
-      if (!raw) return { ...DEFAULT_STORE, rulebooks: INITIAL_BRAND_RULEBOOKS };
-      const parsed = JSON.parse(raw);
-      if (parsed && Array.isArray(parsed.drafts) && Array.isArray(parsed.rules)) {
-        if (!parsed.rulebooks || !Array.isArray(parsed.rulebooks) || parsed.rulebooks.length === 0) {
-          parsed.rulebooks = INITIAL_BRAND_RULEBOOKS;
-        }
-        return parsed;
-      }
-    }
-  } catch (err) {
-    console.warn("[LiveDB] Using defaults, error reading disk store:", err);
-  }
-  return { ...DEFAULT_STORE, rulebooks: INITIAL_BRAND_RULEBOOKS };
-}
-
-const fallbackStore = initStore();
+// Pure in-memory fallback (data is never written to project files)
+const fallbackStore = { ...DEFAULT_STORE, rulebooks: INITIAL_BRAND_RULEBOOKS };
 
 function persistStore() {
-  if (process.env.NEXT_PHASE === "phase-production-build") return;
-  try {
-    const dir = path.dirname(STORE_PATH);
-    if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
-    fs.writeFileSync(STORE_PATH, JSON.stringify(fallbackStore, null, 2), "utf-8");
-  } catch (err) {}
+  // No-op: Data is saved strictly in PostgreSQL / Supabase database
 }
-
-// Initial sync to disk
-persistStore();
 
 export const governanceDB = {
   // Organizations (Brands)
