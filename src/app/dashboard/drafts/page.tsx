@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { useAuthStore } from "@/stores/useAuthStore";
 import {
   FileText,
   Search,
@@ -48,7 +49,7 @@ const INITIAL_DRAFTS: ContentDraft[] = [
     channel: "Blog & Press",
     format: "text",
     status: "review_pending",
-    author: "Alex Morgan",
+    author: currentUser?.name || "Author",
     updatedAt: "10 mins ago",
     driftScore: 78,
     wordCount: 18,

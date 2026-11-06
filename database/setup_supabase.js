@@ -57,13 +57,13 @@ rl.question("Paste your Supabase DATABASE_URL here:\n> ", async (dbUrl) => {
       envContent = fs.readFileSync(envLocalPath, "utf-8");
     }
 
-    if (envContent.includes("DATABASE_URL=")) {
-      envContent = envContent.replace(/DATABASE_URL=.*/g, `DATABASE_URL="${trimmedUrl}"`);
+    if (envContent.match(/^#?\s*DATABASE_URL=/m)) {
+      envContent = envContent.replace(/^#?\s*DATABASE_URL=.*/m, `DATABASE_URL="${trimmedUrl}"`);
     } else {
       envContent += `\nDATABASE_URL="${trimmedUrl}"\n`;
     }
 
-    fs.writeFileSync(envLocalPath, envContent.trim() + "\n");
+    fs.writeFileSync(envLocalPath, envContent.trim() + "\n", "utf-8");
     console.log("      Updated .env.local successfully!");
 
     console.log("");
@@ -80,4 +80,3 @@ rl.question("Paste your Supabase DATABASE_URL here:\n> ", async (dbUrl) => {
     rl.close();
   }
 });
-

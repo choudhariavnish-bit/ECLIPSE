@@ -10,7 +10,7 @@ function getEnvUrl() {
   for (const f of envFiles) {
     if (fs.existsSync(f)) {
       const content = fs.readFileSync(f, "utf-8");
-      const match = content.match(/DATABASE_URL=["']?([^"'\r\n]+)["']?/);
+      const match = content.match(/^DATABASE_URL\s*=\s*["']?([^"'\r\n]+)["']?/m);
       if (match && match[1]) return match[1];
     }
   }

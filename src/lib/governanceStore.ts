@@ -1,4 +1,4 @@
-import { pool, supabase, query } from "./db";
+import { getDbPool, getSupabaseClient, query } from "./db";
 import { UserRole } from "@/types/auth";
 import fs from "fs";
 import path from "path";
@@ -656,7 +656,7 @@ export const governanceDB = {
     const created_at = new Date().toISOString();
     const newOrg: DBOrganization = { id, name, industry, branding_settings: branding, created_at };
 
-    if (pool) {
+    if (getDbPool()) {
       await query(
         `INSERT INTO organizations (id, name, industry, branding_settings, created_at)
          VALUES ($1, $2, $3, $4, $5);`,
@@ -673,9 +673,9 @@ export const governanceDB = {
   async getUsers(): Promise<DBUser[]> {
     const rows = await query<DBUser>("SELECT id, organization_id, name, email, role, department, avatar_url, created_at FROM users ORDER BY created_at DESC;");
     if (rows && rows.length > 0) return rows;
-    if (supabase) {
+    if (getSupabaseClient()) {
       try {
-        const { data } = await supabase.from('users').select('id, organization_id, name, email, role, department, avatar_url, created_at').order('created_at', { ascending: false });
+        const { data } = await getSupabaseClient()!.from('users').select('id, organization_id, name, email, role, department, avatar_url, created_at').order('created_at', { ascending: false });
         if (data && data.length > 0) return data as DBUser[];
       } catch (err) {
         // fallback
@@ -697,9 +697,9 @@ export const governanceDB = {
   async findUserByEmail(email: string): Promise<DBUser | null> {
     const rows = await query<DBUser>("SELECT * FROM users WHERE email = $1 LIMIT 1;", [email]);
     if (rows && rows.length > 0) return rows[0];
-    if (supabase) {
+    if (getSupabaseClient()) {
       try {
-        const { data } = await supabase.from('users').select('*').eq('email', email).maybeSingle();
+        const { data } = await getSupabaseClient()!.from('users').select('*').eq('email', email).maybeSingle();
         if (data) return data as DBUser;
       } catch (err) {
         // fallback
@@ -713,22 +713,30 @@ export const governanceDB = {
     const created_at = new Date().toISOString();
     const newUser: DBUser = { id, created_at, ...user };
 
-    if (pool) {
+    if (getDbPool()) {
       try {
+        await query(
+          `INSERT INTO organizations (id, name, industry, branding_settings)
+           VALUES ($1, $2, $3, $4) ON CONFLICT (id) DO NOTHING;`,
+          [user.organization_id, "Inkloom AI Enterprises", "Enterprise Cloud & Governance Software", '{"primary_color": "#2563EB"}']
+        );
         const res = await query<DBUser>(
           `INSERT INTO users (id, organization_id, name, email, password, role, department, avatar_url)
            VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING *;`,
           [id, user.organization_id, user.name, user.email, user.password, user.role, user.department, user.avatar_url]
         );
-        if (res && res[0]) return res[0];
+        if (res && res[0]) {
+          fallbackStore.users.unshift(res[0]);
+          return res[0];
+        }
       } catch (err) {
         console.warn("[DB Pool] Failed to insert user into PostgreSQL:", err);
       }
     }
 
-    if (supabase) {
+    if (getSupabaseClient()) {
       try {
-        await supabase.from('users').insert({
+        await getSupabaseClient()!.from('users').insert({
           id,
           organization_id: user.organization_id,
           name: user.name,
@@ -761,7 +769,7 @@ export const governanceDB = {
     const created_at = new Date().toISOString();
     const newGuideline: DBGuideline = { id, created_at, ...guideline };
 
-    if (pool) {
+    if (getDbPool()) {
       await query(
         `INSERT INTO guidelines (id, organization_id, title, content, version, created_at)
          VALUES ($1, $2, $3, $4, $5, $6);`,
@@ -785,7 +793,7 @@ export const governanceDB = {
     const created_at = new Date().toISOString();
     const newRule: DBRule = { id, created_at, ...rule };
 
-    if (pool) {
+    if (getDbPool()) {
       const res = await query<DBRule>(
         `INSERT INTO rules (id, guideline_id, rule_type, name, description, severity, pattern, replacement, is_enabled)
          VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING *;`,
@@ -804,7 +812,7 @@ export const governanceDB = {
     if (!rule) return null;
     rule.is_enabled = !rule.is_enabled;
 
-    if (pool) {
+    if (getDbPool()) {
       await query("UPDATE rules SET is_enabled = $1 WHERE id = $2;", [rule.is_enabled, id]);
     }
 
@@ -813,7 +821,7 @@ export const governanceDB = {
   },
 
   async deleteRule(id: string): Promise<boolean> {
-    if (pool) {
+    if (getDbPool()) {
       await query("DELETE FROM rules WHERE id = $1;", [id]);
     }
     const idx = fallbackStore.rules.findIndex((r: any) => r.id === id);
@@ -858,7 +866,7 @@ export const governanceDB = {
       ...draft,
     };
 
-    if (pool) {
+    if (getDbPool()) {
       const res = await query<DBDraft>(
         `INSERT INTO drafts (id, user_id, organization_id, title, content, channel, format, status)
          VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING *;`,
@@ -878,7 +886,7 @@ export const governanceDB = {
 
     const updated = { ...draft, ...updates, updated_at: new Date().toISOString() };
 
-    if (pool) {
+    if (getDbPool()) {
       const res = await query<DBDraft>(
         `UPDATE drafts SET title = $1, content = $2, status = $3, updated_at = NOW() WHERE id = $4 RETURNING *;`,
         [updated.title, updated.content, updated.status, id]
@@ -893,7 +901,7 @@ export const governanceDB = {
   },
 
   async deleteDraft(id: string): Promise<boolean> {
-    if (pool) {
+    if (getDbPool()) {
       await query("DELETE FROM drafts WHERE id = $1;", [id]);
     }
     const idx = fallbackStore.drafts.findIndex((d: any) => d.id === id);
@@ -917,7 +925,7 @@ export const governanceDB = {
     const created_at = new Date().toISOString();
     const newFinding: DBFinding = { id, created_at, ...finding };
 
-    if (pool) {
+    if (getDbPool()) {
       const res = await query<DBFinding>(
         `INSERT INTO findings (id, draft_id, rule_id, issue, severity, suggestion, highlight_text, category, status)
          VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING *;`,
@@ -952,7 +960,7 @@ export const governanceDB = {
     const created_at = new Date().toISOString();
     const newComment: DBComment = { id, created_at, ...comment };
 
-    if (pool) {
+    if (getDbPool()) {
       const res = await query<DBComment>(
         `INSERT INTO comments (id, draft_id, reviewer_id, comment)
          VALUES ($1, $2, $3, $4) RETURNING *;`,
@@ -978,7 +986,7 @@ export const governanceDB = {
     const timestamp = new Date().toISOString();
     const newApproval: DBApproval = { id, timestamp, ...approval };
 
-    if (pool) {
+    if (getDbPool()) {
       await query(
         `INSERT INTO approvals (id, draft_id, approved_by, status, notes, timestamp)
          VALUES ($1, $2, $3, $4, $5, $6);`,
@@ -1050,7 +1058,7 @@ export const governanceDB = {
     const created_at = new Date().toISOString();
     const newLog: DBAuditLog = { id, created_at, ...log };
 
-    if (pool) {
+    if (getDbPool()) {
       try {
         await query(
           `INSERT INTO audit_logs (id, organization_id, user_id, action, entity_type, entity_id, details, ip_address)

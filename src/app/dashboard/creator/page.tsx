@@ -3,6 +3,7 @@
 import React, { useState, useMemo, useEffect } from "react";
 import Link from "next/link";
 import { api } from "@/lib/api";
+import { useAuthStore } from "@/stores/useAuthStore";
 import {
   Sparkles,
   FileCheck2,
@@ -171,6 +172,22 @@ const GLOSSARY_PAIRS = [
 ];
 
 export default function CreatorDashboard() {
+  const { currentUser } = useAuthStore();
+  const userName = currentUser?.name || "Author";
+  const userInitials = useMemo(() => {
+    if (!userName) return "AU";
+    return (
+      userName
+        .split(" ")
+        .map((n) => n[0])
+        .filter(Boolean)
+        .join("")
+        .slice(0, 2)
+        .toUpperCase() || "AU"
+    );
+  }, [userName]);
+  const userDepartment = currentUser?.department || "Content & Communications";
+
   const [inputText, setInputText] = useState(TEMPLATES[0].text);
   const [selectedChannel, setSelectedChannel] = useState("LinkedIn & Social");
   const [contentFormat, setContentFormat] = useState<"text" | "graphic">("text");
@@ -430,19 +447,19 @@ export default function CreatorDashboard() {
 
       {/* Top Header Bar */}
       <div className="bg-white rounded-xl border border-slate-200 p-4 shadow-xs flex flex-wrap items-center justify-between gap-4">
-        {/* User Identity - Welcome without boilerplate text */}
+        {/* User Identity - Welcome with dynamic name */}
         <div className="flex items-center gap-3">
           <div className="h-10 w-10 rounded-xl bg-slate-900 text-white font-bold flex items-center justify-center text-sm shadow-xs">
-            AM
+            {userInitials}
           </div>
           <div>
             <div className="flex items-center gap-2">
-              <h1 className="text-base font-bold text-slate-900">Welcome, Alex Morgan</h1>
+              <h1 className="text-base font-bold text-slate-900">Welcome, {userName}</h1>
               <span className="bg-slate-100 text-slate-700 text-[10px] font-mono px-2 py-0.5 rounded font-semibold border border-slate-200">
                 Author Studio
               </span>
             </div>
-            <div className="text-xs text-slate-500 font-medium">Content & Communications</div>
+            <div className="text-xs text-slate-500 font-medium">{userDepartment}</div>
           </div>
         </div>
 

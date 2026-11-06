@@ -13,6 +13,7 @@ import {
   CheckSquare,
   Layers,
   BookOpen,
+  Database,
 } from "lucide-react";
 
 interface NavItem {
@@ -36,6 +37,7 @@ const BRAND_MANAGER_NAV: NavItem[] = [
 
 const ADMIN_NAV: NavItem[] = [
   { name: "Access & RBAC", href: "/dashboard/admin", icon: Users, badge: "4" },
+  { name: "Database Studio", href: "/dashboard/database", icon: Database, badge: "Live" },
   { name: "Brand Rulebooks", href: "/dashboard/rulebook", icon: BookOpen },
   { name: "System Settings", href: "/dashboard/admin", icon: Cpu },
   { name: "Audit Trail Ledger", href: "/dashboard/admin", icon: History },
@@ -123,9 +125,12 @@ export const Sidebar = () => {
       </div>
 
       {/* Footer Info */}
-      <div className="border-t border-slate-200 pt-3 px-2 text-[10px] text-slate-400 font-mono">
-        <div>INKLOOM PLATFORM</div>
-        <div>v2.4.2-ENTERPRISE</div>
+      <div className="border-t border-slate-200 pt-3 text-[10px] text-slate-400 flex flex-col gap-1">
+        <div className="flex items-center justify-between">
+          <span>Inkloom Platform</span>
+          <span className="font-mono text-emerald-600 font-bold">v2.4-prod</span>
+        </div>
+        <div className="text-[9px] text-slate-400">Zero Data Retention Policy Active</div>
       </div>
     </aside>
   );
