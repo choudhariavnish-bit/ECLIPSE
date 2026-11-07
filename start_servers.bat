@@ -6,7 +6,7 @@ echo ============================================================
 echo.
 
 set BASE_DIR=%~dp0
-set NODE_EXE=C:\Users\Pratik\Downloads\node-v24.21.0-win-x64\node-v24.21.0-win-x64\node.exe
+set NODE_EXE=node
 
 echo [1/2] Starting ECLIPSE AI Engine (FastAPI) on Port 8000...
 start "ECLIPSE AI Engine (Port 8000)" cmd /k "cd /d %BASE_DIR% && python run_eclipse.py"
@@ -22,4 +22,3 @@ echo   AI Engine Health: http://localhost:8000/api/v1/health
 echo   API Docs:         http://localhost:8000/docs
 echo ============================================================
 echo.
-
