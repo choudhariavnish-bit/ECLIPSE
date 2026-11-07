@@ -3,11 +3,8 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev -H 0.0.0.0 -p 3000",
-    "tunnel": "lt --port 3000",
-    "build": "next build",
-    "start": "next start -H 0.0.0.0 -p 3000",
-    "lint": "next lint"
+    "dev": "node server.js",
+    "start": "node server.js"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.118.0",
@@ -17,7 +14,6 @@
     "framer-motion": "^12.4.7",
     "jsonwebtoken": "^9.0.3",
     "lucide-react": "^0.475.0",
-    "next": "^15.1.7",
     "pg": "^8.23.1",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
