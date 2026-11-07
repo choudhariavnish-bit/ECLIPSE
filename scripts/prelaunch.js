@@ -60,7 +60,16 @@ try {
   }
 } catch (e) {}
 
-// 3. Resolve local LAN IP for multi-device / mobile testing
+// 3. Ensure local SQLite3 file database exists
+const sqliteDbPath = path.join(process.cwd(), "database", "governance.sqlite");
+if (!fs.existsSync(sqliteDbPath)) {
+  try {
+    console.log("[DB] Seeding local SQLite3 offline database...");
+    execSync("node scripts/init_sqlite.js", { stdio: "ignore" });
+  } catch (e) {}
+}
+
+// 4. Resolve local LAN IP for multi-device / mobile testing
 let lanIp = "localhost";
 try {
   const ifaces = os.networkInterfaces();
@@ -75,10 +84,12 @@ try {
   }
 } catch (e) {}
 
-console.log("[2/3] Network Endpoints Configured:");
-console.log(`      - Local:            http://localhost:3000`);
+console.log("[2/3] Database & Network Endpoints Configured:");
+console.log(`      - Local Disk DB:    SQLite3 (database/governance.sqlite)`);
+console.log(`      - Browser DB:       MongoDB (Document Collections Engine)`);
+console.log(`      - Primary Web:      http://localhost:3000`);
 if (lanIp !== "localhost") {
-  console.log(`      - Mobile / Devices: http://${lanIp}:3000`);
+  console.log(`      - Wi-Fi Devices:    http://${lanIp}:3000`);
 }
 console.log(`      - Database Studio:  http://localhost:3000/dashboard/database\n`);
 
