@@ -57,7 +57,13 @@ export default function DashboardLayout({
   }
 
   return (
-    <div className="min-h-screen bg-slate-50/50 flex flex-col">
+    <div className="min-h-screen eclipse-pastel-bg flex flex-col">
+      <div className="eclipse-4color-strip">
+        <div className="first-color h-full" />
+        <div className="second-color h-full" />
+        <div className="third-color h-full" />
+        <div className="fourth-color h-full" />
+      </div>
       <Navbar />
       <div className="flex flex-1 max-w-7xl w-full mx-auto pb-16 md:pb-0">
         <Sidebar />

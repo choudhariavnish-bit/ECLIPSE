@@ -29,17 +29,17 @@ const ROLE_META: Record<
 > = {
   creator: {
     label: "Author Studio",
-    badgeClass: "bg-blue-50 text-blue-800 border-blue-200",
+    badgeClass: "first-color text-slate-900 border first-color-border font-bold shadow-2xs",
     path: "/dashboard/creator",
   },
   "brand-manager": {
     label: "Brand Manager",
-    badgeClass: "bg-purple-50 text-purple-800 border-purple-200",
+    badgeClass: "second-color text-slate-900 border second-color-border font-bold shadow-2xs",
     path: "/dashboard/brand-manager",
   },
   admin: {
     label: "Security & Admin",
-    badgeClass: "bg-emerald-50 text-emerald-800 border-emerald-200",
+    badgeClass: "third-color text-slate-900 border third-color-border font-bold shadow-2xs",
     path: "/dashboard/admin",
   },
 };
