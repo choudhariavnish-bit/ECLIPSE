@@ -1,8 +1,8 @@
 "use client";
 
 import React, { useState } from "react";
-import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
+import Link from "@/lib/next-compat/link";
+import { usePathname, useRouter } from "@/lib/next-compat/navigation";
 import { useAuthStore } from "@/stores/useAuthStore";
 import { UserRole } from "@/types/auth";
 import {
@@ -17,6 +17,8 @@ import {
   Layers,
   Database,
   Users,
+  ChevronDown,
+  Sparkles,
 } from "lucide-react";
 import { DatabaseStatusBadge } from "./DatabaseStatusBadge";
 import { AiEngineStatusBadge } from "./AiEngineStatusBadge";
@@ -45,35 +47,31 @@ const ROLE_META: Record<
 export const Navbar = () => {
   const router = useRouter();
   const pathname = usePathname();
-  const { currentUser, activeRole, logout } = useAuthStore();
+  const { currentUser, activeRole, logout, switchRole } = useAuthStore();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [workspaceMenuOpen, setWorkspaceMenuOpen] = useState(false);
 
   const handleLogout = () => {
     logout();
     router.push("/login");
   };
 
+  const handleSwitchWorkspace = (role: UserRole, targetPath: string) => {
+    switchRole(role);
+    setWorkspaceMenuOpen(false);
+    router.push(targetPath);
+  };
+
   const currentMeta = ROLE_META[activeRole] || ROLE_META.creator;
 
-  // Filter mobile navigation links strictly by the user's role (zero cross-role leakage)
-  const roleMobileLinks =
-    activeRole === "creator"
-      ? [
-          { name: "Compliance Inspector", desc: "Audit content against brand rules", href: "/dashboard/creator", icon: CheckSquare, badge: "Real-time" },
-          { name: "Active Drafts", desc: "Manage & open author articles", href: "/dashboard/drafts", icon: FileText, badge: "4 Active" },
-          { name: "Brand Rulebook", desc: "Multi-brand voice & guidelines", href: "/dashboard/rulebook", icon: BookOpen, badge: null },
-        ]
-      : activeRole === "brand-manager"
-      ? [
-          { name: "Approval Pipeline", desc: "Review and sign off on drafts", href: "/dashboard/brand-manager", icon: Layers, badge: "3 Pending" },
-          { name: "Active Drafts", desc: "View submitted team drafts", href: "/dashboard/drafts", icon: FileText, badge: "4 Active" },
-          { name: "Brand Rulebook", desc: "Review and manage rulebook", href: "/dashboard/rulebook", icon: BookOpen, badge: null },
-        ]
-      : [
-          { name: "Access & RBAC", desc: "User permissions and governance", href: "/dashboard/admin", icon: Users, badge: "4" },
-          { name: "Database Studio", desc: "Inspect live database tables", href: "/dashboard/database", icon: Database, badge: "Live" },
-          { name: "Brand Rulebooks", desc: "Configure global rules", href: "/dashboard/rulebook", icon: BookOpen, badge: null },
-        ];
+  const roleMobileLinks = [
+    { name: "Compliance Inspector", desc: "Author studio & visual linting", href: "/dashboard/creator", icon: CheckSquare, badge: "Author", role: "creator" as UserRole },
+    { name: "Approval Pipeline", desc: "Review drafts & enforce policy", href: "/dashboard/brand-manager", icon: Layers, badge: "2 Pending", role: "brand-manager" as UserRole },
+    { name: "Security & RBAC", desc: "Governance parameters & audit log", href: "/dashboard/admin", icon: Users, badge: "Admin", role: "admin" as UserRole },
+    { name: "Active Drafts", desc: "Manage & edit saved drafts", href: "/dashboard/drafts", icon: FileText, badge: "3 Active", role: activeRole },
+    { name: "Brand Rulebook", desc: "Multi-brand voice guidelines", href: "/dashboard/rulebook", icon: BookOpen, badge: "Rulebook", role: activeRole },
+    { name: "Database Studio", desc: "Live table records & schemas", href: "/dashboard/database", icon: Database, badge: "Live DB", role: "admin" as UserRole },
+  ];
 
   return (
     <>
@@ -112,13 +110,89 @@ export const Navbar = () => {
           {/* Center / Right controls */}
           <div className="flex items-center gap-2 sm:gap-3">
             <AiEngineStatusBadge />
-            {/* Database Studio status badge is visible strictly for Administrators */}
-            {activeRole === "admin" && <DatabaseStatusBadge />}
+            <DatabaseStatusBadge />
 
-            {/* Active Workspace Badge (Strict RBAC - Locked to logged-in user) */}
-            <div className="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-lg border border-slate-200 bg-slate-50 text-xs font-semibold text-slate-800">
-              <span className="h-2 w-2 rounded-full bg-emerald-500" />
-              <span>{currentMeta.label}</span>
+            {/* Quick Interactive Workspace Switcher Dropdown */}
+            <div className="relative">
+              <button
+                onClick={() => setWorkspaceMenuOpen(!workspaceMenuOpen)}
+                className="flex items-center gap-2 px-3 py-1.5 rounded-lg border border-slate-200 bg-slate-50 hover:bg-slate-100 text-xs font-semibold text-slate-800 transition-colors shadow-2xs"
+                title="Switch Dashboard Workspace"
+              >
+                <span className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
+                <span>{currentMeta.label}</span>
+                <ChevronDown className="h-3 w-3 text-slate-500" />
+              </button>
+
+              {workspaceMenuOpen && (
+                <>
+                  <div
+                    className="fixed inset-0 z-40"
+                    onClick={() => setWorkspaceMenuOpen(false)}
+                  />
+                  <div className="absolute right-0 mt-2 w-56 rounded-xl bg-white border border-slate-200 shadow-xl z-50 p-1.5 space-y-1">
+                    <div className="px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-slate-400">
+                      Switch Dashboard
+                    </div>
+                    <button
+                      onClick={() => handleSwitchWorkspace("creator", "/dashboard/creator")}
+                      className={`w-full flex items-center gap-2.5 px-2.5 py-2 rounded-lg text-xs font-medium text-left transition-colors ${
+                        activeRole === "creator"
+                          ? "bg-blue-50 text-blue-800 font-bold"
+                          : "text-slate-700 hover:bg-slate-50"
+                      }`}
+                    >
+                      <CheckSquare className="h-4 w-4 text-blue-600" />
+                      <div>
+                        <div>Author Studio</div>
+                        <div className="text-[10px] text-slate-400 font-normal">Content & Image Linter</div>
+                      </div>
+                    </button>
+                    <button
+                      onClick={() => handleSwitchWorkspace("brand-manager", "/dashboard/brand-manager")}
+                      className={`w-full flex items-center gap-2.5 px-2.5 py-2 rounded-lg text-xs font-medium text-left transition-colors ${
+                        activeRole === "brand-manager"
+                          ? "bg-purple-50 text-purple-800 font-bold"
+                          : "text-slate-700 hover:bg-slate-50"
+                      }`}
+                    >
+                      <Layers className="h-4 w-4 text-purple-600" />
+                      <div>
+                        <div>Brand Manager</div>
+                        <div className="text-[10px] text-slate-400 font-normal">Approval Queue & Voice</div>
+                      </div>
+                    </button>
+                    <button
+                      onClick={() => handleSwitchWorkspace("admin", "/dashboard/admin")}
+                      className={`w-full flex items-center gap-2.5 px-2.5 py-2 rounded-lg text-xs font-medium text-left transition-colors ${
+                        activeRole === "admin"
+                          ? "bg-emerald-50 text-emerald-800 font-bold"
+                          : "text-slate-700 hover:bg-slate-50"
+                      }`}
+                    >
+                      <Users className="h-4 w-4 text-emerald-600" />
+                      <div>
+                        <div>Security & Admin</div>
+                        <div className="text-[10px] text-slate-400 font-normal">RBAC & Audit Trail</div>
+                      </div>
+                    </button>
+                    <div className="border-t border-slate-100 my-1" />
+                    <button
+                      onClick={() => {
+                        setWorkspaceMenuOpen(false);
+                        router.push("/dashboard/database");
+                      }}
+                      className="w-full flex items-center gap-2.5 px-2.5 py-2 rounded-lg text-xs font-medium text-left text-slate-700 hover:bg-slate-50 transition-colors"
+                    >
+                      <Database className="h-4 w-4 text-cyan-600" />
+                      <div>
+                        <div>Database Studio</div>
+                        <div className="text-[10px] text-slate-400 font-normal">Live Table Inspector</div>
+                      </div>
+                    </button>
+                  </div>
+                </>
+              )}
             </div>
 
             {/* User Profile & Sign Out */}
@@ -143,9 +217,9 @@ export const Navbar = () => {
         </div>
       </header>
 
-      {/* Mobile Slide-Out Navigation Drawer */}
+      {/* Mobile Drawer Navigation */}
       {mobileMenuOpen && (
-        <div className="fixed inset-0 z-50 md:hidden flex flex-col justify-start">
+        <div className="fixed inset-0 z-50 md:hidden flex">
           <div
             className="fixed inset-0 bg-slate-900/60 backdrop-blur-xs transition-opacity"
             onClick={() => setMobileMenuOpen(false)}
@@ -180,10 +254,10 @@ export const Navbar = () => {
                 </div>
               </div>
 
-              {/* Direct Navigation Links (Strictly role-specific) */}
+              {/* Navigation Links */}
               <div className="p-4 space-y-1">
                 <div className="text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-2">
-                  Navigation
+                  Dashboards & Sub-boards
                 </div>
                 {roleMobileLinks.map((link) => {
                   const Icon = link.icon;
@@ -192,7 +266,10 @@ export const Navbar = () => {
                     <Link
                       key={link.name}
                       href={link.href}
-                      onClick={() => setMobileMenuOpen(false)}
+                      onClick={() => {
+                        switchRole(link.role);
+                        setMobileMenuOpen(false);
+                      }}
                       className={`flex items-center justify-between p-2.5 rounded-xl text-xs font-medium transition-all ${
                         isActive
                           ? "bg-slate-900 text-white font-bold"
@@ -228,22 +305,21 @@ export const Navbar = () => {
             {/* User Drawer Footer */}
             <div className="p-4 border-t border-slate-200 bg-slate-50 space-y-3">
               <div className="flex items-center gap-3">
-                <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-slate-900 text-white font-bold text-xs">
-                  {currentUser?.name?.slice(0, 2).toUpperCase() || "US"}
+                <div className="h-8 w-8 rounded-full bg-slate-900 text-white flex items-center justify-center text-xs font-bold">
+                  {currentUser?.name?.[0] || "U"}
                 </div>
-                <div className="flex flex-col">
-                  <span className="text-xs font-bold text-slate-900">
-                    {currentUser?.name || "Logged User"}
-                  </span>
-                  <span className="text-[11px] text-slate-500 truncate max-w-[180px]">
-                    {currentUser?.email || "user@inkloom.ai"}
-                  </span>
+                <div className="flex-1 min-w-0">
+                  <div className="text-xs font-bold text-slate-900 truncate">
+                    {currentUser?.name || "Active User"}
+                  </div>
+                  <div className="text-[10px] text-slate-500 truncate">
+                    {currentUser?.department || currentUser?.email}
+                  </div>
                 </div>
               </div>
-
               <button
                 onClick={handleLogout}
-                className="w-full flex items-center justify-center gap-2 py-2 px-3 rounded-lg border border-red-200 bg-red-50 text-red-700 text-xs font-semibold hover:bg-red-100 transition-colors"
+                className="w-full flex items-center justify-center gap-2 py-2 px-3 rounded-lg border border-slate-200 text-xs font-semibold text-rose-600 hover:bg-rose-50 hover:border-rose-200 transition-colors"
               >
                 <LogOut className="h-3.5 w-3.5" />
                 <span>Sign Out</span>

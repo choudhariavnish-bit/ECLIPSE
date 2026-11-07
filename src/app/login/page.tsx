@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter } from "@/lib/next-compat/navigation";
 import { useAuthStore, MOCK_USERS } from "@/stores/useAuthStore";
 import { UserRole } from "@/types/auth";
 import {

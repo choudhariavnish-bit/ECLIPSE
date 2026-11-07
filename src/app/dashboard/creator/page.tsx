@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useMemo, useEffect } from "react";
-import Link from "next/link";
+import Link from "@/lib/next-compat/link";
 import { api } from "@/lib/api";
 import { useAuthStore } from "@/stores/useAuthStore";
 import { BlogReviewStudio } from "@/components/blog/BlogReviewStudio";

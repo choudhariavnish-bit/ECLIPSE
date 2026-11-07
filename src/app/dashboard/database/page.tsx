@@ -1,8 +1,8 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import Link from "next/link";
-import { useRouter } from "next/navigation";
+import Link from "@/lib/next-compat/link";
+import { useRouter } from "@/lib/next-compat/navigation";
 import { useAuthStore } from "@/stores/useAuthStore";
 import {
   Database,

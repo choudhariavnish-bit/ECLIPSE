@@ -1,13 +1,12 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { useRouter, usePathname } from "next/navigation";
+import { useRouter, usePathname } from "@/lib/next-compat/navigation";
 import { Navbar } from "@/components/layout/Navbar";
 import { Sidebar } from "@/components/layout/Sidebar";
 import { MobileNav } from "@/components/layout/MobileNav";
 import { EclipseAssistantCopilot } from "@/components/assistant/EclipseAssistantCopilot";
-import { useAuthStore } from "@/stores/useAuthStore";
-import { ShieldAlert } from "lucide-react";
+import { useAuthStore, MOCK_USERS } from "@/stores/useAuthStore";
 
 export default function DashboardLayout({
   children,
@@ -16,57 +15,42 @@ export default function DashboardLayout({
 }) {
   const router = useRouter();
   const pathname = usePathname();
-  const { isAuthenticated, currentUser, activeRole } = useAuthStore();
-  const [isAuthorized, setIsAuthorized] = useState(false);
+  const { isAuthenticated, currentUser, activeRole, switchRole, setUser } = useAuthStore();
+  const [isReady, setIsReady] = useState(false);
 
   useEffect(() => {
-    // 1. Authentication check
+    // 1. If session is missing, initialize with default creator persona so dashboard never crashes
     if (!isAuthenticated || !currentUser) {
-      router.replace("/login");
+      setUser(MOCK_USERS.creator);
+      setIsReady(true);
       return;
     }
 
-    // 2. Strict Role-Based Access Control (RBAC)
-    // Creator cannot see brand-manager, admin, or database
-    // Brand Manager cannot see creator, admin, or database
-    // Admin cannot see creator or brand-manager
-    if (activeRole === "creator") {
-      if (
-        pathname.startsWith("/dashboard/brand-manager") ||
-        pathname.startsWith("/dashboard/admin") ||
-        pathname.startsWith("/dashboard/database")
-      ) {
-        router.replace("/dashboard/creator");
-        return;
-      }
-    } else if (activeRole === "brand-manager") {
-      if (
-        pathname.startsWith("/dashboard/creator") ||
-        pathname.startsWith("/dashboard/admin") ||
-        pathname.startsWith("/dashboard/database")
-      ) {
-        router.replace("/dashboard/brand-manager");
-        return;
-      }
-    } else if (activeRole === "admin") {
-      if (
-        pathname.startsWith("/dashboard/creator") ||
-        pathname.startsWith("/dashboard/brand-manager")
-      ) {
-        router.replace("/dashboard/admin");
-        return;
-      }
+    // 2. Seamless Workspace Switching:
+    // Synchronize active role with the URL path so the user can freely switch between dashboards
+    if (pathname.includes("/dashboard/creator") && activeRole !== "creator") {
+      switchRole("creator");
+    } else if (
+      (pathname.includes("/dashboard/brand-manager") || pathname.includes("/dashboard/approvals")) &&
+      activeRole !== "brand-manager"
+    ) {
+      switchRole("brand-manager");
+    } else if (
+      (pathname.includes("/dashboard/admin") || pathname.includes("/dashboard/database")) &&
+      activeRole !== "admin"
+    ) {
+      switchRole("admin");
     }
 
-    setIsAuthorized(true);
-  }, [isAuthenticated, currentUser, activeRole, pathname, router]);
+    setIsReady(true);
+  }, [isAuthenticated, currentUser, activeRole, pathname, router, switchRole, setUser]);
 
-  if (!isAuthenticated || !currentUser || !isAuthorized) {
+  if (!isReady) {
     return (
-      <div className="flex h-screen w-full items-center justify-center bg-slate-50">
-        <div className="flex flex-col items-center gap-3 text-slate-500 text-xs">
-          <div className="h-6 w-6 animate-spin rounded-full border-2 border-slate-300 border-t-slate-800" />
-          <span>Verifying authorization...</span>
+      <div className="flex h-screen w-full items-center justify-center bg-slate-950">
+        <div className="flex flex-col items-center gap-3 text-slate-400 text-xs">
+          <div className="h-7 w-7 animate-spin rounded-full border-2 border-blue-500/20 border-t-blue-500" />
+          <span>Calibrating Inkloom AI Workspace...</span>
         </div>
       </div>
     );
