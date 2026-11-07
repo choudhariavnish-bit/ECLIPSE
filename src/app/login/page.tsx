@@ -163,7 +163,7 @@ export default function LoginPage() {
         <div className="text-center mb-8">
           <div className="inline-flex items-center gap-2 rounded-full bg-blue-500/10 border border-blue-400/30 px-3.5 py-1 text-xs font-semibold text-blue-300 mb-4 backdrop-blur-md">
             <ShieldCheck className="h-4 w-4 text-blue-400" />
-            <span>ECLIPSE AI • Enterprise Brand Governance</span>
+            <span>ECLIPSE • Enterprise Brand Governance</span>
           </div>
           <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-white">
             {mode === "login" ? "Sign in to Workspace" : "Create New Account"}

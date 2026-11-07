@@ -158,7 +158,7 @@ let auditLogsStore = [
     timestamp: new Date(Date.now() - 600000).toISOString(),
     user: "Sarah Chen",
     action: "POLICY_CALIBRATED",
-    entity: "Brand Rulebook: ECLIPSE AI",
+    entity: "Brand Rulebook: ECLIPSE",
     status: "SUCCESS",
     ip: "127.0.0.1",
     details: "Superlative restriction CLM-01 severity set to critical.",
@@ -598,8 +598,8 @@ const apiMockPlugin = () => ({
           return res.end(
             JSON.stringify({
               audit_id: `ECLIPSE-AUDIT-${Date.now()}`,
-              engine: "ECLIPSE AI",
-              engine_name: "ECLIPSE AI",
+              engine: "ECLIPSE",
+              engine_name: "ECLIPSE",
               model: "Google Gemini",
               compliance_score: violations.length > 0 ? Math.max(25, 100 - violations.length * 22) : 98,
               risk_level: isMajor ? "CRITICAL" : violations.length > 0 ? "HIGH" : "LOW",
@@ -611,10 +611,10 @@ const apiMockPlugin = () => ({
                 drift_score: drift,
               },
               summary: violations.length > 0
-                ? `ECLIPSE AI identified ${violations.length} governance, grammar, and claims infractions requiring editorial calibration.`
+                ? `ECLIPSE identified ${violations.length} governance, grammar, and claims infractions requiring editorial calibration.`
                 : "Content fully adheres to corporate brand tone, legal compliance, and verified benchmarks.",
               overall_assessment: violations.length > 0
-                ? `ECLIPSE AI identified ${violations.length} governance, grammar, and claims infractions requiring editorial calibration.`
+                ? `ECLIPSE identified ${violations.length} governance, grammar, and claims infractions requiring editorial calibration.`
                 : "Content fully adheres to corporate brand tone, legal compliance, and verified benchmarks.",
               violations,
               findings: violations,

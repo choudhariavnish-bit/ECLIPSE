@@ -23,10 +23,10 @@ export async function POST(req: NextRequest) {
     let isMajorDrift = false;
     let executiveSummary = "Content reviewed against ECLIPSE approved brand guidelines and verified facts.";
     let factChecks: any[] = [];
-    let engineUsed = "ECLIPSE AI Engine (Local Heuristics)";
+    let engineUsed = "ECLIPSE Engine (Local Heuristics)";
     let modelUsed = "deterministic-parser";
 
-    // 1. Attempt Live Deep Review with ECLIPSE AI Engine (FastAPI + Google Gemini)
+    // 1. Attempt Live Deep Review with ECLIPSE Engine (FastAPI + Google Gemini)
     try {
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), 18000);
@@ -111,7 +111,7 @@ export async function POST(req: NextRequest) {
         }
       }
     } catch (aiEngineError: any) {
-      console.warn("ECLIPSE AI Engine unavailable on port 8000, using local rules fallback:", aiEngineError.message);
+      console.warn("ECLIPSE Engine unavailable on port 8000, using local rules fallback:", aiEngineError.message);
     }
 
     // 2. Fallback or augment with local database rules if AI engine returned zero findings

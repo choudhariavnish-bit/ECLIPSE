@@ -1,5 +1,5 @@
 @echo off
-title ECLIPSE AI - React Platform Server
+title ECLIPSE - React Platform Server
 cd /d "%~dp0"
 
 set NODE_EXE=node

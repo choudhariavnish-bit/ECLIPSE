@@ -34,7 +34,7 @@ class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoundarySta
             <div className="h-12 w-12 rounded-full bg-red-500/10 text-red-400 flex items-center justify-center mx-auto mb-4">
               ⚠️
             </div>
-            <h1 className="text-xl font-bold mb-2">ECLIPSE AI UI Encountered an Issue</h1>
+            <h1 className="text-xl font-bold mb-2">ECLIPSE UI Encountered an Issue</h1>
             <p className="text-sm text-slate-400 mb-6 font-mono bg-slate-950 p-3 rounded-lg border border-slate-800 text-left overflow-auto max-h-40">
               {this.state.error?.message || "Unknown client error"}
             </p>

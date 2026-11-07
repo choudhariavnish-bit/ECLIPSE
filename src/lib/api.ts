@@ -92,7 +92,7 @@ export const api = {
     },
   },
 
-  // ECLIPSE AI Blog Review & Correction APIs
+  // ECLIPSE Blog Review & Correction APIs
   blog: {
     async analyze(payload: { title?: string; content: string; brand_id?: string; content_type?: string; target_audience?: string }) {
       const res = await apiClient.post("/blog/analyze", payload);

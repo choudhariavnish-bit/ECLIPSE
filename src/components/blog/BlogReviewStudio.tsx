@@ -477,7 +477,7 @@ export function BlogReviewStudio({
           </div>
           <div>
             <div className="flex items-center gap-2">
-              <h1 className="text-base font-bold text-slate-900">ECLIPSE AI Blog & Article Review Studio</h1>
+              <h1 className="text-base font-bold text-slate-900">ECLIPSE Blog & Article Review Studio</h1>
               <span className="bg-purple-100 text-purple-800 text-[10px] font-mono px-2 py-0.5 rounded font-bold border border-purple-200">
                 RAG + Gemini Reasoning
               </span>

@@ -38,7 +38,7 @@
     {
       "fact_id": "FACT-005",
       "topic": "AI Architecture & Engine",
-      "statement": "The ECLIPSE AI Engine utilizes Google Gemini API and high-speed RAG retrieval for real-time brand governance.",
+      "statement": "The ECLIPSE Engine utilizes Google Gemini API and high-speed RAG retrieval for real-time brand governance.",
       "keywords": ["eclipse", "gemini", "google gemini", "rag", "retrieval", "engine"],
       "allowed_metrics": ["sub-second audit generation", "Google Gemini 3.5 / 2.5"],
       "evidence_ref": "ECLIPSE System Architecture Specification v1.0"

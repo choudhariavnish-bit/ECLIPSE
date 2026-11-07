@@ -1,5 +1,5 @@
 """
-ECLIPSE AI Engine — Review & Benchmark Test Suite
+ECLIPSE Engine — Review & Benchmark Test Suite
 Round 2 Deliverable: Unit Tests, Schema Validation & Benchmark Evaluation
 """
 

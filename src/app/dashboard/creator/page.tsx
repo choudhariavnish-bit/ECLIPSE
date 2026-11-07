@@ -333,7 +333,7 @@ export default function CreatorDashboard() {
     setTimeout(() => setToastMessage(null), 3500);
   };
 
-  // Run the explicit check action with ECLIPSE AI Engine
+  // Run the explicit check action with ECLIPSE Engine
   const handleRunCheck = async () => {
     setAuditState("checking");
     setIsPublished(false);
@@ -364,7 +364,7 @@ export default function CreatorDashboard() {
         });
       }
 
-      // 2. Map Live Findings from ECLIPSE AI Engine
+      // 2. Map Live Findings from ECLIPSE Engine
       const rawList = (res && res.findings) || (res && res.violations) || [];
       if (rawList.length > 0) {
         rawList.forEach((f: any, idx: number) => {
@@ -426,16 +426,16 @@ export default function CreatorDashboard() {
       }
 
       if (mappedFindings.length === 0) {
-        showNotification("ECLIPSE AI: 100% Brand Compliant! Zero infractions detected.");
+        showNotification("ECLIPSE: 100% Brand Compliant! Zero infractions detected.");
       } else if (isMajor) {
-        showNotification(`ECLIPSE AI: Major Drift Detected (${calculatedDrift}/100) — Brand Manager review required.`);
+        showNotification(`ECLIPSE: Major Drift Detected (${calculatedDrift}/100) — Brand Manager review required.`);
       } else {
-        showNotification(`ECLIPSE AI: Review complete — ${mappedFindings.length} issue(s) flagged.`);
+        showNotification(`ECLIPSE: Review complete — ${mappedFindings.length} issue(s) flagged.`);
       }
     } catch (err: any) {
       console.error("ECLIPSE live check failed:", err);
       setAuditState("evaluated");
-      showNotification("ECLIPSE AI: Completed review scan.");
+      showNotification("ECLIPSE: Completed review scan.");
     }
   };
 
@@ -967,7 +967,7 @@ export default function CreatorDashboard() {
                           <div className="h-7 w-7 rounded-lg bg-slate-900 text-white font-bold flex items-center justify-center text-xs shadow-xs">
                             EC
                           </div>
-                          <span className="font-bold text-xs tracking-wider text-slate-900">ECLIPSE AI</span>
+                          <span className="font-bold text-xs tracking-wider text-slate-900">ECLIPSE</span>
                         </div>
 
                         <span className="text-[10px] bg-emerald-50 text-emerald-800 border border-emerald-200 px-2 py-0.5 rounded font-mono font-semibold">
@@ -1243,7 +1243,7 @@ export default function CreatorDashboard() {
                     <div className="flex items-center justify-between">
                       <span className="font-bold text-purple-950 flex items-center gap-1.5">
                         <Sparkles className="h-4 w-4 text-purple-600" />
-                        ECLIPSE AI Intelligence Review
+                        ECLIPSE Intelligence Review
                       </span>
                       <span className="bg-purple-200/80 text-purple-900 font-mono text-[10px] font-bold px-2 py-0.5 rounded border border-purple-300">
                         {aiModelName}

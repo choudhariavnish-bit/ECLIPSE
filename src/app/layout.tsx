@@ -2,7 +2,7 @@ import React from "react";
 import "./globals.css";
 
 export const metadata = {
-  title: "ECLIPSE AI | Intelligent Brand Governance & Fact Verification Engine",
+  title: "ECLIPSE | Intelligent Brand Governance & Fact Verification Engine",
   description:
     "Pre-publication brand governance platform that reviews content against approved guidelines, facts, tone, and visual standards.",
 };

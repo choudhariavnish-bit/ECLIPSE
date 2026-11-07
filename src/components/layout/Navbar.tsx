@@ -97,7 +97,7 @@ export const Navbar = () => {
               <div className="flex flex-col">
                 <div className="flex items-center gap-1.5">
                   <span className="font-bold text-sm tracking-tight text-slate-900">
-                    ECLIPSE AI
+                    ECLIPSE
                   </span>
                   <span className="rounded-full bg-slate-100 px-1.5 py-0.2 text-[9px] font-semibold text-slate-600 border border-slate-200">
                     Governance

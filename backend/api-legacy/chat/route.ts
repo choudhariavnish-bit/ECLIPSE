@@ -34,14 +34,14 @@ export async function POST(req: NextRequest) {
         return NextResponse.json(data);
       }
     } catch (engineErr: any) {
-      console.warn("ECLIPSE AI Engine chat offline:", engineErr);
+      console.warn("ECLIPSE Engine chat offline:", engineErr);
     }
 
     // Fallback response if engine is offline
     return NextResponse.json({
       engine_name: "ECLIPSE",
       powered_by: "Local Fallback",
-      reply: `I received your inquiry: "${message}". Please ensure the ECLIPSE AI Engine is running at http://localhost:8000 for live Google Gemini responses. Approved facts: 99.99% uptime SLA, SOC 2 Type II certified, 10,000+ teams. Prohibited terms include 'guaranteed cheapest', '100% bug-free', 'unhackable'.`,
+      reply: `I received your inquiry: "${message}". Please ensure the ECLIPSE Engine is running at http://localhost:8000 for live Google Gemini responses. Approved facts: 99.99% uptime SLA, SOC 2 Type II certified, 10,000+ teams. Prohibited terms include 'guaranteed cheapest', '100% bug-free', 'unhackable'.`,
       timestamp: new Date().toISOString(),
     });
   } catch (err: any) {

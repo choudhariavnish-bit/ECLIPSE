@@ -22,7 +22,7 @@ from app.system_prompt import ECLIPSE_IDENTITY
 
 # Initialize FastAPI app
 app = FastAPI(
-    title="ECLIPSE AI Engine",
+    title="ECLIPSE Engine",
     description="The Intelligent Brand Governance & Fact Verification Layer. Developed by Member 3 (AI & Prompt Engineer).",
     version="1.0.0",
     docs_url="/docs",
@@ -174,7 +174,7 @@ def serve_playground():
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ECLIPSE AI Engine</title>
+  <title>ECLIPSE Engine</title>
   <style>
     :root {
       --bg: #0b0f19;
@@ -362,7 +362,7 @@ def serve_playground():
     <div class="brand-title">
       <div class="logo-badge">E</div>
       <div>
-        <h1>ECLIPSE AI Engine</h1>
+        <h1>ECLIPSE Engine</h1>
         <div class="subtitle">Intelligent Brand Governance Assistant &bull; Powered by Google Gemini</div>
       </div>
     </div>

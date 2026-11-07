@@ -79,7 +79,7 @@ export function EclipseAssistantCopilot() {
         }),
       });
 
-      if (!res.ok) throw new Error("Failed to reach ECLIPSE AI");
+      if (!res.ok) throw new Error("Failed to reach ECLIPSE");
 
       const data = await res.json();
       const assistantMsg: Message = {
@@ -97,7 +97,7 @@ export function EclipseAssistantCopilot() {
           id: `err-${Date.now()}`,
           role: "assistant",
           content:
-            "I could not reach the live ECLIPSE AI Engine at port 8000. Verified facts: SLA 99.99%, SOC 2 Type II certified, 10,000+ teams. Prohibited terms include: 'guaranteed cheapest', '100% bug-free', 'unhackable'.",
+            "I could not reach the live ECLIPSE Engine at port 8000. Verified facts: SLA 99.99%, SOC 2 Type II certified, 10,000+ teams. Prohibited terms include: 'guaranteed cheapest', '100% bug-free', 'unhackable'.",
           timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
         },
       ]);
@@ -124,13 +124,13 @@ export function EclipseAssistantCopilot() {
         <button
           onClick={() => setIsOpen(true)}
           className="fixed bottom-20 md:bottom-6 right-6 z-40 flex items-center gap-2 px-4 py-2.5 rounded-full bg-slate-900 text-white font-semibold text-xs shadow-xl hover:bg-slate-800 hover:scale-105 active:scale-95 transition-all border border-slate-700 group"
-          title="Open ECLIPSE AI Copilot"
+          title="Open ECLIPSE Copilot"
         >
           <div className="relative">
             <Sparkles className="w-4 h-4 text-purple-400 group-hover:rotate-12 transition-transform" />
             <span className="absolute -top-1 -right-1 w-2 h-2 rounded-full bg-emerald-400 animate-ping" />
           </div>
-          <span>Ask ECLIPSE AI</span>
+          <span>Ask ECLIPSE</span>
         </button>
       )}
 

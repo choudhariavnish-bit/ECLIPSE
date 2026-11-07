@@ -167,7 +167,7 @@ class BrandAuditReport(BaseModel):
     alternative_corrections: List[CorrectionSuggestion] = Field(default_factory=list, description="Alternative rewrite options")
     driftScore: Optional[int] = Field(default=None)
     isMajorDrift: Optional[bool] = Field(default=None)
-    engine: Optional[str] = Field(default="ECLIPSE AI")
+    engine: Optional[str] = Field(default="ECLIPSE")
     model: Optional[str] = Field(default="Google Gemini")
     human_review_required: bool = Field(default=False)
     cross_validation_notes: Optional[str] = Field(default=None)

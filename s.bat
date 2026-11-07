@@ -1,5 +1,5 @@
 @echo off
-title ECLIPSE AI - Enterprise Brand Governance Platform (React + Vite)
+title ECLIPSE - Enterprise Brand Governance Platform (React + Vite)
 cd /d "%~dp0"
 
 :: Suppress Vite native config warning

@@ -445,7 +445,7 @@ export function ImageReviewStudio({
 
   // Export Design Plan
   const handleExportDesignPlan = () => {
-    let md = `# ECLIPSE AI — Visual Design & Typography Remediation Plan\n`;
+    let md = `# ECLIPSE — Visual Design & Typography Remediation Plan\n`;
     md += `**Asset:** ${imageFileName} | **Audit ID:** ${auditId}\n\n`;
     md += `## 1. Visual Accessibility (WCAG 2.1 AA)\n`;
     md += `- **Current Contrast Ratio:** ${visualDesign.contrast_ratio}\n`;
@@ -835,7 +835,7 @@ export function ImageReviewStudio({
                             <div className="h-7 w-7 rounded-lg bg-slate-900 text-white font-bold flex items-center justify-center text-xs">
                               EC
                             </div>
-                            <span className="font-bold text-xs tracking-wider text-slate-900">ECLIPSE AI</span>
+                            <span className="font-bold text-xs tracking-wider text-slate-900">ECLIPSE</span>
                           </div>
                           <span className="text-[10px] bg-emerald-50 text-emerald-800 border border-emerald-200 px-2 py-0.5 rounded font-mono font-semibold">
                             Logo Clearspace: 24px (PASS)

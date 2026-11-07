@@ -55,7 +55,7 @@ export function AiEngineStatusBadge() {
             ? "bg-purple-50 hover:bg-purple-100/80 border-purple-200 text-purple-900"
             : "bg-amber-50 hover:bg-amber-100/80 border-amber-200 text-amber-900"
         }`}
-        title="ECLIPSE AI Engine Status"
+        title="ECLIPSE Engine Status"
       >
         <Sparkles className={`w-3.5 h-3.5 ${isOnline ? "text-purple-600 animate-pulse" : "text-amber-600"}`} />
         <span className="hidden sm:inline font-bold">AI:</span>
@@ -75,7 +75,7 @@ export function AiEngineStatusBadge() {
                 <Cpu className="w-4 h-4" />
               </div>
               <div>
-                <span className="font-bold text-slate-900 text-sm">ECLIPSE AI Engine</span>
+                <span className="font-bold text-slate-900 text-sm">ECLIPSE Engine</span>
                 <span className="block text-[10px] text-slate-400">Governance & Fact Verification</span>
               </div>
             </div>

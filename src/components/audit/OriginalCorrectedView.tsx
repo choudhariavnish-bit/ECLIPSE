@@ -15,7 +15,7 @@ export function OriginalCorrectedView({
   correctedText,
   onApplyToEditor,
   originalLabel = "Original Draft (Uncorrected)",
-  correctedLabel = "ECLIPSE AI Corrected (100% Compliant)",
+  correctedLabel = "ECLIPSE Corrected (100% Compliant)",
   className = "",
 }: OriginalCorrectedViewProps) {
   const [copied, setCopied] = useState(false);

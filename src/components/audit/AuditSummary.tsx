@@ -24,7 +24,7 @@ export function AuditSummary({
   auditId,
   summaryText,
   counts,
-  engineName = "ECLIPSE AI",
+  engineName = "ECLIPSE",
   modelName = "Google Gemini",
   className = "",
 }: AuditSummaryProps) {

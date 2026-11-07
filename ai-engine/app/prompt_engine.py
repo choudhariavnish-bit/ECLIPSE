@@ -77,7 +77,7 @@ class PromptEngine:
         if custom_rules:
             custom_rules_section = "\nAdditional Custom Rules:\n" + "\n".join([f"- {r}" for r in custom_rules])
 
-        prompt = f"""You are reviewing marketing copy using your ECLIPSE AI Engine.
+        prompt = f"""You are reviewing marketing copy using your ECLIPSE Engine.
 
 INPUT CONTENT TO REVIEW:
 \"\"\"{content}\"\"\"
@@ -163,7 +163,7 @@ AUDIT INSTRUCTIONS:
         Instructs Gemini to inspect Grammar, Tone, Brand Compliance, Factual Accuracy,
         and generate a complete polished blog revision.
         """
-        prompt = f"""# ECLIPSE AI — Complete Blog Content Review & Autonomous Correction Engine
+        prompt = f"""# ECLIPSE — Complete Blog Content Review & Autonomous Correction Engine
 
 You are ECLIPSE, the intelligent brand governance, fact-checking, and content correction analyst.
 

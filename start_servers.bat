@@ -1,7 +1,7 @@
 @echo off
-title ECLIPSE AI Platform Launcher
+title ECLIPSE Platform Launcher
 echo ============================================================
-echo   ECLIPSE AI — Multimodal Brand Governance Platform
+echo   ECLIPSE — Multimodal Brand Governance Platform
 echo ============================================================
 echo.
 
@@ -15,8 +15,8 @@ if %errorlevel% neq 0 (
   )
 )
 
-echo [1/2] Starting ECLIPSE AI Engine (FastAPI) on Port 8000...
-start "ECLIPSE AI Engine (Port 8000)" cmd /k "cd /d %BASE_DIR% && python run_eclipse.py"
+echo [1/2] Starting ECLIPSE Engine (FastAPI) on Port 8000...
+start "ECLIPSE Engine (Port 8000)" cmd /k "cd /d %BASE_DIR% && python run_eclipse.py"
 
 echo [2/2] Starting ECLIPSE Frontend (React + Vite) on Port 3000...
 start "ECLIPSE Frontend (Port 3000)" cmd /k "cd /d %BASE_DIR% && %NODE_EXE% node_modules\vite\bin\vite.js --host 0.0.0.0 --port 3000"

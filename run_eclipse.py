@@ -1,5 +1,5 @@
 """
-ECLIPSE AI Engine — Server Launcher
+ECLIPSE Engine — Server Launcher
 Member 3 — AI & Prompt Engineer
 """
 
@@ -19,7 +19,7 @@ if __name__ == "__main__":
     host = os.getenv("HOST", "0.0.0.0")
 
     print("\n" + "=" * 65)
-    print("  LAUNCHING ECLIPSE AI ENGINE")
+    print("  LAUNCHING ECLIPSE ENGINE")
     print(f"  Swagger API Docs: http://localhost:{port}/docs")
     print(f"  Interactive Demo: http://localhost:{port}/")
     print(f"  Health Check:     http://localhost:{port}/api/v1/health")

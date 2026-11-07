@@ -1,5 +1,5 @@
 """
-ECLIPSE AI Engine — Intelligent Image & Poster Scanning & Visual Governance Engine
+ECLIPSE Engine — Intelligent Image & Poster Scanning & Visual Governance Engine
 Member 3 — AI & Prompt Engineer
 Multimodal Vision, OCR, Visual Accessibility (WCAG), RAG Fact Verification & Autonomous Correction
 """

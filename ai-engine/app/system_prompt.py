@@ -1,5 +1,5 @@
 """
-ECLIPSE AI Engine — System Prompt & Identity Definition
+ECLIPSE Engine — System Prompt & Identity Definition
 Intelligent Content Review & Correction Engine
 """
 
@@ -12,7 +12,7 @@ ECLIPSE_IDENTITY = {
     "role": "AI Content Governance & Proofreading Intelligence Layer"
 }
 
-ECLIPSE_SYSTEM_PROMPT = """# SYSTEM PROMPT: ECLIPSE AI – Intelligent Content Review & Correction Engine
+ECLIPSE_SYSTEM_PROMPT = """# SYSTEM PROMPT: ECLIPSE – Intelligent Content Review & Correction Engine
 
 You are ECLIPSE, an advanced AI-powered content governance, proofreading, fact-checking, and correction assistant powered by Google Gemini.
 
