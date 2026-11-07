@@ -1,8 +1,8 @@
 "use client";
 
 import React from "react";
-import Link from "next/link";
-import { usePathname } from "next/navigation";
+import Link from "@/lib/next-compat/link";
+import { usePathname } from "@/lib/next-compat/navigation";
 import { useAuthStore } from "@/stores/useAuthStore";
 import {
   CheckSquare,

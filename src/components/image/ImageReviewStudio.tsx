@@ -114,12 +114,64 @@ const PRESET_POSTERS = [
   }
 ];
 
-export function ImageReviewStudio() {
-  const [selectedPreset, setSelectedPreset] = useState<string>("preset_critical");
+export interface ImageReviewStudioProps {
+  initialHeadline?: string;
+  initialSubtext?: string;
+  initialBrand?: string;
+  initialDraftId?: string;
+}
+
+export function ImageReviewStudio({
+  initialHeadline,
+  initialSubtext,
+  initialBrand,
+  initialDraftId,
+}: ImageReviewStudioProps = {}) {
+  const storedDraftHeadline = typeof window !== "undefined" ? localStorage.getItem("eclipse_active_draft_title") : null;
+  const storedDraftSubtext = typeof window !== "undefined" ? localStorage.getItem("eclipse_active_draft_text") : null;
+  const storedDraftBrand = typeof window !== "undefined" ? localStorage.getItem("eclipse_active_draft_brand") : null;
+  const storedDraftId = typeof window !== "undefined" ? localStorage.getItem("eclipse_active_draft_id") : null;
+
+  const activeHeadline = initialHeadline || storedDraftHeadline;
+  const activeSubtext = initialSubtext || storedDraftSubtext;
+  const activeDraftIdVal = initialDraftId || storedDraftId || "active_draft";
+
+  const allPresets = useMemo(() => {
+    if (activeHeadline || activeSubtext) {
+      const draftPreset = {
+        id: activeDraftIdVal,
+        name: activeHeadline || "Active Graphic Draft",
+        description: `Imported from active draft: ${activeHeadline || "Graphic Asset"}`,
+        headline: activeHeadline || "Transform your visual branding with automated AI precision",
+        subtext: activeSubtext || "Instant multi-channel brand governance across all enterprise teams.",
+        cta: "Deploy Now",
+        contrastStatus: "2.4:1 (FAIL - WCAG AA requires min 4.5:1)",
+        wcagFail: true,
+      };
+      return [draftPreset, ...PRESET_POSTERS];
+    }
+    return PRESET_POSTERS;
+  }, [activeHeadline, activeSubtext, activeDraftIdVal]);
+
+  const [selectedPreset, setSelectedPreset] = useState<string>(
+    activeHeadline || activeSubtext ? activeDraftIdVal : "preset_critical"
+  );
   const [uploadedImageSrc, setUploadedImageSrc] = useState<string | null>(null);
-  const [imageFileName, setImageFileName] = useState<string>("q4_launch_poster.png");
-  const [brandId, setBrandId] = useState<string>("ECLIPSE");
+  const [imageFileName, setImageFileName] = useState<string>(
+    activeHeadline ? `${activeHeadline.toLowerCase().replace(/[^a-z0-9]/g, "_")}.png` : "q4_launch_poster.png"
+  );
+  const [brandId, setBrandId] = useState<string>(initialBrand || storedDraftBrand || "ECLIPSE");
   const [targetAudience, setTargetAudience] = useState<string>("Enterprise CTOs & B2B buyers");
+
+  useEffect(() => {
+    if (activeHeadline || activeSubtext) {
+      setSelectedPreset(activeDraftIdVal);
+      setImageFileName(`${(activeHeadline || "active_draft").toLowerCase().replace(/[^a-z0-9]/g, "_")}.png`);
+    }
+    if (initialBrand || storedDraftBrand) {
+      setBrandId(initialBrand || storedDraftBrand || "ECLIPSE");
+    }
+  }, [activeHeadline, activeSubtext, activeDraftIdVal, initialBrand, storedDraftBrand]);
 
   const [activeTab, setActiveTab] = useState<"comparison" | "extracted_ocr" | "visual_design" | "design_plan">("comparison");
   const [isScanning, setIsScanning] = useState<boolean>(false);
@@ -228,16 +280,17 @@ export function ImageReviewStudio() {
           setVisualDesign(response.visual_design);
         }
 
-        const mappedViolations = (response.violations || []).map((v: any, idx: number) => ({
+        const rawViolations = (response.violations || response.findings || []);
+        const mappedViolations = rawViolations.map((v: any, idx: number) => ({
           id: v.id || `viol-${idx + 1}`,
           category: v.category || "PROHIBITED_TERM",
           severity: v.severity || "MEDIUM",
-          problematic_text: v.problematic_text || "",
-          original_sentence: v.original_sentence || "",
-          explanation: v.explanation || "Brand guideline or visual issue detected.",
-          guideline_reference: v.guideline_reference || "ECLIPSE Brand Guidelines",
-          rule_id: v.rule_id || "RULE-VISUAL",
-          suggestion: v.suggestion || "",
+          problematic_text: v.problematic_text || v.flaggedText || v.original_text || v.text || "",
+          original_sentence: v.original_sentence || v.sentence || "",
+          explanation: v.explanation || v.plainEnglishReason || v.issue || "Brand guideline or visual issue detected.",
+          guideline_reference: v.guideline_reference || v.ruleCode || "ECLIPSE Brand Guidelines",
+          rule_id: v.rule_id || v.ruleCode || "RULE-VISUAL",
+          suggestion: v.suggestion || v.suggestedFix || v.recommendation || "",
           status: "pending"
         }));
 
@@ -301,8 +354,8 @@ export function ImageReviewStudio() {
     setSelectedPreset(preset.id);
     setImageFileName(`${preset.id}.png`);
     setUploadedImageSrc(null);
-    setHasScanned(false);
-    showNotification(`Loaded preset: "${preset.name}". Click "Scan Image" or upload your own.`);
+    showNotification(`Loaded preset: "${preset.name}". Scanning with AI engine...`);
+    handleScanImage(undefined, `${preset.id}.png`);
   };
 
   // Accept Individual Fix
@@ -392,7 +445,7 @@ export function ImageReviewStudio() {
 
   // Export Design Plan
   const handleExportDesignPlan = () => {
-    let md = `# ECLIPSE AI — Visual Design & Typography Remediation Plan\n`;
+    let md = `# ECLIPSE — Visual Design & Typography Remediation Plan\n`;
     md += `**Asset:** ${imageFileName} | **Audit ID:** ${auditId}\n\n`;
     md += `## 1. Visual Accessibility (WCAG 2.1 AA)\n`;
     md += `- **Current Contrast Ratio:** ${visualDesign.contrast_ratio}\n`;
@@ -419,14 +472,14 @@ export function ImageReviewStudio() {
     if (categoryFilter === "all") return violations;
     return violations.filter((v) => {
       const cat = (v.category || "").toLowerCase();
-      if (categoryFilter === "visual") return cat.includes("formatting") || v.rule_id?.includes("WCAG");
-      if (categoryFilter === "brand") return cat.includes("prohibited") || cat.includes("casing");
-      if (categoryFilter === "facts") return cat.includes("fact") || cat.includes("claim");
+      if (categoryFilter === "visual") return cat.includes("formatting") || cat.includes("visual") || cat.includes("contrast") || v.rule_id?.includes("WCAG") || v.rule_id?.includes("ACC");
+      if (categoryFilter === "brand") return cat.includes("prohibited") || cat.includes("casing") || cat.includes("tone") || cat.includes("brand");
+      if (categoryFilter === "facts") return cat.includes("fact") || cat.includes("claim") || cat.includes("contradict") || cat.includes("unsupport");
       return true;
     });
   }, [violations, categoryFilter]);
 
-  const activePresetData = PRESET_POSTERS.find((p) => p.id === selectedPreset) || PRESET_POSTERS[0];
+  const activePresetData = allPresets.find((p) => p.id === selectedPreset) || allPresets[0];
 
   return (
     <div className="space-y-4">
@@ -654,18 +707,23 @@ export function ImageReviewStudio() {
             {/* Presets & View Sub-Tabs */}
             <div className="px-4 py-2.5 border-b border-slate-200 bg-slate-50 flex flex-wrap items-center justify-between gap-2 text-xs">
               <div className="flex items-center gap-1.5 flex-wrap">
-                <span className="font-bold text-slate-500 uppercase text-[10px] mr-1">Sample Posters:</span>
-                {PRESET_POSTERS.map((p) => (
+                <span className="font-bold text-slate-500 uppercase text-[10px] mr-1">Posters:</span>
+                {allPresets.map((p) => (
                   <button
                     key={p.id}
                     onClick={() => handleLoadPreset(p)}
-                    className={`px-2 py-0.5 rounded border text-xs font-semibold transition-colors shadow-2xs ${
+                    className={`px-2 py-0.5 rounded border text-xs font-semibold transition-colors shadow-2xs flex items-center gap-1 ${
                       selectedPreset === p.id && !uploadedImageSrc
-                        ? "bg-slate-900 text-white border-slate-900"
+                        ? p.id === activeDraftIdVal
+                          ? "bg-indigo-600 text-white border-indigo-600 font-bold"
+                          : "bg-slate-900 text-white border-slate-900"
+                        : p.id === activeDraftIdVal
+                        ? "bg-indigo-50 hover:bg-indigo-100 text-indigo-900 border-indigo-300 font-bold"
                         : "bg-white hover:bg-slate-100 text-slate-700 border-slate-200"
                     }`}
                   >
-                    {p.name.split(" ")[0]}
+                    {p.id === activeDraftIdVal && <Sparkles className="h-3 w-3 text-indigo-300" />}
+                    <span>{p.id === activeDraftIdVal ? "Active Draft" : p.name.split(" ")[0]}</span>
                   </button>
                 ))}
               </div>
@@ -777,7 +835,7 @@ export function ImageReviewStudio() {
                             <div className="h-7 w-7 rounded-lg bg-slate-900 text-white font-bold flex items-center justify-center text-xs">
                               EC
                             </div>
-                            <span className="font-bold text-xs tracking-wider text-slate-900">ECLIPSE AI</span>
+                            <span className="font-bold text-xs tracking-wider text-slate-900">ECLIPSE</span>
                           </div>
                           <span className="text-[10px] bg-emerald-50 text-emerald-800 border border-emerald-200 px-2 py-0.5 rounded font-mono font-semibold">
                             Logo Clearspace: 24px (PASS)

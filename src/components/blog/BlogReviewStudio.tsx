@@ -29,6 +29,7 @@ import {
   Search,
 } from "lucide-react";
 import { api } from "@/lib/api";
+import { IssueList, OriginalCorrectedView, AuditSummary } from "@/components/audit";
 
 export interface BlogViolation {
   id: string;
@@ -88,13 +89,69 @@ In an era of rapid digital content creation, maintaining brand consistency acros
 
 Built with verified 99.99% uptime SLA reliability, the platform integrates deterministic rule parsing with advanced Google Gemini contextual reasoning. Enterprise organizations using ECLIPSE ensure that every published article, advertisement, and social media post aligns precisely with approved company messaging.`;
 
-export function BlogReviewStudio() {
-  const [blogTitle, setBlogTitle] = useState("Why Eclipse Is India's No. 1 Platform");
-  const [originalContent, setOriginalContent] = useState(SAMPLE_BLOG_VIOLATIONS);
+export interface BlogReviewStudioProps {
+  initialTitle?: string;
+  initialContent?: string;
+  initialBrand?: string;
+  initialDraftId?: string;
+  onClearDraft?: () => void;
+}
+
+export function BlogReviewStudio({
+  initialTitle,
+  initialContent,
+  initialBrand,
+  initialDraftId,
+  onClearDraft,
+}: BlogReviewStudioProps = {}) {
+  // Read stored draft if not passed as prop
+  const getStoredDraft = () => {
+    if (typeof window === "undefined") return { title: null, content: null, brand: null, id: null };
+    return {
+      title: localStorage.getItem("eclipse_active_draft_title"),
+      content: localStorage.getItem("eclipse_active_draft_text"),
+      brand: localStorage.getItem("eclipse_active_draft_brand"),
+      id: localStorage.getItem("eclipse_active_draft_id"),
+    };
+  };
+
+  const stored = getStoredDraft();
+  const resolvedTitle = initialTitle || stored.title || "Why Eclipse Is India's No. 1 Platform";
+  const resolvedContent = initialContent || stored.content || SAMPLE_BLOG_VIOLATIONS;
+  const resolvedBrand = initialBrand || stored.brand || "ECLIPSE";
+
+  const [blogTitle, setBlogTitle] = useState(resolvedTitle);
+  const [originalContent, setOriginalContent] = useState(resolvedContent);
   const [correctedContent, setCorrectedContent] = useState("");
-  const [brandId, setBrandId] = useState("ECLIPSE");
+  const [brandId, setBrandId] = useState(resolvedBrand);
   const [contentType, setContentType] = useState("blog");
   const [targetAudience, setTargetAudience] = useState("Enterprise CTOs & B2B buyers");
+  const [hasActiveDraft, setHasActiveDraft] = useState(!!(initialContent || stored.content));
+
+  useEffect(() => {
+    if (initialTitle || initialContent) {
+      if (initialTitle) setBlogTitle(initialTitle);
+      if (initialContent) {
+        setOriginalContent(initialContent);
+        setHasEvaluated(false);
+        setViolations([]);
+        setCorrectedContent("");
+      }
+      if (initialBrand) setBrandId(initialBrand);
+      setHasActiveDraft(true);
+    } else {
+      const s = getStoredDraft();
+      if (s.content) {
+        if (s.title) setBlogTitle(s.title);
+        setOriginalContent(s.content);
+        if (s.brand) setBrandId(s.brand);
+        setHasEvaluated(false);
+        setViolations([]);
+        setCorrectedContent("");
+        setHasActiveDraft(true);
+      }
+    }
+  }, [initialTitle, initialContent, initialBrand, initialDraftId]);
 
   const [activeTab, setActiveTab] = useState<"editor" | "side_by_side" | "corrected">("editor");
   const [isAnalyzing, setIsAnalyzing] = useState(false);
@@ -208,16 +265,17 @@ export function BlogReviewStudio() {
           setUnderstanding(response.input_understanding);
         }
 
-        const mappedViolations: BlogViolation[] = (response.violations || []).map((v: any, idx: number) => ({
+        const rawViolations = (response.violations || response.findings || []);
+        const mappedViolations: BlogViolation[] = rawViolations.map((v: any, idx: number) => ({
           id: v.id || `viol-${idx + 1}`,
           category: v.category || "PROHIBITED_TERM",
           severity: v.severity || "MEDIUM",
-          problematic_text: v.problematic_text || "",
-          original_sentence: v.original_sentence || "",
-          explanation: v.explanation || "Brand guideline violation detected.",
-          guideline_reference: v.guideline_reference || "ECLIPSE Brand Guidelines",
-          rule_id: v.rule_id || "RULE-ECLIPSE",
-          suggestion: v.suggestion || "",
+          problematic_text: v.problematic_text || v.flaggedText || v.original_text || v.text || "",
+          original_sentence: v.original_sentence || v.sentence || v.problematic_text || "",
+          explanation: v.explanation || v.plainEnglishReason || v.issue || "Brand guideline violation detected.",
+          guideline_reference: v.guideline_reference || v.ruleCode || "ECLIPSE Brand Guidelines",
+          rule_id: v.rule_id || v.ruleCode || "RULE-ECLIPSE",
+          suggestion: v.suggestion || v.suggestedFix || v.recommendation || "",
           corrected_sentence: v.corrected_sentence || "",
           requires_human_review: !!v.requires_human_review,
           status: "pending",
@@ -225,10 +283,11 @@ export function BlogReviewStudio() {
 
         setViolations(mappedViolations);
         setFactChecks(response.fact_checks || []);
-        setExecutiveSummary(response.summary || "ECLIPSE brand review complete.");
+        setExecutiveSummary(response.summary || response.overall_assessment || "ECLIPSE brand review complete.");
 
-        if (response.recommended_correction) {
-          setCorrectedContent(response.recommended_correction);
+        const corrected = response.recommended_correction || response.corrected_content || response.corrected_blog;
+        if (corrected) {
+          setCorrectedContent(corrected);
         } else {
           setCorrectedContent(originalContent);
         }
@@ -246,22 +305,36 @@ export function BlogReviewStudio() {
   };
 
   // 2. Accept an individual violation fix
-  const handleAcceptViolation = (id: string) => {
+  const handleAcceptViolation = (id: string, customReplacement?: string) => {
     const item = violations.find((v) => v.id === id);
     if (!item) return;
 
-    let cleanReplacement = item.suggestion.replace(/^Replace with:\s*['"]?|['"]?$/g, "").trim();
+    let cleanReplacement = (customReplacement || item.suggestion)
+      .replace(/^Replace with:\s*['"]?|['"]?$/gi, "")
+      .trim();
 
-    // Dynamically replace in corrected content
-    if (correctedContent && item.problematic_text) {
+    // Dynamically replace in BOTH originalContent and correctedContent
+    if (item.problematic_text && cleanReplacement) {
       const regex = new RegExp(item.problematic_text.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"), "i");
-      setCorrectedContent((prev) => prev.replace(regex, cleanReplacement));
+      setOriginalContent((prev) => prev.replace(regex, cleanReplacement));
+      if (correctedContent) {
+        setCorrectedContent((prev) => prev.replace(regex, cleanReplacement));
+      }
     }
 
     setViolations((prev) =>
       prev.map((v) => (v.id === id ? { ...v, status: "accepted" } : v))
     );
     showNotification(`Accepted fix for: "${item.problematic_text}"`);
+  };
+
+  // Apply all corrections to original editor draft
+  const handleApplyAllToEditor = (cleanText?: string) => {
+    const targetText = cleanText || correctedContent;
+    if (!targetText) return;
+    setOriginalContent(targetText);
+    setViolations((prev) => prev.map((v) => ({ ...v, status: "accepted" })));
+    showNotification("Applied all AI corrections to the editor draft!");
   };
 
   // 3. Reject an individual violation fix
@@ -352,16 +425,16 @@ export function BlogReviewStudio() {
     return violations.filter((v) => {
       const cat = (v.category || "").toLowerCase();
       if (categoryFilter === "grammar") {
-        return cat.includes("grammar") || cat.includes("spelling") || cat.includes("syntax") || cat.includes("repetitive");
+        return cat.includes("grammar") || cat.includes("spelling") || cat.includes("syntax") || cat.includes("repetitive") || cat.includes("punct") || cat.includes("struct");
       }
       if (categoryFilter === "brand") {
-        return cat.includes("prohibited") || cat.includes("format") || cat.includes("casing") || cat.includes("policy");
+        return cat.includes("brand") || cat.includes("prohibited") || cat.includes("format") || cat.includes("casing") || cat.includes("policy");
       }
       if (categoryFilter === "facts") {
-        return cat.includes("claim") || cat.includes("fact") || cat.includes("superlative");
+        return cat.includes("claim") || cat.includes("fact") || cat.includes("superlative") || cat.includes("contradict") || cat.includes("unsupport");
       }
       if (categoryFilter === "tone") {
-        return cat.includes("tone") || cat.includes("aggressive") || cat.includes("clickbait");
+        return cat.includes("tone") || cat.includes("voice") || cat.includes("aggressive") || cat.includes("clickbait");
       }
       return true;
     });
@@ -404,7 +477,7 @@ export function BlogReviewStudio() {
           </div>
           <div>
             <div className="flex items-center gap-2">
-              <h1 className="text-base font-bold text-slate-900">ECLIPSE AI Blog & Article Review Studio</h1>
+              <h1 className="text-base font-bold text-slate-900">ECLIPSE Blog & Article Review Studio</h1>
               <span className="bg-purple-100 text-purple-800 text-[10px] font-mono px-2 py-0.5 rounded font-bold border border-purple-200">
                 RAG + Gemini Reasoning
               </span>
@@ -659,6 +732,27 @@ export function BlogReviewStudio() {
             <div className="px-4 py-2.5 border-b border-slate-200 bg-slate-50 flex flex-wrap items-center justify-between gap-2 text-xs">
               {/* Presets & Loaders */}
               <div className="flex items-center gap-1.5 flex-wrap">
+                {hasActiveDraft && (
+                  <button
+                    onClick={() => {
+                      const s = getStoredDraft();
+                      const t = initialTitle || s.title || "Active Draft";
+                      const c = initialContent || s.content || "";
+                      const b = initialBrand || s.brand || "ECLIPSE";
+                      setBlogTitle(t);
+                      setOriginalContent(c);
+                      setBrandId(b);
+                      setHasEvaluated(false);
+                      setViolations([]);
+                      setCorrectedContent("");
+                      showNotification(`Reloaded active draft: "${t}"`);
+                    }}
+                    className="px-2.5 py-0.5 rounded border border-purple-300 bg-purple-100/80 hover:bg-purple-200 text-purple-900 font-bold text-xs transition-colors shadow-2xs flex items-center gap-1"
+                  >
+                    <Sparkles className="h-3 w-3 text-purple-600" />
+                    <span>Active Draft</span>
+                  </button>
+                )}
                 <span className="font-bold text-slate-500 uppercase text-[10px] mr-1">Load Sample:</span>
                 <button
                   onClick={() => {
@@ -860,7 +954,7 @@ export function BlogReviewStudio() {
               <span className="text-xs font-bold uppercase tracking-wider text-slate-900">
                 Identified Issues ({violations.length})
               </span>
-              <div className="flex items-center gap-1 text-[10px] font-semibold">
+              <div className="flex items-center gap-1 text-[10px] font-semibold flex-wrap">
                 <button
                   onClick={() => setCategoryFilter("all")}
                   className={`px-2 py-0.5 rounded transition-colors ${
@@ -893,6 +987,22 @@ export function BlogReviewStudio() {
                 >
                   Grammar ({grammarCount})
                 </button>
+                <button
+                  onClick={() => setCategoryFilter("tone")}
+                  className={`px-2 py-0.5 rounded transition-colors ${
+                    categoryFilter === "tone" ? "bg-indigo-700 text-white" : "bg-indigo-100 text-indigo-800"
+                  }`}
+                >
+                  Tone ({toneCount})
+                </button>
+                {correctedContent && violations.length > 0 && (
+                  <button
+                    onClick={() => handleApplyAllToEditor()}
+                    className="ml-auto px-2 py-0.5 bg-emerald-700 hover:bg-emerald-800 text-white font-bold rounded shadow-2xs transition-colors"
+                  >
+                    Fix All
+                  </button>
+                )}
               </div>
             </div>
 

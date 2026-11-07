@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import Link from "next/link";
+import Link from "@/lib/next-compat/link";
 import { Database, ShieldCheck, CheckCircle2, Server, ExternalLink } from "lucide-react";
 import { api } from "@/lib/api";
 

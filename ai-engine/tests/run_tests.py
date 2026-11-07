@@ -22,7 +22,7 @@ from schemas.request_schema import ReviewRequest, ChatRequest
 
 def run_all_tests():
     print("=" * 65)
-    print(" ECLIPSE AI Engine — Automated Test Suite")
+    print(" ECLIPSE Engine — Automated Test Suite")
     print("=" * 65)
 
     # 1. Identity & System Instructions
@@ -109,7 +109,7 @@ def run_all_tests():
     print(f"  -> PASS: ECLIPSE Chat responded: \"{chat_resp.reply[:60]}...\"")
 
     print("=" * 65)
-    print(" ALL 8/8 ECLIPSE AI ENGINE CHECKS PASSED SUCCESSFULLY! ")
+    print(" ALL 8/8 ECLIPSE ENGINE CHECKS PASSED SUCCESSFULLY! ")
     print("=" * 65)
 
 if __name__ == "__main__":

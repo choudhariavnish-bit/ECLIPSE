@@ -13,7 +13,7 @@ export const apiClient = axios.create({
 // Attach JWT token from localStorage if available
 apiClient.interceptors.request.use((config) => {
   if (typeof window !== "undefined") {
-    const token = localStorage.getItem("inkloom_access_token");
+    const token = localStorage.getItem("eclipse_access_token") || localStorage.getItem("inkloom_access_token");
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
@@ -27,6 +27,8 @@ export const api = {
     async login(email: string, password = "password123") {
       const res = await apiClient.post("/auth/login", { email, password });
       if (res.data.accessToken && typeof window !== "undefined") {
+        localStorage.setItem("eclipse_access_token", res.data.accessToken);
+        localStorage.setItem("eclipse_user", JSON.stringify(res.data.user));
         localStorage.setItem("inkloom_access_token", res.data.accessToken);
         localStorage.setItem("inkloom_user", JSON.stringify(res.data.user));
       }
@@ -42,6 +44,8 @@ export const api = {
     },
     logout() {
       if (typeof window !== "undefined") {
+        localStorage.removeItem("eclipse_access_token");
+        localStorage.removeItem("eclipse_user");
         localStorage.removeItem("inkloom_access_token");
         localStorage.removeItem("inkloom_user");
       }
@@ -88,7 +92,7 @@ export const api = {
     },
   },
 
-  // ECLIPSE AI Blog Review & Correction APIs
+  // ECLIPSE Blog Review & Correction APIs
   blog: {
     async analyze(payload: { title?: string; content: string; brand_id?: string; content_type?: string; target_audience?: string }) {
       const res = await apiClient.post("/blog/analyze", payload);

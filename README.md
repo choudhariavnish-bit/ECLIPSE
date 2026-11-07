@@ -1,4 +1,4 @@
-# ECLIPSE AI Platform
+# ECLIPSE Platform
 
 > **The Intelligent Brand Governance, Fact Verification & Autonomous Content Correction Platform**  
 > Powered by **Google Gemini API (`google-genai`) + RAG Architecture + Next.js 15 + FastAPI**
@@ -11,19 +11,20 @@
 
 ```
                                 ┌─────────────────────────────────────────┐
-                                │          ECLIPSE AI PLATFORM            │
+                                │          ECLIPSE PLATFORM            │
                                 └────────────────────┬────────────────────┘
                                                      │
                  ┌───────────────────────────────────┴───────────────────────────────────┐
                  ▼                                                                       ▼
 ┌─────────────────────────────────┐                                     ┌─────────────────────────────────┐
-│     Next.js Fullstack Console   │                                     │        ECLIPSE AI Engine        │
+│     Next.js Fullstack Console   │                                     │        ECLIPSE Engine        │
 │          (Port 3000)            │   Zero-Data-Retention API Requests  │           (Port 8000)           │
 │  - Creator Compliance Studio    │ ──────────────────────────────────> │  - Google Gemini 3.5 LLM       │
 │  - Brand Manager Review Queue   │ <────────────────────────────────── │  - RAG Brand Knowledge Base     │
 │  - Enterprise Admin & RBAC      │       Structured JSON Audits        │  - Deterministic Rule Parser    │
 │  - Multi-Device Local Tunnel    │                                     │  - Verified Fact Cross-Checker  │
-└─────────────────────────────────┘                                     └─────────────────────────────────┘
+└─────────────────────────────────┘                                     └─────────────────────────────────┘ 63
+
 ```
 
 ---
@@ -42,7 +43,7 @@
 
 ```
                       ┌─────────────────────────────────────────┐
-                      │            ECLIPSE AI Engine            │
+                      │            ECLIPSE Engine            │
                       └────────────────────┬────────────────────┘
                                            │
          ┌───────────────────┬─────────────┴───────┬───────────────────┐
@@ -98,7 +99,7 @@ s.bat
 **What `s.bat` automates:**
 1. Clears any zombie process holding port 3000.
 2. Automatically verifies and installs Node dependencies if missing.
-3. Launches the **ECLIPSE AI Engine** on `http://localhost:8000` (FastAPI + Gemini).
+3. Launches the **ECLIPSE Engine** on `http://localhost:8000` (FastAPI + Gemini).
 4. Configures local IPv4 network endpoints for access from smartphones or tablets on the same Wi-Fi.
 5. Automatically opens Google Chrome directly to `http://localhost:3000`.
 6. Launches an optional zero-config public tunnel for remote access.
@@ -108,7 +109,7 @@ s.bat
 
 ### ⚙️ Option B: Manual Setup
 
-#### 1. Start the ECLIPSE AI Engine (Port 8000)
+#### 1. Start the ECLIPSE Engine (Port 8000)
 
 ```bash
 cd ai-engine

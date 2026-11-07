@@ -29,7 +29,7 @@ const INITIAL_USERS: AdminUser[] = [
   {
     id: "usr-01",
     name: "Alex Morgan",
-    email: "alex.creator@inkloom.ai",
+    email: "alex.creator@eclipse.ai",
     role: "creator",
     department: "Content & Communications",
     lastActive: "12 mins ago",
@@ -38,7 +38,7 @@ const INITIAL_USERS: AdminUser[] = [
   {
     id: "usr-02",
     name: "Sarah Chen",
-    email: "sarah.brand@inkloom.ai",
+    email: "sarah.brand@eclipse.ai",
     role: "brand-manager",
     department: "Global Brand Governance",
     lastActive: "3 mins ago",
@@ -47,7 +47,7 @@ const INITIAL_USERS: AdminUser[] = [
   {
     id: "usr-03",
     name: "Marcus Vance",
-    email: "marcus.admin@inkloom.ai",
+    email: "marcus.admin@eclipse.ai",
     role: "admin",
     department: "Information Security",
     lastActive: "Now",

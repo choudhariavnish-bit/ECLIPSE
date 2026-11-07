@@ -1,11 +1,12 @@
 "use client";
 
 import React, { useState, useMemo, useEffect } from "react";
-import Link from "next/link";
+import Link from "@/lib/next-compat/link";
 import { api } from "@/lib/api";
 import { useAuthStore } from "@/stores/useAuthStore";
 import { BlogReviewStudio } from "@/components/blog/BlogReviewStudio";
 import { ImageReviewStudio } from "@/components/image/ImageReviewStudio";
+import { IssueList, OriginalCorrectedView, AuditSummary, EmptyAuditState } from "@/components/audit";
 import {
   Sparkles,
   FileCheck2,
@@ -38,7 +39,8 @@ import {
 
 interface AuditFinding {
   id: string;
-  category: "Legal & Claims" | "Tone & Style" | "Visual & Contrast (WCAG)";
+  category: string;
+  severity?: string;
   flaggedText: string;
   issue: string;
   plainEnglishReason: string;
@@ -100,7 +102,7 @@ const TEMPLATES: TemplatePreset[] = [
     isImage: true,
     imageTitle: "Q4 Enterprise Product Launch Campaign Poster",
     contrast: "2.4:1 (FAIL - WCAG AA requires min 4.5:1)",
-    text: "INKLOOM: The only 100% foolproof AI platform. Deploy with super crazy fast velocity across all enterprise teams.",
+    text: "ECLIPSE: The only 100% foolproof AI platform. Deploy with super crazy fast velocity across all enterprise teams.",
     rawFindings: [
       {
         id: "f-img-1",
@@ -126,7 +128,7 @@ const TEMPLATES: TemplatePreset[] = [
   },
   {
     id: "major_drift",
-    label: "Critical Claim (Major Drift â¥ 70)",
+    label: "Critical Claim (Major Drift >= 70)",
     channel: "Press Release & Social",
     driftScore: 86,
     isMajorDrift: true,
@@ -200,6 +202,16 @@ export default function CreatorDashboard() {
   const [glossarySearch, setGlossarySearch] = useState("");
   const [toastMessage, setToastMessage] = useState<string | null>(null);
 
+  // Active Draft info state
+  const [activeDraftInfo, setActiveDraftInfo] = useState<{
+    id?: string;
+    title?: string;
+    content?: string;
+    channel?: string;
+    brand?: string;
+    format?: string;
+  } | null>(null);
+
   // Workflow states: "idle" (needs check), "checking" (in progress), "evaluated" (checked)
   const [auditState, setAuditState] = useState<"idle" | "checking" | "evaluated">("idle");
   const [findings, setFindings] = useState<AuditFinding[]>([]);
@@ -213,35 +225,84 @@ export default function CreatorDashboard() {
   const [aiModelName, setAiModelName] = useState<string>("Google Gemini");
 
   useEffect(() => {
-    if (typeof window !== "undefined") {
-      const hash = window.location.hash;
+    if (typeof window === "undefined") return;
+
+    const getParam = (paramName: string): string | null => {
       const urlParams = new URLSearchParams(window.location.search);
-      if (hash === "#blog" || urlParams.get("mode") === "blog" || localStorage.getItem("eclipse_creator_mode") === "blog") {
-        setStudioMode("blog");
-      } else if (hash === "#social" || urlParams.get("mode") === "social" || localStorage.getItem("eclipse_creator_mode") === "social") {
-        setStudioMode("social");
-      } else {
-        setStudioMode("image");
+      const urlVal = urlParams.get(paramName);
+      if (urlVal) return urlVal;
+
+      const fullHash = window.location.hash || "";
+      if (fullHash.includes("?")) {
+        const hashParams = new URLSearchParams(fullHash.split("?")[1]);
+        const hashVal = hashParams.get(paramName);
+        if (hashVal) return hashVal;
       }
-      const storedText = localStorage.getItem("eclipse_active_draft_text");
-      const storedChannel = localStorage.getItem("eclipse_active_draft_channel");
-      const storedBrand = localStorage.getItem("eclipse_active_draft_brand");
-      if (storedText) {
-        setInputText(storedText);
-        setAuditState("idle");
-        showNotification("Loaded active draft into Compliance Inspector!");
-        localStorage.removeItem("eclipse_active_draft_text");
-      }
-      if (storedChannel) {
-        setSelectedChannel(storedChannel);
-        localStorage.removeItem("eclipse_active_draft_channel");
-      }
-      if (storedBrand) {
-        showNotification("Active Rulebook switched to: " + storedBrand);
-        localStorage.removeItem("eclipse_active_draft_brand");
-      }
+      return null;
+    };
+
+    const modeParam = getParam("mode");
+    const draftIdParam = getParam("draftId");
+
+    const storedDraftId = draftIdParam || localStorage.getItem("eclipse_active_draft_id");
+    const storedText = localStorage.getItem("eclipse_active_draft_text");
+    const storedTitle = localStorage.getItem("eclipse_active_draft_title");
+    const storedChannel = localStorage.getItem("eclipse_active_draft_channel");
+    const storedBrand = localStorage.getItem("eclipse_active_draft_brand");
+    const storedFormat = localStorage.getItem("eclipse_active_draft_format");
+    const storedMode = localStorage.getItem("eclipse_creator_mode");
+
+    if (storedText || storedTitle) {
+      const draftObj = {
+        id: storedDraftId || undefined,
+        title: storedTitle || "Active Draft",
+        content: storedText || "",
+        channel: storedChannel || "LinkedIn & Social",
+        brand: storedBrand || "ECLIPSE Global Enterprises",
+        format: storedFormat || "text",
+      };
+      setActiveDraftInfo(draftObj);
+      setInputText(storedText || "");
+      if (storedTitle) setPosterTitle(storedTitle);
+      if (storedChannel) setSelectedChannel(storedChannel);
+      setAuditState("idle");
+    }
+
+    // Determine target studio mode
+    let targetMode: "image" | "blog" | "social" = "social";
+    if (modeParam === "blog" || modeParam === "image" || modeParam === "social") {
+      targetMode = modeParam;
+    } else if (storedMode === "blog" || storedMode === "image" || storedMode === "social") {
+      targetMode = storedMode;
+    } else if (storedFormat === "graphic" || (storedChannel && (storedChannel.toLowerCase().includes("instagram") || storedChannel.toLowerCase().includes("poster")))) {
+      targetMode = "image";
+    } else if (storedChannel && (storedChannel.toLowerCase().includes("blog") || storedChannel.toLowerCase().includes("press") || storedChannel.toLowerCase().includes("whitepaper"))) {
+      targetMode = "blog";
+    }
+
+    setStudioMode(targetMode);
+    localStorage.setItem("eclipse_creator_mode", targetMode);
+
+    if (storedText || storedTitle) {
+      showNotification(`Loaded draft: "${storedTitle || "In-Progress Draft"}" into ${targetMode === "blog" ? "Blog Studio" : targetMode === "image" ? "Image Studio" : "Short-Form Studio"}`);
     }
   }, []);
+
+  const handleClearActiveDraft = () => {
+    setActiveDraftInfo(null);
+    localStorage.removeItem("eclipse_active_draft_id");
+    localStorage.removeItem("eclipse_active_draft_title");
+    localStorage.removeItem("eclipse_active_draft_text");
+    localStorage.removeItem("eclipse_active_draft_channel");
+    localStorage.removeItem("eclipse_active_draft_brand");
+    localStorage.removeItem("eclipse_active_draft_format");
+    localStorage.removeItem("inkloom_active_draft_text");
+    setInputText(TEMPLATES[0].text);
+    setPosterTitle("Marketing Banner Graphic");
+    setFindings([]);
+    setAuditState("idle");
+    showNotification("Cleared active draft. Switched to standard templates.");
+  };
 
   const pendingList = findings.filter((f) => f.status === "pending");
 
@@ -272,7 +333,7 @@ export default function CreatorDashboard() {
     setTimeout(() => setToastMessage(null), 3500);
   };
 
-  // Run the explicit check action with ECLIPSE AI Engine
+  // Run the explicit check action with ECLIPSE Engine
   const handleRunCheck = async () => {
     setAuditState("checking");
     setIsPublished(false);
@@ -280,6 +341,7 @@ export default function CreatorDashboard() {
     try {
       const res = await api.review.start({
         text: inputText,
+        content: inputText,
         channel: selectedChannel || "social_media",
       });
 
@@ -292,6 +354,7 @@ export default function CreatorDashboard() {
         mappedFindings.push({
           id: "f-img-1",
           category: "Visual & Contrast (WCAG)",
+          severity: "high",
           flaggedText: "Yellow Headline on Light Background",
           issue: "Contrast ratio 2.4:1 fails accessibility standard.",
           plainEnglishReason: "Low visual contrast makes text hard to read on mobile devices and violates WCAG 2.1 AA.",
@@ -301,25 +364,38 @@ export default function CreatorDashboard() {
         });
       }
 
-      // 2. Map Live Findings from ECLIPSE AI Engine
-      if (res && res.findings && res.findings.length > 0) {
-        res.findings.forEach((f: any, idx: number) => {
-          let category: "Legal & Claims" | "Tone & Style" | "Visual & Contrast (WCAG)" = "Tone & Style";
+      // 2. Map Live Findings from ECLIPSE Engine
+      const rawList = (res && res.findings) || (res && res.violations) || [];
+      if (rawList.length > 0) {
+        rawList.forEach((f: any, idx: number) => {
+          let category = "Tone & Style";
           const rawCat = (f.category || "").toLowerCase();
-          if (rawCat.includes("claim") || rawCat.includes("legal") || rawCat.includes("fact") || rawCat.includes("terminology")) {
+          if (rawCat.includes("gramm") || rawCat.includes("spell") || rawCat.includes("syntax") || rawCat.includes("punct") || rawCat.includes("struct")) {
+            category = "Grammar & Language";
+          } else if (rawCat.includes("claim") || rawCat.includes("legal") || rawCat.includes("sec") || rawCat.includes("ftc")) {
             category = "Legal & Claims";
-          } else if (rawCat.includes("visual") || rawCat.includes("contrast") || rawCat.includes("wcag")) {
+          } else if (rawCat.includes("visual") || rawCat.includes("contrast") || rawCat.includes("wcag") || rawCat.includes("format")) {
             category = "Visual & Contrast (WCAG)";
+          } else if (rawCat.includes("prohibit") || rawCat.includes("term") || rawCat.includes("casing") || rawCat.includes("policy")) {
+            category = "Prohibited Terminology";
+          } else if (rawCat.includes("fact") || rawCat.includes("contradict") || rawCat.includes("unsupport")) {
+            category = "Fact Verification";
           }
+
+          const flagged = f.problematic_text || f.flaggedText || f.original_text || f.text || "";
+          const expl = f.explanation || f.plainEnglishReason || f.issue || "Brand guideline violation detected.";
+          let fix = f.suggestion || f.suggestedFix || f.recommendation || "";
+          fix = fix.replace(/^Replace with:\s*['"]?|['"]?$/gi, "").trim();
 
           mappedFindings.push({
             id: f.id || `f-${idx + 1}`,
             category,
-            flaggedText: f.flaggedText || f.highlight_text || f.problematic_text || "",
-            issue: f.issue || f.explanation || "Brand guideline violation",
-            plainEnglishReason: f.plainEnglishReason || f.explanation || "Non-compliant copy flagged by ECLIPSE AI.",
-            suggestedFix: f.suggestedFix || f.suggestion || "",
-            ruleCode: f.ruleCode || (f.severity === "high" ? "SEC-9.1 (CRITICAL)" : "RULE-ECLIPSE"),
+            severity: f.severity || "medium",
+            flaggedText: flagged,
+            issue: f.title || f.issue || expl,
+            plainEnglishReason: expl,
+            suggestedFix: fix,
+            ruleCode: f.rule_id || f.ruleCode || (f.severity === "high" || f.severity === "critical" ? "SEC-9.1 (CRITICAL)" : "RULE-ECLIPSE"),
             status: "pending",
           });
         });
@@ -339,41 +415,49 @@ export default function CreatorDashboard() {
       setIsMajorDrift(isMajor);
 
       if (res) {
-        if (res.summary) setAiSummary(res.summary);
+        if (res.summary || res.overall_assessment) setAiSummary(res.summary || res.overall_assessment);
         if (Array.isArray(res.factChecks)) setFactChecks(res.factChecks);
-        if (res.cleanTextSuggested) setCleanCopy(res.cleanTextSuggested);
+        else if (Array.isArray(res.fact_checks)) setFactChecks(res.fact_checks);
+
+        const clean = res.cleanTextSuggested || res.recommended_correction || res.corrected_content;
+        if (clean) setCleanCopy(clean);
         if (res.engine) setAiEngineName(res.engine);
         if (res.model) setAiModelName(res.model);
       }
 
       if (mappedFindings.length === 0) {
-        showNotification("ECLIPSE AI: 100% Brand Compliant! Zero infractions detected.");
+        showNotification("ECLIPSE: 100% Brand Compliant! Zero infractions detected.");
       } else if (isMajor) {
-        showNotification(`ECLIPSE AI: Major Drift Detected (${calculatedDrift}/100) — Brand Manager review required.`);
+        showNotification(`ECLIPSE: Major Drift Detected (${calculatedDrift}/100) — Brand Manager review required.`);
       } else {
-        showNotification(`ECLIPSE AI: Review complete — ${mappedFindings.length} issue(s) flagged.`);
+        showNotification(`ECLIPSE: Review complete — ${mappedFindings.length} issue(s) flagged.`);
       }
     } catch (err: any) {
       console.error("ECLIPSE live check failed:", err);
       setAuditState("evaluated");
-      showNotification("ECLIPSE AI: Completed review scan.");
+      showNotification("ECLIPSE: Completed review scan.");
     }
   };
 
-  const handleApplyFix = (id: string) => {
+  const handleApplyFix = (id: string, customReplacement?: string) => {
     const finding = findings.find((f) => f.id === id);
     if (!finding) return;
 
+    const rep = (customReplacement || finding.suggestedFix)
+      .replace(/^Replace with:\s*['"]?|['"]?$/gi, "")
+      .trim();
+
     if (finding.category === "Visual & Contrast (WCAG)") {
       setPosterContrast("WCAG AA Compliant (12.4:1 - Slate-900 typography)");
-    } else {
-      setInputText((prev) => prev.replace(finding.flaggedText, finding.suggestedFix));
+    } else if (finding.flaggedText && rep) {
+      const regex = new RegExp(finding.flaggedText.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"), "i");
+      setInputText((prev) => prev.replace(regex, rep));
     }
 
     setFindings((prev) =>
       prev.map((f) => (f.id === id ? { ...f, status: "applied" } : f))
     );
-    showNotification(`Rephrased "${finding.flaggedText}" â "${finding.suggestedFix}" (Original voice preserved)`);
+    return;
   };
 
   const handleDismiss = (findingId: string) => {
@@ -387,8 +471,10 @@ export default function CreatorDashboard() {
     pendingList.forEach((f) => {
       if (f.category === "Visual & Contrast (WCAG)") {
         setPosterContrast("WCAG AA Compliant (12.4:1 - Slate-900 typography)");
-      } else {
-        updated = updated.replace(f.flaggedText, f.suggestedFix);
+      } else if (f.flaggedText && f.suggestedFix) {
+        const rep = f.suggestedFix.replace(/^Replace with:\s*['"]?|['"]?$/gi, "").trim();
+        const regex = new RegExp(f.flaggedText.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"), "i");
+        updated = updated.replace(regex, rep);
       }
     });
     setInputText(updated);
@@ -472,6 +558,42 @@ export default function CreatorDashboard() {
         </div>
       )}
 
+      {/* Active Draft Banner */}
+      {activeDraftInfo && (
+        <div className="bg-gradient-to-r from-blue-50 via-indigo-50 to-purple-50 border border-blue-200 rounded-xl p-3 shadow-xs flex flex-wrap items-center justify-between gap-3">
+          <div className="flex items-center gap-3">
+            <div className="h-9 w-9 rounded-xl bg-blue-600 text-white flex items-center justify-center shadow-xs">
+              <Sparkles className="h-4 w-4" />
+            </div>
+            <div>
+              <div className="flex items-center gap-2">
+                <span className="text-[10px] font-bold uppercase tracking-wider bg-blue-100 text-blue-800 px-2 py-0.5 rounded border border-blue-200">
+                  Active Draft Loaded
+                </span>
+                <span className="text-xs font-black text-slate-900">{activeDraftInfo.title}</span>
+              </div>
+              <p className="text-[11px] text-slate-500 mt-0.5">
+                Brand: <strong className="text-slate-700">{activeDraftInfo.brand || "ECLIPSE"}</strong> • Channel: <strong className="text-slate-700">{activeDraftInfo.channel || "Multi-Channel"}</strong>
+              </p>
+            </div>
+          </div>
+          <div className="flex items-center gap-2">
+            <Link
+              href="/dashboard/drafts"
+              className="text-xs font-bold text-blue-700 hover:text-blue-900 px-3 py-1.5 rounded-lg bg-white border border-blue-200 shadow-2xs hover:bg-blue-50 transition-colors"
+            >
+              Switch Draft
+            </Link>
+            <button
+              onClick={handleClearActiveDraft}
+              className="text-xs font-semibold text-slate-600 hover:text-slate-900 px-3 py-1.5 rounded-lg hover:bg-white/80 transition-colors"
+            >
+              Unload
+            </button>
+          </div>
+        </div>
+      )}
+
       {/* Primary Studio Workflow Switcher */}
       <div className="bg-white rounded-xl border border-slate-200 p-2 shadow-xs flex flex-wrap items-center justify-between gap-3">
         <div className="flex rounded-lg border border-slate-200 bg-slate-100 p-1 text-xs font-bold w-full sm:w-auto">
@@ -532,9 +654,20 @@ export default function CreatorDashboard() {
       </div>
 
       {studioMode === "image" ? (
-        <ImageReviewStudio />
+        <ImageReviewStudio
+          initialDraftId={activeDraftInfo?.id}
+          initialHeadline={activeDraftInfo?.title}
+          initialSubtext={activeDraftInfo?.content}
+          initialBrand={activeDraftInfo?.brand}
+        />
       ) : studioMode === "blog" ? (
-        <BlogReviewStudio />
+        <BlogReviewStudio
+          initialDraftId={activeDraftInfo?.id}
+          initialTitle={activeDraftInfo?.title}
+          initialContent={activeDraftInfo?.content}
+          initialBrand={activeDraftInfo?.brand}
+          onClearDraft={handleClearActiveDraft}
+        />
       ) : (
         <>
           {/* Top Header Bar */}
@@ -710,7 +843,7 @@ export default function CreatorDashboard() {
               className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold shadow-xs transition-colors"
             >
               <AlertTriangle className="h-3.5 w-3.5" />
-              <span>Escalate to Brand Manager (Drift â¥ 70)</span>
+              <span>Escalate to Brand Manager (Drift &ge; 70)</span>
             </button>
           )}
 
@@ -832,9 +965,9 @@ export default function CreatorDashboard() {
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-2">
                           <div className="h-7 w-7 rounded-lg bg-slate-900 text-white font-bold flex items-center justify-center text-xs shadow-xs">
-                            IL
+                            EC
                           </div>
-                          <span className="font-bold text-xs tracking-wider text-slate-900">INKLOOM AI</span>
+                          <span className="font-bold text-xs tracking-wider text-slate-900">ECLIPSE</span>
                         </div>
 
                         <span className="text-[10px] bg-emerald-50 text-emerald-800 border border-emerald-200 px-2 py-0.5 rounded font-mono font-semibold">
@@ -915,49 +1048,30 @@ export default function CreatorDashboard() {
                   <div className="rounded-xl border border-slate-200 bg-white p-4 space-y-3 shadow-xs">
                     <div className="flex items-center gap-2.5">
                       <div className="h-8 w-8 rounded-lg bg-slate-900 text-white font-bold flex items-center justify-center text-xs">
-                        IL
+                        EC
                       </div>
                       <div>
                         <div className="text-xs font-bold text-slate-900">ECLIPSE Official Post</div>
-                        <div className="text-[11px] text-slate-400">Target Channel: {selectedChannel} â¢ Public</div>
+                        <div className="text-[11px] text-slate-400">Target Channel: {selectedChannel} • Public</div>
                       </div>
                     </div>
                     <p className="text-xs sm:text-sm text-slate-800 leading-relaxed whitespace-pre-wrap font-sans">
                       {inputText}
                     </p>
                     <div className="pt-2 border-t border-slate-100 flex items-center justify-between text-[11px] text-slate-400">
-                      <span>142 reactions â¢ 18 comments</span>
+                      <span>142 reactions • 18 comments</span>
                       <span>Verified Brand Post</span>
                     </div>
                   </div>
                 ) : (
-                  <div className="rounded-xl border border-slate-200 bg-slate-50 p-4 text-xs sm:text-sm leading-relaxed font-sans">
-                    {inputText.includes("100% foolproof") ? (
-                      <>
-                        ECLIPSE is the market&apos;s only{" "}
-                        <span className="bg-rose-100 text-rose-800 line-through px-1 rounded font-medium">
-                          100% foolproof
-                        </span>{" "}
-                        AI automation platform with{" "}
-                        <span className="bg-amber-100 text-amber-800 line-through px-1 rounded font-medium">
-                          super crazy fast
-                        </span>{" "}
-                        deployment for global brands.
-                      </>
-                    ) : (
-                      <>
-                        ECLIPSE is the market&apos;s only{" "}
-                        <span className="bg-emerald-100 text-emerald-800 underline px-1 rounded font-medium">
-                          enterprise-grade verified
-                        </span>{" "}
-                        AI automation platform with{" "}
-                        <span className="bg-emerald-100 text-emerald-800 underline px-1 rounded font-medium">
-                          rapid zero-downtime
-                        </span>{" "}
-                        deployment for global brands.
-                      </>
-                    )}
-                  </div>
+                  <OriginalCorrectedView
+                    originalText={inputText}
+                    correctedText={cleanCopy || ""}
+                    onApplyToEditor={(text) => {
+                      setInputText(text);
+                      showNotification("Applied AI-corrected copy to editor!");
+                    }}
+                  />
                 )
               )}
 
@@ -1096,7 +1210,7 @@ export default function CreatorDashboard() {
                     <div className="flex items-center justify-between">
                       <span className="font-bold text-rose-900 flex items-center gap-1.5">
                         <AlertTriangle className="h-4 w-4 text-rose-600" />
-                        Major Policy Drift ({driftScore}%) â¥ 70 Threshold
+                        Major Policy Drift ({driftScore}%) &ge; 70 Threshold
                       </span>
                       <span className="bg-rose-200/80 text-rose-900 font-mono text-[10px] font-bold px-1.5 py-0.5 rounded">
                         MANDATORY ESCALATION
@@ -1129,7 +1243,7 @@ export default function CreatorDashboard() {
                     <div className="flex items-center justify-between">
                       <span className="font-bold text-purple-950 flex items-center gap-1.5">
                         <Sparkles className="h-4 w-4 text-purple-600" />
-                        ECLIPSE AI Intelligence Review
+                        ECLIPSE Intelligence Review
                       </span>
                       <span className="bg-purple-200/80 text-purple-900 font-mono text-[10px] font-bold px-2 py-0.5 rounded border border-purple-300">
                         {aiModelName}
@@ -1200,114 +1314,31 @@ export default function CreatorDashboard() {
                   </div>
                 )}
 
-                {/* 1. Legal & Claims Section */}
-                {legalFindings.length > 0 && (
-                  <div className="space-y-2">
-                    <div className="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wider text-rose-800 bg-rose-50 px-2 py-1 rounded border border-rose-200">
-                      <AlertTriangle className="h-3 w-3 text-rose-600" />
-                      <span>Legal Liability & Superlative Claims ({legalFindings.length})</span>
-                    </div>
-
-                    {legalFindings.map((f) => (
-                      <div
-                        key={f.id}
-                        className="p-3 rounded-lg border border-rose-200/80 bg-white space-y-2 text-xs shadow-2xs"
-                      >
-                        <div className="flex items-center justify-between">
-                          <span className="font-mono text-[10px] font-bold text-slate-400">{f.ruleCode}</span>
-                          <span className="font-bold text-rose-600 line-through font-mono">
-                            &quot;{f.flaggedText}&quot;
-                          </span>
-                        </div>
-                        <p className="font-semibold text-slate-800">{f.issue}</p>
-                        <div className="p-2 rounded bg-slate-50 text-[11px] text-slate-600 leading-normal border border-slate-100">
-                          <strong>Why this matters:</strong> {f.plainEnglishReason}
-                        </div>
-                        <div className="p-2 rounded bg-emerald-50 border border-emerald-200 flex items-center justify-between gap-2">
-                          <span className="font-bold text-emerald-950 text-[11px]">&quot;{f.suggestedFix}&quot;</span>
-                          <button
-                            onClick={() => handleApplyFix(f.id)}
-                            className="px-2.5 py-1 bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs rounded shadow-xs"
-                          >
-                            Apply Fix
-                          </button>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                )}
-
-                {/* 2. Visual & Accessibility Section */}
-                {visualFindings.length > 0 && (
-                  <div className="space-y-2">
-                    <div className="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wider text-indigo-900 bg-indigo-50 px-2 py-1 rounded border border-indigo-200">
-                      <ImageIcon className="h-3 w-3 text-indigo-600" />
-                      <span>Visual & WCAG Accessibility ({visualFindings.length})</span>
-                    </div>
-
-                    {visualFindings.map((f) => (
-                      <div
-                        key={f.id}
-                        className="p-3 rounded-lg border border-indigo-200/80 bg-white space-y-2 text-xs shadow-2xs"
-                      >
-                        <div className="flex items-center justify-between">
-                          <span className="font-mono text-[10px] font-bold text-slate-400">{f.ruleCode}</span>
-                          <span className="font-bold text-indigo-700 text-[11px]">{f.flaggedText}</span>
-                        </div>
-                        <p className="font-semibold text-slate-800">{f.issue}</p>
-                        <div className="p-2 rounded bg-slate-50 text-[11px] text-slate-600 leading-normal border border-slate-100">
-                          <strong>Why this matters:</strong> {f.plainEnglishReason}
-                        </div>
-                        <div className="p-2 rounded bg-emerald-50 border border-emerald-200 flex items-center justify-between gap-2">
-                          <span className="font-bold text-emerald-950 text-[11px]">{f.suggestedFix}</span>
-                          <button
-                            onClick={() => handleApplyFix(f.id)}
-                            className="px-2.5 py-1 bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs rounded shadow-xs"
-                          >
-                            Remediate
-                          </button>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                )}
-
-                {/* 3. Tone & Voice Section */}
-                {toneFindings.length > 0 && (
-                  <div className="space-y-2">
-                    <div className="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wider text-amber-900 bg-amber-50 px-2 py-1 rounded border border-amber-200">
-                      <Sliders className="h-3 w-3 text-amber-600" />
-                      <span>Tone & Voice Benchmarks ({toneFindings.length})</span>
-                    </div>
-
-                    {toneFindings.map((f) => (
-                      <div
-                        key={f.id}
-                        className="p-3 rounded-lg border border-amber-200/80 bg-white space-y-2 text-xs shadow-2xs"
-                      >
-                        <div className="flex items-center justify-between">
-                          <span className="font-mono text-[10px] font-bold text-slate-400">{f.ruleCode}</span>
-                          <span className="font-bold text-amber-700 line-through font-mono">
-                            &quot;{f.flaggedText}&quot;
-                          </span>
-                        </div>
-                        <p className="font-semibold text-slate-800">{f.issue}</p>
-                        <div className="p-2 rounded bg-slate-50 text-[11px] text-slate-600 leading-normal border border-slate-100">
-                          <strong>Why this matters:</strong> {f.plainEnglishReason}
-                        </div>
-                        <div className="p-2 rounded bg-emerald-50 border border-emerald-200 flex items-center justify-between gap-2">
-                          <span className="font-bold text-emerald-950 text-[11px]">&quot;{f.suggestedFix}&quot;</span>
-                          <button
-                            onClick={() => handleApplyFix(f.id)}
-                            className="px-2.5 py-1 bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs rounded shadow-xs"
-                          >
-                            Apply Fix
-                          </button>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                )}
+                {/* Unified All-Category Identified Issues */}
+                <div className="space-y-2 pt-1 border-t border-slate-100">
+                  <IssueList
+                    issues={pendingList.map((f) => ({
+                      id: f.id,
+                      category: f.category,
+                      severity: f.severity || "medium",
+                      problematic_text: f.flaggedText,
+                      explanation: f.plainEnglishReason || f.issue,
+                      suggestion: f.suggestedFix,
+                      rule_id: f.ruleCode,
+                      status: f.status,
+                    }))}
+                    onAcceptIssue={(id, customReplacement) => handleApplyFix(id, customReplacement)}
+                    onDismissIssue={(id) => handleDismiss(id)}
+                    onEditIssue={(id, newFix) => {
+                      setFindings((prev) =>
+                        prev.map((f) => (f.id === id ? { ...f, suggestedFix: newFix } : f))
+                      );
+                    }}
+                    onApplyAll={handleApplyAll}
+                    emptyStateTitle="All Issues Resolved"
+                    emptyStateDescription="Every flagged brand governance, factual, or design issue has been safely remediated."
+                  />
+                </div>
               </div>
             )}
           </div>

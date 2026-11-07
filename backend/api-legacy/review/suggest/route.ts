@@ -10,12 +10,12 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Flagged phrase is required" }, { status: 400 });
     }
 
-    // 1. Attempt Context-Aware AI Rephrase from ECLIPSE AI Engine
+    // 1. Attempt Context-Aware AI Rephrase from ECLIPSE Engine
     try {
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), 10000);
 
-      const prompt = `You are ECLIPSE AI. Provide an approved, professional brand-compliant alternative for the phrase: "${flaggedPhrase}" in context: "${context || ""}". Return only the replacement phrase without surrounding quotes.`;
+      const prompt = `You are ECLIPSE. Provide an approved, professional brand-compliant alternative for the phrase: "${flaggedPhrase}" in context: "${context || ""}". Return only the replacement phrase without surrounding quotes.`;
 
       const aiRes = await fetch(`${AI_ENGINE_URL}/api/v1/chat`, {
         method: "POST",

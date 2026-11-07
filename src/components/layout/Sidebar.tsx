@@ -1,8 +1,8 @@
 "use client";
 
 import React from "react";
-import Link from "next/link";
-import { usePathname } from "next/navigation";
+import Link from "@/lib/next-compat/link";
+import { usePathname } from "@/lib/next-compat/navigation";
 import { useAuthStore } from "@/stores/useAuthStore";
 import {
   FileText,
@@ -127,7 +127,7 @@ export const Sidebar = () => {
       {/* Footer Info */}
       <div className="border-t border-slate-200 pt-3 text-[10px] text-slate-400 flex flex-col gap-1">
         <div className="flex items-center justify-between">
-          <span>Inkloom Platform</span>
+          <span>ECLIPSE Platform</span>
           <span className="font-mono text-emerald-600 font-bold">v2.4-prod</span>
         </div>
         <div className="text-[9px] text-slate-400">Zero Data Retention Policy Active</div>

@@ -6,7 +6,7 @@ import { logAuditEvent } from "../middleware/audit";
 const router = Router();
 const AI_ENGINE_URL = process.env.AI_ENGINE_URL || "http://127.0.0.1:8000";
 
-// Start Content Review (Zero Data Retention - ECLIPSE AI Engine)
+// Start Content Review (Zero Data Retention - ECLIPSE Engine)
 router.post("/start", authenticateJWT, async (req: AuthenticatedRequest, res: Response) => {
   try {
     const { draftId, text, channel = "General" } = req.body;
@@ -19,9 +19,9 @@ router.post("/start", authenticateJWT, async (req: AuthenticatedRequest, res: Re
     let detected: any[] = [];
     let complianceScore = 100;
     let cleanTextSuggested = text;
-    let summary = "ECLIPSE AI review completed.";
+    let summary = "ECLIPSE review completed.";
 
-    // 1. Call ECLIPSE AI Engine on port 8000
+    // 1. Call ECLIPSE Engine on port 8000
     try {
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), 12000);
@@ -61,7 +61,7 @@ router.post("/start", authenticateJWT, async (req: AuthenticatedRequest, res: Re
         }
       }
     } catch (aiErr: any) {
-      console.warn("ECLIPSE AI Engine unavailable from Express backend, falling back to local DB rules:", aiErr.message);
+      console.warn("ECLIPSE Engine unavailable from Express backend, falling back to local DB rules:", aiErr.message);
     }
 
     // 2. Fallback to database rules if AI returned zero findings and DB is connected
@@ -138,7 +138,7 @@ router.get("/:draftId/findings", authenticateJWT, async (req: AuthenticatedReque
   }
 });
 
-// Generate Suggestions with ECLIPSE AI
+// Generate Suggestions with ECLIPSE
 router.post("/suggest", authenticateJWT, async (req: AuthenticatedRequest, res: Response) => {
   try {
     const { flaggedPhrase, ruleType, context } = req.body;
