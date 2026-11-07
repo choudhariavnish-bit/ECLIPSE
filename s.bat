@@ -12,7 +12,7 @@ if errorlevel 1 (
 :: Launch browser after 4 seconds (once Next.js finishes compiling)
 start "" /b cmd /c "timeout /t 4 /nobreak >nul && start http://localhost:3000"
 
-node node_modules\next\dist\bin\next dev -p 3000
+node node_modules\next\dist\bin\next dev -H 0.0.0.0 -p 3000
 
 if errorlevel 1 (
     echo.

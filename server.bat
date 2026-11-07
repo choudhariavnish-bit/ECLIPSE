@@ -22,7 +22,7 @@ if not exist ".next\BUILD_ID" (
 
 start "Inkloom Browser Waiter" /min node scripts\open-browser.js http://localhost:3000
 
-node node_modules\next\dist\bin\next start -p 3000
+node node_modules\next\dist\bin\next start -H 0.0.0.0 -p 3000
 
 if errorlevel 1 (
     echo.
