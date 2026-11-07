@@ -56,8 +56,8 @@ export interface BrandRulebook {
 
 const INITIAL_BRAND_RULEBOOKS: BrandRulebook[] = [
   {
-    id: "brand-inkloom",
-    name: "Inkloom AI Enterprises",
+    id: "brand-eclipse",
+    name: "ECLIPSE Global Enterprises",
     tagline: "Enterprise AI & Cloud Governance",
     industry: "Enterprise B2B Software",
     primaryColor: "#2563EB",
@@ -454,6 +454,7 @@ export default function BrandRulebookPage() {
 
   const handleInspectWithBrand = () => {
     if (typeof window !== "undefined") {
+      localStorage.setItem("eclipse_active_draft_brand", currentBrand.name);
       localStorage.setItem("inkloom_active_draft_brand", currentBrand.name);
     }
     showToast(`Switched active inspector to: ${currentBrand.name}`);

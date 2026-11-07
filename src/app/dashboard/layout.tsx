@@ -50,7 +50,7 @@ export default function DashboardLayout({
       <div className="flex h-screen w-full items-center justify-center bg-slate-950">
         <div className="flex flex-col items-center gap-3 text-slate-400 text-xs">
           <div className="h-7 w-7 animate-spin rounded-full border-2 border-blue-500/20 border-t-blue-500" />
-          <span>Calibrating Inkloom AI Workspace...</span>
+          <span>Calibrating ECLIPSE AI Workspace...</span>
         </div>
       </div>
     );

@@ -138,8 +138,8 @@ export interface DBAuditLog {
 
 export const INITIAL_BRAND_RULEBOOKS: BrandRulebook[] = [
   {
-    id: "brand-inkloom",
-    name: "Inkloom AI Enterprises",
+    id: "brand-eclipse",
+    name: "ECLIPSE Global Enterprises",
     tagline: "Enterprise AI & Cloud Governance",
     industry: "Enterprise B2B Software",
     primaryColor: "#2563EB",
@@ -342,7 +342,7 @@ const DEFAULT_STORE = {
   organizations: [
     {
       id: "a0000000-0000-0000-0000-000000000001",
-      name: "Inkloom AI Enterprises",
+      name: "ECLIPSE Global Enterprises",
       industry: "Enterprise AI & Cloud Governance",
       branding_settings: {
         primary_color: "#2563EB",
@@ -380,7 +380,7 @@ const DEFAULT_STORE = {
       id: "11111111-1111-1111-1111-111111111111",
       organization_id: "a0000000-0000-0000-0000-000000000001",
       name: "Alex Morgan",
-      email: "alex.creator@inkloom.ai",
+      email: "alex.creator@eclipse.ai",
       password: "$2b$10$QlqTuVyYHXVHV.PHVD2MOemEBMneEGmx.oZOTxlXIT/d4VDOtAXra",
       role: "creator" as UserRole,
       department: "Content & Growth Marketing",
@@ -391,7 +391,7 @@ const DEFAULT_STORE = {
       id: "22222222-2222-2222-2222-222222222222",
       organization_id: "a0000000-0000-0000-0000-000000000001",
       name: "Sarah Chen",
-      email: "sarah.brand@inkloom.ai",
+      email: "sarah.brand@eclipse.ai",
       password: "$2b$10$QlqTuVyYHXVHV.PHVD2MOemEBMneEGmx.oZOTxlXIT/d4VDOtAXra",
       role: "brand-manager" as UserRole,
       department: "Global Brand & Governance",
@@ -402,7 +402,7 @@ const DEFAULT_STORE = {
       id: "33333333-3333-3333-3333-333333333333",
       organization_id: "a0000000-0000-0000-0000-000000000001",
       name: "Marcus Vance",
-      email: "marcus.admin@inkloom.ai",
+      email: "marcus.admin@eclipse.ai",
       password: "$2b$10$QlqTuVyYHXVHV.PHVD2MOemEBMneEGmx.oZOTxlXIT/d4VDOtAXra",
       role: "admin" as UserRole,
       department: "System Architecture & Compliance",
@@ -415,7 +415,7 @@ const DEFAULT_STORE = {
     {
       id: "b0000000-0000-0000-0000-000000000001",
       organization_id: "a0000000-0000-0000-0000-000000000001",
-      title: "Inkloom Global Brand & Voice Guidelines",
+      title: "ECLIPSE Global Brand & Voice Guidelines",
       content: "Standards for claims, tone of voice, visual margins, and WCAG AA accessibility.",
       version: "2.4.0",
       created_at: new Date().toISOString(),
@@ -494,9 +494,9 @@ const DEFAULT_STORE = {
       id: "draft-001",
       user_id: "11111111-1111-1111-1111-111111111111",
       organization_id: "a0000000-0000-0000-0000-000000000001",
-      brand: "Inkloom AI Enterprises",
+      brand: "ECLIPSE Global Enterprises",
       title: "Q4 Global Product Launch Announcement",
-      content: "Inkloom is the market's only 100% foolproof AI automation platform with super crazy fast deployment for global brands.",
+      content: "ECLIPSE is the market's only 100% foolproof AI automation platform with super crazy fast deployment for global brands.",
       channel: "Blog & Press",
       format: "text",
       status: "review_pending" as const,
@@ -530,9 +530,9 @@ const DEFAULT_STORE = {
       id: "draft-003",
       user_id: "11111111-1111-1111-1111-111111111111",
       organization_id: "a0000000-0000-0000-0000-000000000001",
-      brand: "Inkloom AI Enterprises",
+      brand: "ECLIPSE Global Enterprises",
       title: "Enterprise Security & SOC2 Compliance Whitepaper",
-      content: "Inkloom delivers enterprise-grade AI brand governance with verified high-availability and zero data retention for regulated enterprises.",
+      content: "ECLIPSE delivers enterprise-grade AI brand governance with verified high-availability and zero data retention for regulated enterprises.",
       channel: "Whitepaper (PDF)",
       format: "text",
       status: "approved" as const,
@@ -610,7 +610,7 @@ const DEFAULT_STORE = {
       action: "ORGANIZATION_INITIALIZE",
       entity_type: "organization",
       entity_id: "a0000000-0000-0000-0000-000000000001",
-      details: { name: "Inkloom AI Enterprises" },
+      details: { name: "ECLIPSE Global Enterprises" },
       created_at: new Date().toISOString(),
     },
   ] as DBAuditLog[],
@@ -618,11 +618,11 @@ const DEFAULT_STORE = {
 
 // Pure in-memory fallback (data is never written to project files)
 const globalForStore = globalThis as unknown as {
-  __INKLOOM_STORE__?: typeof DEFAULT_STORE & { rulebooks: typeof INITIAL_BRAND_RULEBOOKS };
+  __ECLIPSE_STORE__?: typeof DEFAULT_STORE & { rulebooks: typeof INITIAL_BRAND_RULEBOOKS };
 };
 
-if (!globalForStore.__INKLOOM_STORE__) {
-  globalForStore.__INKLOOM_STORE__ = {
+if (!globalForStore.__ECLIPSE_STORE__) {
+  globalForStore.__ECLIPSE_STORE__ = {
     ...DEFAULT_STORE,
     users: [...DEFAULT_STORE.users],
     organizations: [...DEFAULT_STORE.organizations],
@@ -637,7 +637,7 @@ if (!globalForStore.__INKLOOM_STORE__) {
   };
 }
 
-const fallbackStore = globalForStore.__INKLOOM_STORE__;
+const fallbackStore = globalForStore.__ECLIPSE_STORE__;
 
 function persistStore() {
   // No-op: Data is saved strictly in PostgreSQL / Supabase database
@@ -718,7 +718,7 @@ export const governanceDB = {
         await query(
           `INSERT INTO organizations (id, name, industry, branding_settings)
            VALUES ($1, $2, $3, $4) ON CONFLICT (id) DO NOTHING;`,
-          [user.organization_id, "Inkloom AI Enterprises", "Enterprise Cloud & Governance Software", '{"primary_color": "#2563EB"}']
+          [user.organization_id, "ECLIPSE Global Enterprises", "Enterprise Cloud & Governance Software", '{"primary_color": "#2563EB"}']
         );
         const res = await query<DBUser>(
           `INSERT INTO users (id, organization_id, name, email, password, role, department, avatar_url)
@@ -862,7 +862,7 @@ export const governanceDB = {
       wordCount: draft.wordCount ?? (draft.content ? draft.content.trim().split(/\s+/).length : 0),
       commentsCount: draft.commentsCount ?? 0,
       author: draft.author ?? "Alex Morgan",
-      brand: draft.brand ?? "Inkloom AI Enterprises",
+      brand: draft.brand ?? "ECLIPSE Global Enterprises",
       ...draft,
     };
 

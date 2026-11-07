@@ -8,7 +8,7 @@ const path = require("path");
 const os = require("os");
 
 console.log("=====================================================================");
-console.log("          INKLOOM AI - ENTERPRISE GOVERNANCE PLATFORM");
+console.log("          ECLIPSE AI - INTELLIGENT BRAND GOVERNANCE");
 console.log("=====================================================================\n");
 
 // 1. Release port 3000 if occupied by any stale process
@@ -89,5 +89,5 @@ try {
 }
 
 console.log("=====================================================================");
-console.log("  SERVER LAUNCHING — KEEP THIS WINDOW OPEN WHILE USING INKLOOM AI");
+console.log("  SERVER LAUNCHING — KEEP THIS WINDOW OPEN WHILE USING ECLIPSE AI");
 console.log("=====================================================================\n");

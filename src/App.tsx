@@ -15,7 +15,7 @@ function PageLoader() {
     <div className="min-h-screen bg-slate-950 flex flex-col items-center justify-center p-4">
       <div className="flex flex-col items-center gap-3 text-slate-400 text-xs">
         <div className="h-8 w-8 animate-spin rounded-full border-2 border-blue-500/20 border-t-blue-500" />
-        <span className="font-medium text-slate-300">Loading Inkloom AI...</span>
+        <span className="font-medium text-slate-300">Loading ECLIPSE AI...</span>
       </div>
     </div>
   );

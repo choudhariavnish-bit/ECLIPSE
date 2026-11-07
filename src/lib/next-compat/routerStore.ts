@@ -12,7 +12,7 @@ const getInitialPath = (): string => {
   if (window.location.pathname && window.location.pathname !== "/") {
     return window.location.pathname;
   }
-  const authSession = localStorage.getItem("inkloom_auth_session");
+  const authSession = localStorage.getItem("eclipse_auth_session") || localStorage.getItem("inkloom_auth_session");
   if (authSession) {
     try {
       const parsed = JSON.parse(authSession);

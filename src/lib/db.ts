@@ -251,7 +251,7 @@ export async function ensureDatabaseSchema(p: Pool): Promise<void> {
         INSERT INTO organizations (id, name, industry, branding_settings)
         VALUES (
           'a0000000-0000-0000-0000-000000000001',
-          'Inkloom AI Enterprises',
+          'ECLIPSE Global Enterprises',
           'Enterprise Cloud & Governance Software',
           '{"primary_color": "#2563EB", "font_family": "Inter", "tone_preference": "professional"}'::jsonb
         )

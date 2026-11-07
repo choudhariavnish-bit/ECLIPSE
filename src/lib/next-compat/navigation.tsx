@@ -18,12 +18,21 @@ export function useRouter() {
 
 export function usePathname(): string {
   const { currentPath } = useNavigationStore();
-  return currentPath;
+  return (currentPath || "/").split("?")[0];
 }
 
 export function useSearchParams(): URLSearchParams {
   if (typeof window === "undefined") return new URLSearchParams();
-  return new URLSearchParams(window.location.search);
+  const currentPath = useNavigationStore.getState().currentPath || "";
+  let query = "";
+  if (currentPath.includes("?")) {
+    query = currentPath.split("?")[1];
+  } else if (window.location.hash.includes("?")) {
+    query = window.location.hash.split("?")[1];
+  } else if (window.location.search) {
+    query = window.location.search.replace(/^\?/, "");
+  }
+  return new URLSearchParams(query);
 }
 
 export function useParams(): Record<string, string> {

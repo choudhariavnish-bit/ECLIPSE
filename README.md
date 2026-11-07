@@ -23,7 +23,8 @@
 │  - Brand Manager Review Queue   │ <────────────────────────────────── │  - RAG Brand Knowledge Base     │
 │  - Enterprise Admin & RBAC      │       Structured JSON Audits        │  - Deterministic Rule Parser    │
 │  - Multi-Device Local Tunnel    │                                     │  - Verified Fact Cross-Checker  │
-└─────────────────────────────────┘                                     └─────────────────────────────────┘
+└─────────────────────────────────┘                                     └─────────────────────────────────┘ 63
+
 ```
 
 ---

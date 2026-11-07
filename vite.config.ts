@@ -9,8 +9,8 @@ const __dirname = path.dirname(__filename);
 // Initial in-memory Rulebooks Store
 let rulebooksStore = [
   {
-    id: "brand-inkloom",
-    name: "Inkloom AI Enterprises",
+    id: "brand-eclipse",
+    name: "ECLIPSE Global Enterprises",
     tagline: "Enterprise AI & Cloud Governance",
     industry: "Enterprise B2B Software",
     primaryColor: "#2563EB",
@@ -104,11 +104,11 @@ let draftsStore = [
     id: "d0000000-0000-0000-0000-000000000001",
     title: "Q4 Enterprise AI Cloud Resilience Whitepaper",
     author: "Alex Morgan",
-    brand: "Inkloom AI Enterprises",
+    brand: "ECLIPSE Global Enterprises",
     channel: "Blog & Press",
     format: "Whitepaper",
     status: "review_pending",
-    content: "Inkloom is the market's only 100% foolproof AI automation platform with super crazy fast deployment for enterprise teams.",
+    content: "ECLIPSE is the market's only 100% foolproof AI automation platform with super crazy fast deployment for enterprise teams.",
     wordCount: 1420,
     driftScore: 8,
     updated_at: new Date().toISOString(),
@@ -158,7 +158,7 @@ let auditLogsStore = [
     timestamp: new Date(Date.now() - 600000).toISOString(),
     user: "Sarah Chen",
     action: "POLICY_CALIBRATED",
-    entity: "Brand Rulebook: Inkloom AI",
+    entity: "Brand Rulebook: ECLIPSE AI",
     status: "SUCCESS",
     ip: "127.0.0.1",
     details: "Superlative restriction CLM-01 severity set to critical.",
@@ -189,13 +189,52 @@ const apiMockPlugin = () => ({
         body += chunk;
       });
 
-      req.on("end", () => {
+      req.on("end", async () => {
         res.setHeader("Content-Type", "application/json");
 
         let parsedBody: any = {};
         try {
           if (body) parsedBody = JSON.parse(body);
         } catch {}
+
+        // Forward to Python FastAPI AI Engine if running on port 8000
+        const fastApiRoutes: Record<string, string> = {
+          "/api/health": "http://127.0.0.1:8000/api/v1/health",
+          "/api/ai/health": "http://127.0.0.1:8000/api/v1/health",
+          "/api/image/scan": "http://127.0.0.1:8000/api/v1/image/scan",
+          "/api/image/correct": "http://127.0.0.1:8000/api/v1/image/correct",
+          "/api/blog/analyze": "http://127.0.0.1:8000/api/v1/blog/analyze",
+          "/api/blog/correct": "http://127.0.0.1:8000/api/v1/blog/correct",
+          "/api/blog/review": "http://127.0.0.1:8000/api/v1/blog/review",
+          "/api/review/start": "http://127.0.0.1:8000/api/v1/review",
+          "/api/chat": "http://127.0.0.1:8000/api/v1/chat",
+        };
+
+        const targetBackendUrl = fastApiRoutes[req.url.split("?")[0]];
+        if (targetBackendUrl) {
+          try {
+            let forwardBody = body;
+            if (req.method === "POST" && parsedBody) {
+              if (parsedBody.text && !parsedBody.content) {
+                parsedBody.content = parsedBody.text;
+                forwardBody = JSON.stringify(parsedBody);
+              }
+            }
+            const fRes = await fetch(targetBackendUrl, {
+              method: req.method,
+              headers: { "Content-Type": "application/json" },
+              body: req.method === "POST" ? (forwardBody || "{}") : undefined,
+              signal: AbortSignal.timeout(30000),
+            });
+            if (fRes.ok) {
+              const data = await fRes.json();
+              res.statusCode = 200;
+              return res.end(JSON.stringify(data));
+            }
+          } catch (e) {
+            // Fall back to built-in mocks below
+          }
+        }
 
         // 1. Health Checks
         if (req.url === "/api/health" || req.url === "/api/ai/health") {
@@ -221,7 +260,7 @@ const apiMockPlugin = () => ({
 
         // 2. Auth: Login & Register
         if (req.url.includes("/api/auth/login")) {
-          const email = parsedBody.email || "alex.creator@inkloom.ai";
+          const email = parsedBody.email || "alex.creator@eclipse.ai";
           const role = email.includes("creator")
             ? "creator"
             : email.includes("admin")
@@ -258,7 +297,7 @@ const apiMockPlugin = () => ({
               user: {
                 id: "usr_" + Math.random().toString(36).substring(2, 9),
                 name: name || "New User",
-                email: email || "user@inkloom.ai",
+                email: email || "user@eclipse.ai",
                 role: role || "creator",
                 department: department || "Content & Growth Marketing",
               },
@@ -343,7 +382,7 @@ const apiMockPlugin = () => ({
               id: "d-" + Date.now(),
               title: parsedBody.title || "Untitled Draft",
               author: parsedBody.author || "Alex Morgan",
-              brand: parsedBody.brand || "Inkloom AI Enterprises",
+              brand: parsedBody.brand || "ECLIPSE Global Enterprises",
               channel: parsedBody.channel || "LinkedIn & Social",
               format: parsedBody.format || "text",
               status: parsedBody.status || "draft",
@@ -378,9 +417,9 @@ const apiMockPlugin = () => ({
                 drift_score: 48,
               },
               summary: "Detected 2 critical policy infractions: Low visual contrast (WCAG 2.1 AA violation) and uninsurable superlative guarantee.",
-              extracted_text: "INKLOOM: The only 100% foolproof AI platform. Deploy with super crazy fast velocity across all enterprise teams.",
+              extracted_text: "ECLIPSE: The only 100% foolproof AI platform. Deploy with super crazy fast velocity across all enterprise teams.",
               text_elements: [
-                { id: "te_1", text: "INKLOOM: The only 100% foolproof AI platform", element_type: "headline", confidence: 0.99 },
+                { id: "te_1", text: "ECLIPSE: The only 100% foolproof AI platform", element_type: "headline", confidence: 0.99 },
                 { id: "te_2", text: "Deploy with super crazy fast velocity across all enterprise teams", element_type: "body", confidence: 0.96 },
                 { id: "te_3", text: "Deploy Now", element_type: "cta", confidence: 0.98 },
               ],
@@ -429,58 +468,179 @@ const apiMockPlugin = () => ({
           );
         }
 
-        // 6. Blog & Article AI Review
+        // 6. Blog, Short-Form, & Content AI Review
         if (req.url.includes("/api/blog/review") || req.url.includes("/api/blog/analyze") || req.url.includes("/api/review/start")) {
           const content = parsedBody.content || parsedBody.text || "";
           const words = content.split(/\s+/).filter(Boolean).length;
-          const hasFoolproof = content.toLowerCase().includes("100% foolproof");
-          const hasCrazyFast = content.toLowerCase().includes("super crazy fast");
+          const violations: any[] = [];
+          let corrected = content;
 
-          const violations = [];
-          if (hasFoolproof) {
+          // 1. Superlatives & Absolute Guarantees
+          if (/100%\s*(foolproof|bug-free|guaranteed|result)/i.test(content)) {
+            const match = content.match(/100%\s*(foolproof|bug-free|guaranteed\s+results(?:\s+in\s+\d+\s+days)?|result\s+without\s+any\s+error)/i);
+            const flagged = match ? match[0] : "100% foolproof";
             violations.push({
-              id: "v-blog-1",
+              id: "v-clm-1",
               category: "Legal & Claims",
               severity: "CRITICAL",
-              problematic_text: "100% foolproof",
-              explanation: "Absolute guarantee cannot be verified under corporate advertising compliance.",
+              problematic_text: flagged,
+              flaggedText: flagged,
+              original_text: flagged,
+              explanation: "Absolute performance or timeline guarantee violates FTC & enterprise advertising substantiation standards.",
+              issue: "Absolute superlative guarantee",
+              plainEnglishReason: "Absolute guarantees create legal liability without empirical audit documentation.",
               rule_id: "CLM-01",
+              ruleCode: "SEC-4.2 (CRITICAL)",
               suggestion: "enterprise-grade verified high-availability",
+              suggestedFix: "enterprise-grade verified high-availability",
+              recommendation: "Replace with: 'enterprise-grade verified high-availability'",
             });
+            corrected = corrected.replace(new RegExp(flagged.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"), "gi"), "enterprise-grade verified high-availability");
           }
-          if (hasCrazyFast) {
+
+          // 2. Prohibited Pricing / Cheap Claims
+          if (/cheapest|cheap/i.test(content)) {
+            const flagged = "cheapest";
             violations.push({
-              id: "v-blog-2",
-              category: "Tone & Style",
-              severity: "WARNING",
-              problematic_text: "super crazy fast",
-              explanation: "Colloquial hyperbole compromises authoritative enterprise standing.",
-              rule_id: "TON-01",
-              suggestion: "rapid zero-downtime deployment",
+              id: "v-trm-1",
+              category: "Prohibited Terminology",
+              severity: "HIGH",
+              problematic_text: flagged,
+              flaggedText: flagged,
+              original_text: flagged,
+              explanation: "Unqualified price claims like 'cheapest' devalue enterprise reputation and require verified market proof.",
+              issue: "Prohibited pricing terminology",
+              plainEnglishReason: "Unsubstantiated cost claims breach enterprise brand standards.",
+              rule_id: "TRM-01",
+              ruleCode: "PRC-1.1",
+              suggestion: "cost-effective, highly competitive pricing",
+              suggestedFix: "cost-effective, highly competitive pricing",
+              recommendation: "Replace with: 'cost-effective, highly competitive pricing'",
             });
+            corrected = corrected.replace(/cheapest/gi, "cost-effective, highly competitive");
           }
+
+          // 3. Sensationalism & Hyperbole ('super crazy fast', 'best in the world', 'most best')
+          if (/super\s+crazy\s+fast|most\s+best|best\s+(?:and\s+cheapest\s+)?in\s+the\s+world/i.test(content)) {
+            const match = content.match(/super\s+crazy\s+fast|most\s+best|best\s+(?:and\s+cheapest\s+)?in\s+the\s+world/i);
+            const flagged = match ? match[0] : "super crazy fast";
+            violations.push({
+              id: "v-ton-1",
+              category: "Tone & Style",
+              severity: "HIGH",
+              problematic_text: flagged,
+              flaggedText: flagged,
+              original_text: flagged,
+              explanation: "Informal hyperbole and colloquial slang compromises authoritative enterprise standing.",
+              issue: "Colloquial hyperbole restriction",
+              plainEnglishReason: "Enterprise buyers require precise, authoritative terminology.",
+              rule_id: "TON-01",
+              ruleCode: "TON-1.1",
+              suggestion: "rapid zero-downtime deployment",
+              suggestedFix: "rapid zero-downtime deployment",
+              recommendation: "Replace with: 'rapid zero-downtime deployment'",
+            });
+            corrected = corrected.replace(new RegExp(flagged.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"), "gi"), "rapid zero-downtime deployment");
+          }
+
+          // 4. Aggressive Call to Action ('BUY NOW!!!', 'Customer must buy it now')
+          if (/buy\s+now!+|customer\s+must\s+buy\s+it\s+now/i.test(content)) {
+            const match = content.match(/buy\s+now!+|customer\s+must\s+buy\s+it\s+now/i);
+            const flagged = match ? match[0] : "BUY NOW!!!";
+            violations.push({
+              id: "v-ton-2",
+              category: "Tone & Style",
+              severity: "HIGH",
+              problematic_text: flagged,
+              flaggedText: flagged,
+              original_text: flagged,
+              explanation: "Aggressive sales pressure violates transparent, empowering B2B brand voice.",
+              issue: "Aggressive call to action",
+              plainEnglishReason: "High-pressure phrasing degrades enterprise executive trust.",
+              rule_id: "TON-02",
+              ruleCode: "CTA-1.2",
+              suggestion: "Discover how ECLIPSE empowers modern organizations today.",
+              suggestedFix: "Discover how ECLIPSE empowers modern organizations today.",
+              recommendation: "Replace with: 'Discover how ECLIPSE empowers modern organizations today.'",
+            });
+            corrected = corrected.replace(new RegExp(flagged.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"), "gi"), "Discover how ECLIPSE empowers modern organizations today.");
+          }
+
+          // 5. Grammar & Syntax Errors ('Artificial Intelligence are', 'very fastly', 'Many company using', 'It give')
+          if (/artificial\s+intelligence\s+are|very\s+fastly|many\s+company\s+using|it\s+give/i.test(content)) {
+            violations.push({
+              id: "v-grm-1",
+              category: "Grammar & Language",
+              severity: "HIGH",
+              problematic_text: "Artificial Intelligence are changing the world very fastly. Many company using",
+              flaggedText: "Artificial Intelligence are changing the world very fastly. Many company using",
+              original_text: "Artificial Intelligence are changing the world very fastly. Many company using",
+              explanation: "Subject-verb agreement and vocabulary errors: 'Artificial Intelligence' is singular (requires 'is') and 'fastly' is non-standard English.",
+              issue: "Grammar & vocabulary syntax error",
+              plainEnglishReason: "Standard grammar is critical for professional enterprise communications.",
+              rule_id: "GRM-01",
+              ruleCode: "SYN-1.0",
+              suggestion: "Artificial intelligence is changing the world rapidly. Many companies are leveraging",
+              suggestedFix: "Artificial intelligence is changing the world rapidly. Many companies are leveraging",
+              recommendation: "Replace with: 'Artificial intelligence is changing the world rapidly. Many companies are leveraging'",
+            });
+            corrected = corrected
+              .replace(/Artificial Intelligence are/gi, "Artificial intelligence is")
+              .replace(/very fastly/gi, "rapidly")
+              .replace(/Many company using/gi, "Many companies are leveraging")
+              .replace(/It give/gi, "It delivers");
+          }
+
+          const drift = violations.length > 0 ? Math.min(95, violations.length * 28) : 0;
+          const isMajor = drift >= 70 || violations.some((v) => v.severity === "CRITICAL");
 
           res.statusCode = 200;
           return res.end(
             JSON.stringify({
-              audit_id: `ECLIPSE-BLOG-${Date.now()}`,
+              audit_id: `ECLIPSE-AUDIT-${Date.now()}`,
+              engine: "ECLIPSE AI",
               engine_name: "ECLIPSE AI",
-              compliance_score: violations.length > 0 ? 58 : 96,
-              risk_level: violations.length > 0 ? "HIGH" : "LOW",
+              model: "Google Gemini",
+              compliance_score: violations.length > 0 ? Math.max(25, 100 - violations.length * 22) : 98,
+              risk_level: isMajor ? "CRITICAL" : violations.length > 0 ? "HIGH" : "LOW",
+              driftScore: drift,
+              isMajorDrift: isMajor,
               quality_scores: {
-                overall_score: violations.length > 0 ? 58 : 96,
-                brand_compliance_score: violations.length > 0 ? 58 : 96,
-                drift_score: violations.length > 0 ? 42 : 4,
+                overall_score: violations.length > 0 ? Math.max(25, 100 - violations.length * 22) : 98,
+                brand_compliance_score: violations.length > 0 ? 58 : 98,
+                drift_score: drift,
               },
               summary: violations.length > 0
-                ? "Identified 2 brand governance policy infractions requiring editorial calibration."
-                : "Content fully adheres to Inkloom AI tone, legal, and terminology guidelines.",
+                ? `ECLIPSE AI identified ${violations.length} governance, grammar, and claims infractions requiring editorial calibration.`
+                : "Content fully adheres to corporate brand tone, legal compliance, and verified benchmarks.",
+              overall_assessment: violations.length > 0
+                ? `ECLIPSE AI identified ${violations.length} governance, grammar, and claims infractions requiring editorial calibration.`
+                : "Content fully adheres to corporate brand tone, legal compliance, and verified benchmarks.",
               violations,
-              recommended_correction: content
-                .replace(/100% foolproof/gi, "enterprise-grade verified high-availability")
-                .replace(/super crazy fast/gi, "rapid zero-downtime deployment"),
+              findings: violations,
+              factChecks: [
+                {
+                  claim_text: "100% guaranteed results",
+                  status: "unsupported",
+                  evidence: "Internal corporate fact base (FACT-001) confirms 99.99% uptime, but no absolute zero-error warranties exist.",
+                  confidence: 0.98,
+                  source_ref: "FACT-001",
+                },
+              ],
+              fact_checks: [
+                {
+                  claim_text: "100% guaranteed results",
+                  status: "unsupported",
+                  evidence: "Internal corporate fact base (FACT-001) confirms 99.99% uptime, but no absolute zero-error warranties exist.",
+                  confidence: 0.98,
+                  source_ref: "FACT-001",
+                },
+              ],
+              recommended_correction: corrected,
+              corrected_content: corrected,
+              cleanTextSuggested: corrected,
               word_count_original: words,
-              word_count_corrected: words,
+              word_count_corrected: corrected.split(/\s+/).filter(Boolean).length,
               readability_level: "Grade 9-11 (Optimal for Enterprise B2B)",
             })
           );
@@ -531,15 +691,15 @@ const apiMockPlugin = () => ({
           let rows: any[] = [];
           if (table === "organizations") {
             rows = [
-              { id: "org-01", name: "Inkloom AI Enterprises", industry: "Enterprise AI & Cloud Governance", created_at: "2026-01-15T09:00:00Z" },
+              { id: "org-01", name: "ECLIPSE Global Enterprises", industry: "Enterprise AI & Cloud Governance", created_at: "2026-01-15T09:00:00Z" },
               { id: "org-02", name: "LoomCraft Studio", industry: "Digital Creative Agency", created_at: "2026-02-10T14:30:00Z" },
               { id: "org-03", name: "PulseFin Global", industry: "Banking & Financial Services", created_at: "2026-03-01T11:15:00Z" },
             ];
           } else if (table === "users") {
             rows = [
-              { id: "u-01", name: "Alex Morgan", email: "alex.creator@inkloom.ai", role: "creator", department: "Content & Communications", status: "ACTIVE" },
-              { id: "u-02", name: "Sarah Chen", email: "sarah.brand@inkloom.ai", role: "brand-manager", department: "Global Brand Governance", status: "ACTIVE" },
-              { id: "u-03", name: "Marcus Vance", email: "marcus.admin@inkloom.ai", role: "admin", department: "Information Security", status: "ACTIVE" },
+              { id: "u-01", name: "Alex Morgan", email: "alex.creator@eclipse.ai", role: "creator", department: "Content & Communications", status: "ACTIVE" },
+              { id: "u-02", name: "Sarah Chen", email: "sarah.brand@eclipse.ai", role: "brand-manager", department: "Global Brand Governance", status: "ACTIVE" },
+              { id: "u-03", name: "Marcus Vance", email: "marcus.admin@eclipse.ai", role: "admin", department: "Information Security", status: "ACTIVE" },
               { id: "u-04", name: "Growth Agency Partner", email: "contractor@agency.studio", role: "creator", department: "External Contractor", status: "ACTIVE" },
             ];
           } else if (table === "drafts") {

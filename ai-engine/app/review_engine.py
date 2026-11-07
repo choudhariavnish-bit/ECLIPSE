@@ -46,6 +46,176 @@ def clean_json_markdown(text: str) -> str:
         raw = "\n".join(lines).strip()
     return raw
 
+def _normalize_category(cat_str: str) -> ViolationCategory:
+    c = str(cat_str or "").lower().strip()
+    if "gramm" in c:
+        return ViolationCategory.GRAMMAR_ERROR
+    if "spell" in c:
+        return ViolationCategory.SPELLING_ERROR
+    if "punct" in c:
+        return ViolationCategory.PUNCTUATION_ERROR
+    if "vocab" in c:
+        return ViolationCategory.WEAK_VOCABULARY
+    if "structure" in c:
+        return ViolationCategory.SENTENCE_STRUCTURE
+    if "repet" in c:
+        return ViolationCategory.REPETITIVE_CONTENT
+    if "tone" in c or "voice" in c or "style" in c:
+        return ViolationCategory.TONE_VIOLATION
+    if "prohibit" in c or "term" in c or "word" in c:
+        return ViolationCategory.PROHIBITED_TERM
+    if "contradict" in c:
+        return ViolationCategory.CONTRADICTED_FACT
+    if "false" in c:
+        return ViolationCategory.FALSE_CLAIM
+    if "claim" in c or "unsupport" in c or "fact" in c:
+        return ViolationCategory.UNSUPPORTED_CLAIM
+    if "legal" in c or "regulat" in c or "risk" in c or "sec" in c or "ftc" in c:
+        return ViolationCategory.LEGAL_RISK
+    if "format" in c or "visual" in c or "contrast" in c or "wcag" in c:
+        return ViolationCategory.FORMATTING_RULE
+    return ViolationCategory.CONTENT_QUALITY
+
+def _normalize_severity(sev_str: str) -> ViolationSeverity:
+    s = str(sev_str or "").lower().strip()
+    if "crit" in s:
+        return ViolationSeverity.CRITICAL
+    if "high" in s:
+        return ViolationSeverity.HIGH
+    if "med" in s or "warn" in s:
+        return ViolationSeverity.MEDIUM
+    if "low" in s:
+        return ViolationSeverity.LOW
+    return ViolationSeverity.INFO
+
+def _extract_violations_from_gemini(parsed_data: Dict[str, Any], default_rule_prefix: str = "RULE-AI") -> List[Violation]:
+    gemini_violations: List[Violation] = []
+    raw_list = (
+        parsed_data.get("violations")
+        or parsed_data.get("detected_issues")
+        or parsed_data.get("findings")
+        or parsed_data.get("issues")
+        or []
+    )
+    # Check suggested_corrections mapping
+    corrections_map = {}
+    for sc in parsed_data.get("suggested_corrections", []):
+        if isinstance(sc, dict):
+            orig = sc.get("original_sentence") or sc.get("original_text") or ""
+            if orig:
+                corrections_map[orig.lower().strip()] = sc
+
+    for gv in raw_list:
+        if not isinstance(gv, dict):
+            continue
+        p_text = (
+            gv.get("problematic_text")
+            or gv.get("flaggedText")
+            or gv.get("original_text")
+            or gv.get("text")
+            or gv.get("snippet")
+            or ""
+        ).strip()
+        if not p_text:
+            continue
+
+        orig_sentence = gv.get("original_sentence") or gv.get("sentence") or p_text
+        explanation = (
+            gv.get("explanation")
+            or gv.get("reason")
+            or gv.get("issue")
+            or gv.get("description")
+            or "Detected brand guideline or content quality infraction."
+        )
+        guideline = (
+            gv.get("guideline_reference")
+            or gv.get("supporting_rule_or_evidence")
+            or gv.get("rule")
+            or "ECLIPSE Brand Guidelines"
+        )
+        rule_id = (
+            gv.get("rule_id")
+            or gv.get("ruleCode")
+            or gv.get("code")
+            or f"{default_rule_prefix}-{uuid.uuid4().hex[:4].upper()}"
+        )
+
+        suggestion = (
+            gv.get("suggestion")
+            or gv.get("suggestedFix")
+            or gv.get("recommendation")
+            or gv.get("replacement")
+            or ""
+        )
+        corrected_sentence = gv.get("corrected_sentence")
+
+        orig_key = orig_sentence.lower().strip()
+        if orig_key in corrections_map:
+            match = corrections_map[orig_key]
+            if not suggestion:
+                suggestion = match.get("corrected_sentence") or match.get("replacement") or ""
+            if not corrected_sentence:
+                corrected_sentence = match.get("corrected_sentence")
+
+        cat = _normalize_category(gv.get("category", "tone_violation"))
+        sev = _normalize_severity(gv.get("severity", "medium"))
+
+        gemini_violations.append(Violation(
+            id=gv.get("id", f"viol_{uuid.uuid4().hex[:6]}"),
+            category=cat,
+            severity=sev,
+            problematic_text=p_text,
+            original_sentence=orig_sentence,
+            explanation=explanation,
+            guideline_reference=guideline,
+            rule_id=rule_id,
+            evidence_id=gv.get("evidence_id"),
+            suggestion=suggestion or "Align with brand standards.",
+            corrected_sentence=corrected_sentence,
+            requires_human_review=gv.get("requires_human_review", (sev in [ViolationSeverity.CRITICAL, ViolationSeverity.HIGH]))
+        ))
+    return gemini_violations
+
+def _extract_fact_checks_from_gemini(parsed_data: Dict[str, Any]) -> List[FactCheckItem]:
+    gemini_fact_checks: List[FactCheckItem] = []
+    raw_list = (
+        parsed_data.get("fact_checks")
+        or parsed_data.get("factChecks")
+        or parsed_data.get("claims")
+        or []
+    )
+    for gfc in raw_list:
+        if not isinstance(gfc, dict):
+            continue
+        c_text = (
+            gfc.get("claim_text")
+            or gfc.get("claim")
+            or gfc.get("statement")
+            or ""
+        ).strip()
+        if not c_text:
+            continue
+        st_str = str(gfc.get("status", "unsupported")).lower().strip()
+        if "verif" in st_str:
+            fc_status = FactCheckStatus.VERIFIED
+        elif "contradict" in st_str:
+            fc_status = FactCheckStatus.CONTRADICTED
+        elif "refut" in st_str:
+            fc_status = FactCheckStatus.REFUTED
+        else:
+            fc_status = FactCheckStatus.UNSUPPORTED
+
+        gemini_fact_checks.append(FactCheckItem(
+            claim_text=c_text,
+            status=fc_status,
+            evidence=gfc.get("evidence") or gfc.get("explanation") or "Requires empirical citation.",
+            confidence=float(gfc.get("confidence", 0.85)),
+            source_ref=gfc.get("source_ref") or gfc.get("fact_id"),
+            approved_info=gfc.get("approved_info"),
+            suggested_correction=gfc.get("suggested_correction")
+        ))
+    return gemini_fact_checks
+
 class ContentReviewEngine:
     """
     Main Intelligent Reasoning & Decision-Making Orchestrator for ECLIPSE.
@@ -106,57 +276,24 @@ class ContentReviewEngine:
         try:
             parsed_data = json.loads(clean_json_markdown(gemini_raw_response))
 
-            # Parse Gemini violations
-            for gv in parsed_data.get("violations", []):
-                p_text = gv.get("problematic_text", "").strip()
-                if p_text:
-                    try:
-                        sev_str = gv.get("severity", "medium").lower()
-                        cat_str = gv.get("category", "tone_violation").lower()
-                        sev = ViolationSeverity(sev_str) if sev_str in ViolationSeverity._value2member_map_ else ViolationSeverity.MEDIUM
-                        cat = ViolationCategory(cat_str) if cat_str in ViolationCategory._value2member_map_ else ViolationCategory.TONE_VIOLATION
+            gemini_violations = _extract_violations_from_gemini(parsed_data, default_rule_prefix="RULE-GEMINI")
+            gemini_fact_checks = _extract_fact_checks_from_gemini(parsed_data)
 
-                        gemini_violations.append(Violation(
-                            id=gv.get("id", f"gemini_viol_{uuid.uuid4().hex[:6]}"),
-                            category=cat,
-                            severity=sev,
-                            problematic_text=p_text,
-                            original_sentence=gv.get("original_sentence"),
-                            explanation=gv.get("explanation", "Detected tone or guideline inconsistency."),
-                            guideline_reference=gv.get("guideline_reference", "ECLIPSE Core Voice Guidelines"),
-                            rule_id=gv.get("rule_id", "RULE-GEMINI-TONE"),
-                            evidence_id=gv.get("evidence_id"),
-                            suggestion=gv.get("suggestion", "Align with approved brand tone."),
-                            corrected_sentence=gv.get("corrected_sentence"),
-                            requires_human_review=gv.get("requires_human_review", False)
-                        ))
-                    except Exception as ve:
-                        logger.warning(f"Error parsing Gemini violation: {ve}")
-
-            # Parse Gemini fact checks
-            for gfc in parsed_data.get("fact_checks", []):
-                c_text = gfc.get("claim_text", "").strip()
-                if c_text:
-                    try:
-                        st_str = gfc.get("status", "unsupported").lower()
-                        fc_status = FactCheckStatus(st_str) if st_str in FactCheckStatus._value2member_map_ else FactCheckStatus.UNSUPPORTED
-                        gemini_fact_checks.append(FactCheckItem(
-                            claim_text=c_text,
-                            status=fc_status,
-                            evidence=gfc.get("evidence", "Requires empirical citation."),
-                            confidence=float(gfc.get("confidence", 0.85)),
-                            source_ref=gfc.get("source_ref"),
-                            approved_info=gfc.get("approved_info"),
-                            suggested_correction=gfc.get("suggested_correction")
-                        ))
-                    except Exception as fe:
-                        logger.warning(f"Error parsing Gemini fact check: {fe}")
-
-            recommended_correction = parsed_data.get("recommended_correction", "")
-            executive_summary = parsed_data.get("summary", "")
+            recommended_correction = (
+                parsed_data.get("recommended_correction")
+                or parsed_data.get("corrected_content")
+                or parsed_data.get("fully_corrected_content")
+                or ""
+            )
+            executive_summary = (
+                parsed_data.get("summary")
+                or parsed_data.get("content_analysis")
+                or parsed_data.get("executive_summary")
+                or ""
+            )
 
             for alt in parsed_data.get("alternative_corrections", []):
-                if alt.get("revised_text"):
+                if isinstance(alt, dict) and alt.get("revised_text"):
                     alternative_suggestions.append(CorrectionSuggestion(
                         tone_variation=alt.get("tone_variation", "Alternative Style"),
                         revised_text=alt.get("revised_text"),
@@ -279,55 +416,25 @@ class ContentReviewEngine:
         try:
             parsed = json.loads(clean_json_markdown(gemini_raw))
 
-            for gv in parsed.get("violations", []):
-                p_text = gv.get("problematic_text", "").strip()
-                if p_text:
-                    try:
-                        sev_str = gv.get("severity", "medium").lower()
-                        cat_str = gv.get("category", "tone_violation").lower()
-                        sev = ViolationSeverity(sev_str) if sev_str in ViolationSeverity._value2member_map_ else ViolationSeverity.MEDIUM
-                        cat = ViolationCategory(cat_str) if cat_str in ViolationCategory._value2member_map_ else ViolationCategory.TONE_VIOLATION
+            gemini_violations = _extract_violations_from_gemini(parsed, default_rule_prefix="RULE-BLOG")
+            gemini_fact_checks = _extract_fact_checks_from_gemini(parsed)
 
-                        gemini_violations.append(Violation(
-                            id=gv.get("id", f"blog_viol_{uuid.uuid4().hex[:6]}"),
-                            category=cat,
-                            severity=sev,
-                            problematic_text=p_text,
-                            original_sentence=gv.get("original_sentence"),
-                            explanation=gv.get("explanation", "Detected content quality or brand inconsistency."),
-                            guideline_reference=gv.get("guideline_reference", "ECLIPSE Brand Guidelines"),
-                            rule_id=gv.get("rule_id", "RULE-BLOG-STYLE"),
-                            evidence_id=gv.get("evidence_id"),
-                            suggestion=gv.get("suggestion", "Improve phrasing"),
-                            corrected_sentence=gv.get("corrected_sentence"),
-                            requires_human_review=gv.get("requires_human_review", False)
-                        ))
-                    except Exception as ve:
-                        logger.warning(f"Error parsing blog violation: {ve}")
-
-            for gfc in parsed.get("fact_checks", []):
-                c_text = gfc.get("claim_text", "").strip()
-                if c_text:
-                    try:
-                        st_str = gfc.get("status", "unsupported").lower()
-                        fc_status = FactCheckStatus(st_str) if st_str in FactCheckStatus._value2member_map_ else FactCheckStatus.UNSUPPORTED
-                        gemini_fact_checks.append(FactCheckItem(
-                            claim_text=c_text,
-                            status=fc_status,
-                            evidence=gfc.get("evidence", "Verified against approved brand facts."),
-                            confidence=float(gfc.get("confidence", 0.90)),
-                            source_ref=gfc.get("source_ref"),
-                            approved_info=gfc.get("approved_info"),
-                            suggested_correction=gfc.get("suggested_correction")
-                        ))
-                    except Exception as fe:
-                        logger.warning(f"Error parsing blog fact check: {fe}")
-
-            corrected_blog = parsed.get("corrected_blog") or parsed.get("recommended_correction", "")
-            executive_summary = parsed.get("summary", "")
+            corrected_blog = (
+                parsed.get("corrected_blog")
+                or parsed.get("fully_corrected_content")
+                or parsed.get("recommended_correction")
+                or parsed.get("revised_content")
+                or ""
+            )
+            executive_summary = (
+                parsed.get("summary")
+                or parsed.get("content_analysis")
+                or parsed.get("executive_summary")
+                or ""
+            )
 
             for alt in parsed.get("alternative_corrections", []):
-                if alt.get("revised_text"):
+                if isinstance(alt, dict) and alt.get("revised_text"):
                     alternative_suggestions.append(CorrectionSuggestion(
                         tone_variation=alt.get("tone_variation", "Alternative Style"),
                         revised_text=alt.get("revised_text"),

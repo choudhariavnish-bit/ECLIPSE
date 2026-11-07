@@ -44,12 +44,12 @@ const INITIAL_DRAFTS: ContentDraft[] = [
   {
     id: "draft-001",
     title: "Q4 Global Product Launch Announcement",
-    content: "Inkloom is the market's only 100% foolproof AI automation platform with super crazy fast deployment for global brands.",
-    brand: "Inkloom AI Enterprises",
+    content: "ECLIPSE is the market's only 100% foolproof AI automation platform with super crazy fast deployment for global brands.",
+    brand: "ECLIPSE Global Enterprises",
     channel: "Blog & Press",
     format: "text",
     status: "review_pending",
-    author: currentUser?.name || "Author",
+    author: "Alex Morgan",
     updatedAt: "10 mins ago",
     driftScore: 78,
     wordCount: 18,
@@ -74,8 +74,8 @@ const INITIAL_DRAFTS: ContentDraft[] = [
   {
     id: "draft-003",
     title: "Enterprise Security & SOC2 Compliance Whitepaper",
-    content: "Inkloom delivers enterprise-grade AI brand governance with verified high-availability and zero data retention for regulated enterprises.",
-    brand: "Inkloom AI Enterprises",
+    content: "ECLIPSE delivers enterprise-grade AI brand governance with verified high-availability and zero data retention for regulated enterprises.",
+    brand: "ECLIPSE Global Enterprises",
     channel: "Whitepaper (PDF)",
     format: "text",
     status: "approved",
@@ -116,7 +116,7 @@ export default function ActiveDraftsPage() {
   // New Draft Form State
   const [newTitle, setNewTitle] = useState("");
   const [newContent, setNewContent] = useState("");
-  const [newBrand, setNewBrand] = useState("Inkloom AI Enterprises");
+  const [newBrand, setNewBrand] = useState("ECLIPSE Global Enterprises");
   const [newChannel, setNewChannel] = useState("LinkedIn & B2B Social");
 
   const showToast = (msg: string) => {
@@ -135,7 +135,7 @@ export default function ActiveDraftsPage() {
             id: d.id,
             title: d.title,
             content: d.content,
-            brand: d.brand || "Inkloom AI Enterprises",
+            brand: d.brand || "ECLIPSE Global Enterprises",
             channel: d.channel || "Blog & Press",
             format: (d.format === "graphic" || d.format === "Graphic Visual") ? "graphic" : "text",
             status: d.status || "draft",
@@ -161,14 +161,31 @@ export default function ActiveDraftsPage() {
   }, []);
 
   const handleOpenInInspector = (draft: ContentDraft) => {
+    let mode: "image" | "blog" | "social" = "social";
+    const channelLower = (draft.channel || "").toLowerCase();
+    const formatLower = (draft.format || "").toLowerCase();
+
+    if (formatLower === "graphic" || channelLower.includes("instagram") || channelLower.includes("poster") || channelLower.includes("creative")) {
+      mode = "image";
+    } else if (channelLower.includes("blog") || channelLower.includes("press") || channelLower.includes("whitepaper") || channelLower.includes("article") || (draft.wordCount && draft.wordCount > 40)) {
+      mode = "blog";
+    } else {
+      mode = "social";
+    }
+
     // Store in localStorage so Compliance Inspector picks it up
     if (typeof window !== "undefined") {
+      localStorage.setItem("eclipse_active_draft_id", draft.id);
+      localStorage.setItem("eclipse_active_draft_title", draft.title);
+      localStorage.setItem("eclipse_active_draft_text", draft.content);
+      localStorage.setItem("eclipse_active_draft_channel", draft.channel);
+      localStorage.setItem("eclipse_active_draft_brand", draft.brand);
+      localStorage.setItem("eclipse_active_draft_format", draft.format);
+      localStorage.setItem("eclipse_creator_mode", mode);
       localStorage.setItem("inkloom_active_draft_text", draft.content);
-      localStorage.setItem("inkloom_active_draft_channel", draft.channel);
-      localStorage.setItem("inkloom_active_draft_brand", draft.brand);
     }
     showToast(`Loaded "${draft.title}" into Compliance Inspector`);
-    router.push("/dashboard/creator");
+    router.push(`/dashboard/creator?mode=${mode}&draftId=${draft.id}`);
   };
 
   const handleCreateDraft = async (e: React.FormEvent) => {
@@ -298,7 +315,7 @@ export default function ActiveDraftsPage() {
             className="rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-xs font-semibold text-slate-700 focus:outline-none focus:bg-white"
           >
             <option value="all">All Brands ({drafts.length})</option>
-            <option value="Inkloom AI Enterprises">Inkloom AI</option>
+            <option value="ECLIPSE Global Enterprises">ECLIPSE Global</option>
             <option value="LoomCraft Studio">LoomCraft Studio</option>
             <option value="PulseFin Global">PulseFin Global</option>
           </select>
@@ -362,7 +379,11 @@ export default function ActiveDraftsPage() {
                   </div>
 
                   {/* Title & Preview */}
-                  <h3 className="text-base font-bold text-slate-900 group-hover:text-blue-600 transition-colors line-clamp-1">
+                  <h3
+                    onClick={() => handleOpenInInspector(draft)}
+                    className="text-base font-bold text-slate-900 group-hover:text-blue-600 transition-colors line-clamp-1 cursor-pointer"
+                    title="Click to open in Compliance Inspector"
+                  >
                     {draft.title}
                   </h3>
                   <p className="text-xs text-slate-500 line-clamp-2 mt-1 leading-relaxed">
@@ -506,7 +527,7 @@ export default function ActiveDraftsPage() {
                     onChange={(e) => setNewBrand(e.target.value)}
                     className="w-full rounded-xl border border-slate-300 p-2 text-xs text-slate-900 focus:outline-none focus:border-blue-500"
                   >
-                    <option value="Inkloom AI Enterprises">Inkloom AI (Enterprise)</option>
+                    <option value="ECLIPSE Global Enterprises">ECLIPSE Global (Enterprise)</option>
                     <option value="LoomCraft Studio">LoomCraft Studio (Creative)</option>
                     <option value="PulseFin Global">PulseFin Global (FinTech)</option>
                   </select>

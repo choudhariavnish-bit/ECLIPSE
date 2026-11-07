@@ -7,21 +7,21 @@ export const MOCK_USERS: Record<UserRole, User> = {
   creator: {
     id: "usr_creator_01",
     name: "Alex Morgan",
-    email: "alex.creator@inkloom.ai",
+    email: "alex.creator@eclipse.ai",
     role: "creator",
     department: "Content & Growth Marketing",
   },
   "brand-manager": {
     id: "usr_bm_02",
     name: "Sarah Chen",
-    email: "sarah.brand@inkloom.ai",
+    email: "sarah.brand@eclipse.ai",
     role: "brand-manager",
     department: "Global Brand & Governance",
   },
   admin: {
     id: "usr_admin_03",
     name: "Marcus Vance",
-    email: "marcus.admin@inkloom.ai",
+    email: "marcus.admin@eclipse.ai",
     role: "admin",
     department: "System Architecture & Compliance",
   },
@@ -79,7 +79,7 @@ export const useAuthStore = create<AuthState>()(
       },
     }),
     {
-      name: "inkloom_auth_session",
+      name: "eclipse_auth_session",
       storage: createJSONStorage(() => localStorage),
     }
   )

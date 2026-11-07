@@ -97,7 +97,7 @@ export const Navbar = () => {
               <div className="flex flex-col">
                 <div className="flex items-center gap-1.5">
                   <span className="font-bold text-sm tracking-tight text-slate-900">
-                    Inkloom AI
+                    ECLIPSE AI
                   </span>
                   <span className="rounded-full bg-slate-100 px-1.5 py-0.2 text-[9px] font-semibold text-slate-600 border border-slate-200">
                     Governance
@@ -233,7 +233,7 @@ export const Navbar = () => {
                   <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-slate-900 text-white">
                     <ShieldCheck className="h-4 w-4" />
                   </div>
-                  <span className="font-bold text-sm text-slate-900">Inkloom Governance</span>
+                  <span className="font-bold text-sm text-slate-900">ECLIPSE Governance</span>
                 </div>
                 <button
                   onClick={() => setMobileMenuOpen(false)}

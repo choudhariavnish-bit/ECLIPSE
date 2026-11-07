@@ -56,9 +56,9 @@ const INITIAL_QUEUE: ReviewItem[] = [
       "Rule TON-1.1: Colloquial hyperbole ('super crazy fast deployment')",
     ],
     contentDraft:
-      "Inkloom is the market's only 100% foolproof AI automation platform with super crazy fast deployment for global brands.",
+      "ECLIPSE is the market's only 100% foolproof AI automation platform with super crazy fast deployment for global brands.",
     proposedCorrection:
-      "Inkloom delivers enterprise-grade verified AI brand governance with rapid zero-downtime deployment for verified organisations.",
+      "ECLIPSE delivers enterprise-grade verified AI brand governance with rapid zero-downtime deployment for verified organisations.",
     status: "pending",
   },
   {
@@ -148,18 +148,18 @@ export default function BrandManagerDashboard() {
   // Live dynamic sample generation based on sliders
   const dynamicPolicySentence = useMemo(() => {
     if (formality >= 75 && boldness >= 60) {
-      return "Inkloom enforces authoritative enterprise brand governance standards through verified, deterministic compliance verification.";
+      return "ECLIPSE enforces authoritative enterprise brand governance standards through verified, deterministic compliance verification.";
     }
     if (formality >= 70 && empathy >= 70) {
       return "We partner with growing enterprises to protect their trusted reputation while empowering creators to do their best work.";
     }
     if (formality < 50 && boldness >= 60) {
-      return "Say goodbye to embarrassing brand slip-ups! Inkloom unleashes your team to write faster while keeping your identity razor-sharp.";
+      return "Say goodbye to embarrassing brand slip-ups! ECLIPSE unleashes your team to write faster while keeping your identity razor-sharp.";
     }
     if (formality < 50) {
       return "Writing for a global brand can feel overwhelming. We're here to help you get your message right without all the stress.";
     }
-    return "Inkloom delivers enterprise-grade AI brand governance with rapid zero-downtime deployment for verified organisations.";
+    return "ECLIPSE delivers enterprise-grade AI brand governance with rapid zero-downtime deployment for verified organisations.";
   }, [formality, boldness, empathy]);
 
   const filteredQueue = queue.filter((item) => {
@@ -594,7 +594,7 @@ export default function BrandManagerDashboard() {
               {
                 code: "NOM-5.1",
                 title: "Trademark & Enterprise Nomenclature",
-                rule: "Mandates consistent brand terminology ('Inkloom Platform' vs 'the bot').",
+                rule: "Mandates consistent brand terminology ('ECLIPSE Platform' vs 'the bot').",
               },
             ].map((r) => (
               <div key={r.code} className="p-4 rounded-xl border border-slate-200 bg-slate-50/50 space-y-2">

@@ -1,4 +1,4 @@
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, model_validator
 from typing import List, Optional, Dict, Any
 from enum import Enum
 from datetime import datetime
@@ -69,6 +69,44 @@ class Violation(BaseModel):
     corrected_sentence: Optional[str] = Field(default=None, description="Complete corrected sentence")
     requires_human_review: bool = Field(default=False, description="Flag indicating ambiguous or subjective decision")
 
+    # Standardized contract fields for universal frontend interoperability
+    title: Optional[str] = Field(default=None, description="Short human-readable finding title")
+    location: Optional[Dict[str, int]] = Field(default=None, description="Character index offset {start, end}")
+    confidence: float = Field(default=0.95, description="Confidence level 0.0 to 1.0")
+    status: str = Field(default="detected", description="detected, pending, accepted, rejected")
+    evidence: List[str] = Field(default_factory=list, description="Associated fact or policy citations")
+
+    # Universal compatibility aliases
+    flaggedText: Optional[str] = Field(default=None)
+    original_text: Optional[str] = Field(default=None)
+    issue: Optional[str] = Field(default=None)
+    plainEnglishReason: Optional[str] = Field(default=None)
+    suggestedFix: Optional[str] = Field(default=None)
+    recommendation: Optional[str] = Field(default=None)
+    ruleCode: Optional[str] = Field(default=None)
+
+    @model_validator(mode="after")
+    def populate_aliases(self) -> "Violation":
+        if not self.title:
+            self.title = self.explanation.split(".")[0] if "." in self.explanation else self.explanation
+        if not self.flaggedText:
+            self.flaggedText = self.problematic_text
+        if not self.original_text:
+            self.original_text = self.problematic_text
+        if not self.issue:
+            self.issue = self.explanation
+        if not self.plainEnglishReason:
+            self.plainEnglishReason = self.explanation
+        if not self.suggestedFix:
+            self.suggestedFix = self.suggestion
+        if not self.recommendation:
+            self.recommendation = self.suggestion
+        if not self.ruleCode:
+            self.ruleCode = self.rule_id or "RULE-ECLIPSE"
+        if not self.evidence and self.guideline_reference:
+            self.evidence = [self.guideline_reference]
+        return self
+
 class FactCheckItem(BaseModel):
     claim_text: str = Field(description="Extracted empirical, numerical, or product claim")
     status: FactCheckStatus = Field(description="Verification status against verified knowledge base")
@@ -119,12 +157,57 @@ class BrandAuditReport(BaseModel):
     risk_level: str = Field(default="LOW")
     summary: str = Field(description="Executive summary of the review findings")
     violations: List[Violation] = Field(default_factory=list, description="Detected violations")
+    findings: List[Violation] = Field(default_factory=list, description="Universal alias for violations")
     fact_checks: List[FactCheckItem] = Field(default_factory=list, description="Claim verifications")
     recommended_correction: str = Field(description="Primary suggested compliant rewrite")
+    corrected_content: Optional[str] = Field(default=None, description="Alias for recommended_correction")
+    cleanTextSuggested: Optional[str] = Field(default=None, description="Direct convenience alias for recommended_correction")
+    overall_assessment: Optional[str] = Field(default=None, description="Standardized assessment summary")
+    analysis_summary: Optional[Dict[str, Any]] = Field(default=None, description="Aggregate metric statistics")
     alternative_corrections: List[CorrectionSuggestion] = Field(default_factory=list, description="Alternative rewrite options")
+    driftScore: Optional[int] = Field(default=None)
+    isMajorDrift: Optional[bool] = Field(default=None)
+    engine: Optional[str] = Field(default="ECLIPSE AI")
+    model: Optional[str] = Field(default="Google Gemini")
     human_review_required: bool = Field(default=False)
     cross_validation_notes: Optional[str] = Field(default=None)
     execution_time_ms: float = Field(default=0.0, description="Pipeline latency in milliseconds")
+
+    @model_validator(mode="after")
+    def sync_findings_and_summary(self) -> "BrandAuditReport":
+        if not self.findings and self.violations:
+            self.findings = list(self.violations)
+        elif not self.violations and self.findings:
+            self.violations = list(self.findings)
+        if not self.corrected_content and self.recommended_correction:
+            self.corrected_content = self.recommended_correction
+        if not self.cleanTextSuggested:
+            self.cleanTextSuggested = self.recommended_correction or self.corrected_content
+        if not self.overall_assessment and self.summary:
+            self.overall_assessment = self.summary
+        if self.driftScore is None and self.quality_scores:
+            self.driftScore = self.quality_scores.drift_score
+        if self.isMajorDrift is None:
+            self.isMajorDrift = (self.driftScore is not None and self.driftScore >= 70) or self.risk_level == "CRITICAL"
+
+        tot = len(self.violations)
+        crit = sum(1 for v in self.violations if getattr(v.severity, "value", str(v.severity)).lower() == "critical")
+        high = sum(1 for v in self.violations if getattr(v.severity, "value", str(v.severity)).lower() == "high")
+        med = sum(1 for v in self.violations if getattr(v.severity, "value", str(v.severity)).lower() == "medium")
+        low = sum(1 for v in self.violations if getattr(v.severity, "value", str(v.severity)).lower() in ("low", "info"))
+        ver = sum(1 for fc in self.fact_checks if getattr(fc.status, "value", str(fc.status)).lower() == "verified")
+        unsupp = sum(1 for fc in self.fact_checks if getattr(fc.status, "value", str(fc.status)).lower() in ("unsupported", "needs_human_review"))
+
+        self.analysis_summary = {
+            "total_issues": tot,
+            "critical": crit,
+            "high": high,
+            "medium": med,
+            "low": low,
+            "verified_claims": ver,
+            "unsupported_claims": unsupp
+        }
+        return self
 
 class BlogAuditReport(BrandAuditReport):
     blog_title: Optional[str] = Field(default=None, description="Title of the submitted blog")
@@ -181,7 +264,38 @@ class ImageAuditReport(BaseModel):
     status: ReviewStatus = Field(default=ReviewStatus.APPROVED)
     risk_level: str = Field(default="LOW", description="CRITICAL, HIGH, MEDIUM, LOW, INFO")
     summary: str = Field(default="")
+    overall_assessment: Optional[str] = Field(default=None)
     violations: List[Violation] = Field(default_factory=list)
+    findings: List[Violation] = Field(default_factory=list)
+    analysis_summary: Optional[Dict[str, Any]] = None
     fact_checks: List[FactCheckItem] = Field(default_factory=list)
     correction_plan: Optional[ImageCorrectionPlan] = None
     execution_time_ms: float = Field(default=0.0)
+
+    @model_validator(mode="after")
+    def sync_image_findings(self) -> "ImageAuditReport":
+        if not self.findings and self.violations:
+            self.findings = list(self.violations)
+        elif not self.violations and self.findings:
+            self.violations = list(self.findings)
+        if not self.overall_assessment and self.summary:
+            self.overall_assessment = self.summary
+
+        tot = len(self.violations)
+        crit = sum(1 for v in self.violations if getattr(v.severity, "value", str(v.severity)).lower() == "critical")
+        high = sum(1 for v in self.violations if getattr(v.severity, "value", str(v.severity)).lower() == "high")
+        med = sum(1 for v in self.violations if getattr(v.severity, "value", str(v.severity)).lower() == "medium")
+        low = sum(1 for v in self.violations if getattr(v.severity, "value", str(v.severity)).lower() in ("low", "info"))
+        ver = sum(1 for fc in self.fact_checks if getattr(fc.status, "value", str(fc.status)).lower() == "verified")
+        unsupp = sum(1 for fc in self.fact_checks if getattr(fc.status, "value", str(fc.status)).lower() in ("unsupported", "needs_human_review"))
+
+        self.analysis_summary = {
+            "total_issues": tot,
+            "critical": crit,
+            "high": high,
+            "medium": med,
+            "low": low,
+            "verified_claims": ver,
+            "unsupported_claims": unsupp
+        }
+        return self
