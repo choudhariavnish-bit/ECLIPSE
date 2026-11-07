@@ -47,9 +47,9 @@ export default function DashboardLayout({
 
   if (!isReady) {
     return (
-      <div className="flex h-screen w-full items-center justify-center bg-slate-950">
-        <div className="flex flex-col items-center gap-3 text-slate-400 text-xs">
-          <div className="h-7 w-7 animate-spin rounded-full border-2 border-blue-500/20 border-t-blue-500" />
+      <div className="flex h-screen w-full items-center justify-center bg-[#fdffcd]">
+        <div className="flex flex-col items-center gap-3 text-stone-700 text-xs font-semibold p-6 rounded-2xl bg-white/90 border border-[#ffebbb] shadow-sm">
+          <div className="h-7 w-7 animate-spin rounded-full border-2 border-[#ffebbb] border-t-[#ffcab0]" />
           <span>Calibrating ECLIPSE Workspace...</span>
         </div>
       </div>
@@ -57,7 +57,7 @@ export default function DashboardLayout({
   }
 
   return (
-    <div className="min-h-screen bg-slate-50/50 flex flex-col">
+    <div className="min-h-screen bg-gradient-to-br from-[#fdffcd]/90 via-[#ffebbb]/30 to-[#e0ffcd]/50 flex flex-col">
       <Navbar />
       <div className="flex flex-1 max-w-7xl w-full mx-auto pb-16 md:pb-0">
         <Sidebar />

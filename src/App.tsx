@@ -12,10 +12,10 @@ const DatabasePage = React.lazy(() => import("@/app/dashboard/database/page"));
 
 function PageLoader() {
   return (
-    <div className="min-h-screen bg-slate-950 flex flex-col items-center justify-center p-4">
-      <div className="flex flex-col items-center gap-3 text-slate-400 text-xs">
-        <div className="h-8 w-8 animate-spin rounded-full border-2 border-blue-500/20 border-t-blue-500" />
-        <span className="font-medium text-slate-300">Loading ECLIPSE...</span>
+    <div className="min-h-screen bg-gradient-to-br from-[#fdffcd] via-[#ffebbb] to-[#e0ffcd] flex flex-col items-center justify-center p-4">
+      <div className="flex flex-col items-center gap-3 text-stone-700 text-xs font-semibold p-6 rounded-2xl bg-white/80 backdrop-blur-md border border-[#ffebbb] shadow-lg">
+        <div className="h-9 w-9 animate-spin rounded-full border-3 border-[#ffebbb] border-t-[#ffcab0]" />
+        <span className="font-bold tracking-wide text-stone-800">Calibrating ECLIPSE...</span>
       </div>
     </div>
   );

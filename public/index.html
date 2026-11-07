@@ -3,10 +3,24 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Inkloom AI - Brand Governance Platform (React)</title>
+  <title>ECLIPSE AI - Brand Governance Platform (React)</title>
   
   <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            first: '#e0ffcd',
+            second: '#fdffcd',
+            third: '#ffebbb',
+            fourth: '#ffcab0',
+          }
+        }
+      }
+    }
+  </script>
   
   <!-- Lucide Icons CDN -->
   <script src="https://unpkg.com/lucide@latest"></script>
@@ -19,9 +33,49 @@
     @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap');
     body { font-family: 'Plus Jakarta Sans', sans-serif; }
     .font-mono { font-family: 'JetBrains Mono', monospace; }
+
+    /* User Requested Palette Classes */
+    .first-color { background-color: #e0ffcd !important; }
+    .second-color { background-color: #fdffcd !important; }
+    .third-color { background-color: #ffebbb !important; }
+    .fourth-color { background-color: #ffcab0 !important; }
+
+    body {
+      background-color: #fdffcd !important;
+      background: linear-gradient(135deg, #fdffcd 0%, #ffebbb 45%, #e0ffcd 100%) !important;
+      background-attachment: fixed !important;
+      color: #1c1917 !important;
+    }
+
+    .bg-white {
+      background-color: rgba(255, 255, 255, 0.92) !important;
+      border-color: #ffebbb !important;
+    }
+
+    .border-slate-200, .border-slate-100 {
+      border-color: #ffebbb !important;
+    }
+
+    .bg-blue-600, .bg-blue-700, .bg-slate-900:not(pre) {
+      background-color: #ffcab0 !important;
+      color: #291206 !important;
+      border-color: #f7a077 !important;
+    }
+
+    .bg-emerald-50, .bg-emerald-100, .bg-blue-50, .bg-blue-100 {
+      background-color: #e0ffcd !important;
+      color: #173d09 !important;
+      border-color: #b7e89e !important;
+    }
+
+    .bg-purple-50, .bg-purple-100, .bg-amber-50, .bg-amber-100 {
+      background-color: #ffebbb !important;
+      color: #573305 !important;
+      border-color: #f2cb7e !important;
+    }
   </style>
 </head>
-<body class="bg-slate-50 text-slate-900 min-h-screen selection:bg-blue-600 selection:text-white">
+<body class="bg-[#fdffcd] text-stone-900 min-h-screen selection:bg-[#ffcab0] selection:text-stone-950">
   <!-- React Root Container -->
   <div id="root"></div>
 
