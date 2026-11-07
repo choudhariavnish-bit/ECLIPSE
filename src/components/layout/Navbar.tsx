@@ -75,7 +75,7 @@ export const Navbar = () => {
 
   return (
     <>
-      <header className="sticky top-0 z-40 w-full border-b border-[#ffebbb] bg-[#fdffcd]/95 backdrop-blur-md shadow-xs">
+      <header className="sticky top-0 z-40 w-full border-b border-[#f2ead8] bg-[#fafaf6]/95 backdrop-blur-md shadow-xs">
         <div className="flex h-14 items-center justify-between px-3 sm:px-6 lg:px-8 max-w-7xl mx-auto">
           {/* Left: Mobile Menu Toggle & Brand Identity */}
           <div className="flex items-center gap-2 sm:gap-3">

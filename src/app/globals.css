@@ -4,22 +4,24 @@
 
 :root {
   --first-color: #e0ffcd;
-  --second-color: #fdffcd;
+  /* Ultra-faint, delicate cream ivory instead of bright yellow */
+  --second-color: #fdfdf7;
   --third-color: #ffebbb;
   --fourth-color: #ffcab0;
 
   --foreground-rgb: 28, 25, 23;
-  --background-start-rgb: 253, 255, 205;
-  --background-end-rgb: 255, 235, 187;
+  --background-start-rgb: 253, 253, 247;
+  --background-end-rgb: 255, 251, 242;
 }
 
-/* 1. Exact User-Requested Palette Classes */
+/* 1. User Palette Classes (with faint, subtle yellow) */
 .first-color { 
   background-color: #e0ffcd !important; 
 }
 	
 .second-color { 
-  background-color: #fdffcd !important; 
+  /* Faint, delicate warm-ivory / faint cream */
+  background-color: #fcfcf5 !important; 
 }
 
 .third-color { 
@@ -37,11 +39,11 @@
 .text-fourth-color { color: #5c1c04 !important; }
 
 .border-first-color { border-color: #b7e89e !important; }
-.border-second-color { border-color: #e5eb98 !important; }
+.border-second-color { border-color: #f0f0dc !important; }
 .border-third-color { border-color: #f2cb7e !important; }
 .border-fourth-color { border-color: #f7a077 !important; }
 
-/* 3. Global HTML & Body Theme */
+/* 3. Global HTML & Body Theme: Clean, faint, elegant canvas */
 html {
   scroll-behavior: smooth;
   -webkit-text-size-adjust: 100%;
@@ -51,8 +53,9 @@ html {
 
 body {
   color: #1c1917;
-  background-color: #fdffcd !important;
-  background: linear-gradient(135deg, #fdffcd 0%, #ffebbb 45%, #e0ffcd 100%) !important;
+  /* Very faint, subtle warm-white gradient without loud yellow */
+  background-color: #fafaf6 !important;
+  background: linear-gradient(135deg, #fdfdf9 0%, #fffcf5 45%, #f6fcf3 100%) !important;
   background-attachment: fixed !important;
   min-height: 100vh;
   min-height: 100dvh;
@@ -61,19 +64,19 @@ body {
   font-feature-settings: "cv02", "cv03", "cv04", "cv11";
 }
 
-/* 4. Adaptive Component Theming for the 4-color palette */
+/* 4. Soft, crisp cards with faint warm borders */
 .bg-white {
-  background-color: rgba(255, 255, 255, 0.94) !important;
-  border-color: #ffebbb !important;
+  background-color: #ffffff !important;
+  border-color: #f2ead8 !important;
 }
 
 .bg-slate-50, .bg-slate-50\/50, .bg-slate-100 {
-  background-color: rgba(253, 255, 205, 0.7) !important;
-  border-color: #ffebbb !important;
+  background-color: #faf9f5 !important;
+  border-color: #f2ead8 !important;
 }
 
 .border-slate-200, .border-slate-100 {
-  border-color: #ffebbb !important;
+  border-color: #f2ead8 !important;
 }
 
 /* Primary actions: fourth-color (#ffcab0) */
@@ -109,7 +112,7 @@ body {
 }
 
 ::-webkit-scrollbar-track {
-  background: rgba(253, 255, 205, 0.4);
+  background: rgba(250, 250, 246, 0.4);
 }
 
 ::-webkit-scrollbar-thumb {

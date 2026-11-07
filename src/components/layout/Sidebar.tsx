@@ -59,7 +59,7 @@ export const Sidebar = () => {
   }
 
   return (
-    <aside className="w-56 border-r border-[#ffebbb] bg-[#fdffcd]/60 min-h-[calc(100vh-3.5rem)] flex flex-col justify-between p-3 hidden md:flex">
+    <aside className="w-56 border-r border-[#f2ead8] bg-[#fafaf6]/80 min-h-[calc(100vh-3.5rem)] flex flex-col justify-between p-3 hidden md:flex">
       <div className="space-y-5">
         {/* Active Role Indicator */}
         <div className="px-3 py-2.5 rounded-2xl bg-white/80 border border-[#ffebbb] shadow-xs">

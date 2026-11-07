@@ -11,16 +11,16 @@ export default {
       colors: {
         palette: {
           first: "#e0ffcd",   // Mint Green
-          second: "#fdffcd",  // Cream / Pastel Lemon
-          third: "#ffebbb",   // Soft Peach / Custard
-          fourth: "#ffcab0",  // Warm Coral Peach
+          second: "#fcfcf5",  // Faint Cream Ivory
+          third: "#ffebbb",   // Soft Peach
+          fourth: "#ffcab0",  // Coral Peach
         },
         first: "#e0ffcd",
-        second: "#fdffcd",
+        second: "#fcfcf5",
         third: "#ffebbb",
         fourth: "#ffcab0",
         brand: {
-          50: "#fdffcd",
+          50: "#fafaf6",
           100: "#ffebbb",
           200: "#ffcab0",
           300: "#fca07a",

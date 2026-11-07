@@ -57,7 +57,7 @@ export default function DashboardLayout({
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#fdffcd]/90 via-[#ffebbb]/30 to-[#e0ffcd]/50 flex flex-col">
+    <div className="min-h-screen bg-gradient-to-br from-[#fafaf6] via-[#fffcf5] to-[#f6fcf3] flex flex-col">
       <Navbar />
       <div className="flex flex-1 max-w-7xl w-full mx-auto pb-16 md:pb-0">
         <Sidebar />
