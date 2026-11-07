@@ -1,10 +1,46 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 import path from "path";
+import fs from "fs";
+import { DatabaseSync } from "node:sqlite";
 import { fileURLToPath } from "url";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
+
+// Persistent SQLite3 Database Helper
+const sqliteDbPath = path.join(process.cwd(), "database", "governance.sqlite");
+
+function getSqliteDb() {
+  const dbDir = path.dirname(sqliteDbPath);
+  if (!fs.existsSync(dbDir)) {
+    fs.mkdirSync(dbDir, { recursive: true });
+  }
+  return new DatabaseSync(sqliteDbPath);
+}
+
+function executeSql(sql: string, params: any[] = []): { success: boolean; rows?: any[]; count?: number; changes?: number; lastInsertRowid?: number | bigint; error?: string } {
+  let db: any = null;
+  try {
+    db = getSqliteDb();
+    const trimmed = sql.trim();
+    if (trimmed.toUpperCase().startsWith("SELECT") || trimmed.toUpperCase().startsWith("PRAGMA")) {
+      const stmt = db.prepare(sql);
+      const rows = stmt.all(...params) as any[];
+      return { success: true, rows, count: rows.length };
+    } else {
+      const stmt = db.prepare(sql);
+      const info = stmt.run(...params);
+      return { success: true, changes: info.changes, lastInsertRowid: info.lastInsertRowid };
+    }
+  } catch (err: any) {
+    return { success: false, error: err.message, rows: [], count: 0 };
+  } finally {
+    if (db) {
+      try { db.close(); } catch {}
+    }
+  }
+}
 
 // Initial in-memory Rulebooks Store
 let rulebooksStore = [
@@ -251,8 +287,8 @@ const apiMockPlugin = () => ({
               endpoint: "http://localhost:3000",
               database: {
                 connected: true,
-                type: "in-memory / persistent",
-                details: "High-speed zero-latency governance store active",
+                type: "SQLite3 + MongoDB",
+                details: "SQLite3 local disk file (database/governance.sqlite) and MongoDB browser collections are active.",
               },
             })
           );
@@ -290,16 +326,30 @@ const apiMockPlugin = () => ({
 
         if (req.url.includes("/api/auth/register")) {
           const { name, email, role, department } = parsedBody;
+          const newUserId = "u-" + Date.now();
+          const cleanEmail = email || `user_${Date.now()}@eclipse.ai`;
+          const cleanName = name || "New User";
+          const cleanRole = role || "creator";
+          const cleanDept = department || "Content & Growth Marketing";
+          const now = new Date().toISOString();
+
+          // Persist directly to SQLite3 users table
+          executeSql(
+            `INSERT INTO users (id, organization_id, name, email, password, role, department, status, created_at)
+             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+            [newUserId, "org-01", cleanName, cleanEmail, "password123", cleanRole, cleanDept, "ACTIVE", now]
+          );
+
           res.statusCode = 200;
           return res.end(
             JSON.stringify({
               accessToken: "jwt_token_" + Date.now(),
               user: {
-                id: "usr_" + Math.random().toString(36).substring(2, 9),
-                name: name || "New User",
-                email: email || "user@eclipse.ai",
-                role: role || "creator",
-                department: department || "Content & Growth Marketing",
+                id: newUserId,
+                name: cleanName,
+                email: cleanEmail,
+                role: cleanRole,
+                department: cleanDept,
               },
             })
           );
@@ -311,10 +361,11 @@ const apiMockPlugin = () => ({
             const { action, brandId, ruleId, rule, brand } = parsedBody;
 
             if (action === "ADD_RULE" && brandId && rule) {
+              const newRuleId = "r-" + Date.now();
               const target = rulebooksStore.find((b) => b.id === brandId);
               if (target) {
                 target.rules.push({
-                  id: "r-" + Date.now(),
+                  id: newRuleId,
                   code: rule.code || "RULE-" + (target.rules.length + 1),
                   category: rule.category || "claim",
                   name: rule.name,
@@ -325,16 +376,41 @@ const apiMockPlugin = () => ({
                   isEnabled: true,
                 });
               }
+
+              // Persist directly to SQLite3 rules table
+              executeSql(
+                `INSERT INTO rules (id, guideline_id, brand_id, rule_type, name, description, severity, pattern, replacement, is_enabled, created_at)
+                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+                [
+                  newRuleId,
+                  "g-01",
+                  brandId,
+                  rule.category || "claim",
+                  rule.name,
+                  rule.description || "",
+                  rule.severity || "warning",
+                  rule.pattern,
+                  rule.replacement || "",
+                  1,
+                  new Date().toISOString(),
+                ]
+              );
+
               res.statusCode = 200;
               return res.end(JSON.stringify({ message: "Rule added", rulebooks: rulebooksStore }));
             }
 
             if (action === "TOGGLE_RULE" && brandId && ruleId) {
               const target = rulebooksStore.find((b) => b.id === brandId);
+              let newState = 1;
               if (target) {
                 const r = target.rules.find((x) => x.id === ruleId);
-                if (r) r.isEnabled = !r.isEnabled;
+                if (r) {
+                  r.isEnabled = !r.isEnabled;
+                  newState = r.isEnabled ? 1 : 0;
+                }
               }
+              executeSql("UPDATE rules SET is_enabled = ? WHERE id = ?", [newState, ruleId]);
               res.statusCode = 200;
               return res.end(JSON.stringify({ message: "Rule toggled", rulebooks: rulebooksStore }));
             }
@@ -344,13 +420,15 @@ const apiMockPlugin = () => ({
               if (target) {
                 target.rules = target.rules.filter((x) => x.id !== ruleId);
               }
+              executeSql("DELETE FROM rules WHERE id = ?", [ruleId]);
               res.statusCode = 200;
               return res.end(JSON.stringify({ message: "Rule deleted", rulebooks: rulebooksStore }));
             }
 
             if (action === "CREATE_BRAND" && brand) {
+              const newBrandId = "brand-" + Date.now();
               rulebooksStore.push({
-                id: "brand-" + Date.now(),
+                id: newBrandId,
                 name: brand.name,
                 tagline: brand.tagline || "Enterprise Guidelines",
                 industry: brand.industry || "General",
@@ -359,6 +437,10 @@ const apiMockPlugin = () => ({
                 tone: brand.tone || { formality: 80, boldness: 60, empathy: 70 },
                 rules: brand.rules || [],
               });
+              executeSql(
+                "INSERT INTO organizations (id, name, industry, branding_settings, created_at) VALUES (?, ?, ?, ?, ?)",
+                [newBrandId, brand.name, brand.industry || "General", JSON.stringify({ primary_color: brand.primaryColor || "#2563EB" }), new Date().toISOString()]
+              );
               res.statusCode = 200;
               return res.end(JSON.stringify({ message: "Brand created", rulebooks: rulebooksStore }));
             }
@@ -373,13 +455,17 @@ const apiMockPlugin = () => ({
           if (req.method === "DELETE") {
             const id = req.url.split("/").pop();
             draftsStore = draftsStore.filter((d) => d.id !== id);
+            executeSql("DELETE FROM drafts WHERE id = ?", [id]);
             res.statusCode = 200;
             return res.end(JSON.stringify({ message: "Draft deleted", drafts: draftsStore }));
           }
 
           if (req.method === "POST") {
+            const newDraftId = "d-" + Date.now();
+            const now = new Date().toISOString();
             const newDraft = {
-              id: "d-" + Date.now(),
+              id: newDraftId,
+              user_id: "u-01",
               title: parsedBody.title || "Untitled Draft",
               author: parsedBody.author || "Alex Morgan",
               brand: parsedBody.brand || "ECLIPSE Global Enterprises",
@@ -389,11 +475,40 @@ const apiMockPlugin = () => ({
               content: parsedBody.content || "",
               wordCount: (parsedBody.content || "").split(/\s+/).filter(Boolean).length,
               driftScore: Math.floor(Math.random() * 20) + 5,
-              updated_at: new Date().toISOString(),
+              created_at: now,
+              updated_at: now,
             };
             draftsStore.unshift(newDraft);
+
+            // Persist directly to SQLite3 drafts table
+            executeSql(
+              `INSERT INTO drafts (id, user_id, brand, author, title, content, channel, format, status, drift_score, created_at, updated_at)
+               VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+              [
+                newDraft.id,
+                newDraft.user_id,
+                newDraft.brand,
+                newDraft.author,
+                newDraft.title,
+                newDraft.content,
+                newDraft.channel,
+                newDraft.format,
+                newDraft.status,
+                newDraft.driftScore,
+                newDraft.created_at,
+                newDraft.updated_at,
+              ]
+            );
+
             res.statusCode = 200;
             return res.end(JSON.stringify({ message: "Draft created successfully", draft: newDraft }));
+          }
+
+          // Query live drafts from SQLite table
+          const dbDrafts = executeSql("SELECT * FROM drafts ORDER BY rowid DESC;");
+          if (dbDrafts.success && dbDrafts.rows && dbDrafts.rows.length > 0) {
+            res.statusCode = 200;
+            return res.end(JSON.stringify({ drafts: dbDrafts.rows }));
           }
 
           res.statusCode = 200;
@@ -651,16 +766,21 @@ const apiMockPlugin = () => ({
           const draftId = parsedBody.draftId || parsedBody.draft_id;
           const target = draftsStore.find((d) => d.id === draftId);
           if (target) target.status = "approved";
-          auditLogsStore.unshift({
-            id: "a-" + Date.now(),
-            timestamp: new Date().toISOString(),
-            user: "Sarah Chen",
-            action: "DRAFT_APPROVED",
-            entity: `Draft ${draftId || "REV-9021"}`,
-            status: "APPROVED",
-            ip: "127.0.0.1",
-            details: "Full pre-publication governance approval granted.",
-          });
+
+          // Update SQLite3 drafts status
+          if (draftId) {
+            executeSql("UPDATE drafts SET status = 'approved', updated_at = ? WHERE id = ?", [new Date().toISOString(), draftId]);
+          }
+
+          // Insert into SQLite3 audit_logs
+          const auditId = "a-" + Date.now();
+          const now = new Date().toISOString();
+          executeSql(
+            `INSERT INTO audit_logs (id, user_id, user_name, action, entity, status, ip_address, details, timestamp)
+             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+            [auditId, "u-02", "Sarah Chen", "DRAFT_APPROVED", `Draft ${draftId || "REV-9021"}`, "APPROVED", "127.0.0.1", "Full pre-publication governance approval granted.", now]
+          );
+
           res.statusCode = 200;
           return res.end(JSON.stringify({ status: "approved", message: "Draft approved successfully." }));
         }
@@ -669,57 +789,104 @@ const apiMockPlugin = () => ({
           const draftId = parsedBody.draftId || parsedBody.draft_id;
           const target = draftsStore.find((d) => d.id === draftId);
           if (target) target.status = "changes_requested";
-          auditLogsStore.unshift({
-            id: "a-" + Date.now(),
-            timestamp: new Date().toISOString(),
-            user: "Sarah Chen",
-            action: "CHANGES_REQUESTED",
-            entity: `Draft ${draftId || "REV-9021"}`,
-            status: "CHANGES_REQUESTED",
-            ip: "127.0.0.1",
-            details: parsedBody.comment || parsedBody.notes || "Editorial changes requested.",
-          });
+
+          // Update SQLite3 drafts status
+          if (draftId) {
+            executeSql("UPDATE drafts SET status = 'changes_requested', updated_at = ? WHERE id = ?", [new Date().toISOString(), draftId]);
+          }
+
+          // Insert into SQLite3 audit_logs
+          const auditId = "a-" + Date.now();
+          const now = new Date().toISOString();
+          const comment = parsedBody.comment || parsedBody.notes || "Editorial changes requested.";
+          executeSql(
+            `INSERT INTO audit_logs (id, user_id, user_name, action, entity, status, ip_address, details, timestamp)
+             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+            [auditId, "u-02", "Sarah Chen", "CHANGES_REQUESTED", `Draft ${draftId || "REV-9021"}`, "CHANGES_REQUESTED", "127.0.0.1", comment, now]
+          );
+
           res.statusCode = 200;
           return res.end(JSON.stringify({ status: "changes_requested", message: "Changes requested from author." }));
         }
 
-        // 8. Database Tables & Studio Inspection
+        // 8. Database Studio: Live CRUD & SQL Query Endpoints
+        if (req.url.startsWith("/api/database/insert") && req.method === "POST") {
+          const { table, data } = parsedBody;
+          const safeTable = (table || "").replace(/[^a-zA-Z0-9_]/g, "");
+          if (!safeTable || !data || typeof data !== "object") {
+            res.statusCode = 400;
+            return res.end(JSON.stringify({ error: "Table and data object are required." }));
+          }
+
+          // Generate id if missing
+          if (!data.id) {
+            data.id = `${safeTable.slice(0, 3)}-${Date.now()}`;
+          }
+          if (data.created_at === undefined && !data.created_at) {
+            data.created_at = new Date().toISOString();
+          }
+
+          const keys = Object.keys(data);
+          const placeholders = keys.map(() => "?").join(", ");
+          const values = keys.map((k) => (typeof data[k] === "object" ? JSON.stringify(data[k]) : data[k]));
+
+          const insertRes = executeSql(`INSERT INTO ${safeTable} (${keys.join(", ")}) VALUES (${placeholders});`, values);
+          if (insertRes.success) {
+            res.statusCode = 200;
+            return res.end(JSON.stringify({ success: true, message: `Record inserted into ${safeTable}`, row: data }));
+          } else {
+            res.statusCode = 400;
+            return res.end(JSON.stringify({ success: false, error: insertRes.error }));
+          }
+        }
+
+        if (req.url.startsWith("/api/database/delete") && (req.method === "POST" || req.method === "DELETE")) {
+          const urlParams = new URL(req.url, "http://localhost:3000").searchParams;
+          const table = (parsedBody.table || urlParams.get("table") || "").replace(/[^a-zA-Z0-9_]/g, "");
+          const id = parsedBody.id || urlParams.get("id");
+
+          if (!table || !id) {
+            res.statusCode = 400;
+            return res.end(JSON.stringify({ error: "Table and record ID are required." }));
+          }
+
+          const delRes = executeSql(`DELETE FROM ${table} WHERE id = ?;`, [id]);
+          res.statusCode = delRes.success ? 200 : 400;
+          return res.end(JSON.stringify({ success: delRes.success, changes: delRes.changes, error: delRes.error }));
+        }
+
+        if (req.url.startsWith("/api/database/query") && req.method === "POST") {
+          const { sql } = parsedBody;
+          if (!sql || typeof sql !== "string") {
+            res.statusCode = 400;
+            return res.end(JSON.stringify({ error: "SQL statement is required." }));
+          }
+
+          const qRes = executeSql(sql);
+          res.statusCode = qRes.success ? 200 : 400;
+          return res.end(JSON.stringify(qRes));
+        }
+
+        // 9. Database Tables Inspection
         if (req.url.includes("/api/database/tables")) {
           const urlParams = new URL(req.url, "http://localhost:3000").searchParams;
-          const table = urlParams.get("table") || "organizations";
+          const table = (urlParams.get("table") || "organizations").replace(/[^a-zA-Z0-9_]/g, "");
 
-          let rows: any[] = [];
-          if (table === "organizations") {
-            rows = [
-              { id: "org-01", name: "ECLIPSE Global Enterprises", industry: "Enterprise AI & Cloud Governance", created_at: "2026-01-15T09:00:00Z" },
-              { id: "org-02", name: "LoomCraft Studio", industry: "Digital Creative Agency", created_at: "2026-02-10T14:30:00Z" },
-              { id: "org-03", name: "PulseFin Global", industry: "Banking & Financial Services", created_at: "2026-03-01T11:15:00Z" },
-            ];
-          } else if (table === "users") {
-            rows = [
-              { id: "u-01", name: "Alex Morgan", email: "alex.creator@eclipse.ai", role: "creator", department: "Content & Communications", status: "ACTIVE" },
-              { id: "u-02", name: "Sarah Chen", email: "sarah.brand@eclipse.ai", role: "brand-manager", department: "Global Brand Governance", status: "ACTIVE" },
-              { id: "u-03", name: "Marcus Vance", email: "marcus.admin@eclipse.ai", role: "admin", department: "Information Security", status: "ACTIVE" },
-              { id: "u-04", name: "Growth Agency Partner", email: "contractor@agency.studio", role: "creator", department: "External Contractor", status: "ACTIVE" },
-            ];
-          } else if (table === "drafts") {
-            rows = draftsStore;
-          } else if (table === "rules") {
-            rows = rulebooksStore.flatMap((b) => b.rules.map((r) => ({ ...r, brand: b.name })));
-          } else if (table === "audit_logs") {
-            rows = auditLogsStore;
-          } else {
-            rows = [
-              { id: "rec-01", name: "Sample Record 1", status: "active", created_at: new Date().toISOString() },
-              { id: "rec-02", name: "Sample Record 2", status: "active", created_at: new Date().toISOString() },
-            ];
-          }
+          // Query live SQLite database directly
+          const dbRes = executeSql(`SELECT * FROM ${table} ORDER BY rowid DESC LIMIT 200;`);
+          const rows = dbRes.success && dbRes.rows ? dbRes.rows : [];
 
           res.statusCode = 200;
           return res.end(
             JSON.stringify({
               table,
-              connection: { connected: true, type: "PostgreSQL (Supabase Active / Local Fallback)", endpoint: "live_governance_db" },
+              connection: {
+                connected: true,
+                type: "SQLite3 (Offline File DB) + MongoDB (Browser Collections)",
+                sqlitePath: "database/governance.sqlite",
+                mongoUri: "mongodb://localhost:27017/inkloom (Browser Document Store)",
+                status: "Active & 100% Offline Ready",
+              },
               count: rows.length,
               rows,
             })
@@ -731,8 +898,8 @@ const apiMockPlugin = () => ({
           return res.end(
             JSON.stringify({
               connected: true,
-              type: "postgres",
-              details: "PostgreSQL / Supabase connection calibrated successfully.",
+              type: "sqlite + mongodb",
+              message: "Dual engine connected: SQLite 3 (database/governance.sqlite) and MongoDB browser collection store.",
             })
           );
         }
