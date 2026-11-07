@@ -9,15 +9,11 @@ if errorlevel 1 (
     exit /b 1
 )
 
-:: Launch browser after 4 seconds (once Next.js finishes compiling)
-start "" /b cmd /c "timeout /t 4 /nobreak >nul && start http://localhost:3000"
-
-node node_modules\next\dist\bin\next dev -p 3000
+:: Run Next.js server on 0.0.0.0:3000
+node node_modules\next\dist\bin\next dev -p 3000 -H 0.0.0.0
 
 if errorlevel 1 (
     echo.
-    echo =====================================================================
-    echo [Inkloom] Server exited with code %errorlevel%.
-    echo =====================================================================
+    echo [Inkloom] Server exited with an error.
     pause
 )

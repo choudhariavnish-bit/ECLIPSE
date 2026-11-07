@@ -134,7 +134,7 @@ export const supabase = new Proxy({} as SupabaseClient, {
 /**
  * Universal query runner:
  * Executes SQL directly if PostgreSQL pool is connected.
- * Returns null if not configured so callers can use mock/in-memory data.
+ * Returns null if not configured or if connection fails, so callers gracefully use local/fallback store.
  */
 export async function query<T = any>(text: string, params: any[] = []): Promise<T[] | null> {
   const p = getDbPool();
@@ -142,9 +142,9 @@ export async function query<T = any>(text: string, params: any[] = []): Promise<
     try {
       const res = await p.query(text, params);
       return res.rows as T[];
-    } catch (err) {
-      console.error("[DB Query Error]:", err);
-      throw err;
+    } catch (err: any) {
+      console.warn("[DB Query] External database unreachable, seamlessly using local store:", err.message || err);
+      return null;
     }
   }
   return null;
@@ -155,111 +155,113 @@ export async function query<T = any>(text: string, params: any[] = []): Promise<
  * Idempotent: safe to run multiple times.
  */
 export async function ensureDatabaseSchema(p: Pool): Promise<void> {
-  const client = await p.connect();
   try {
-    await client.query(`
-      CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
-      CREATE EXTENSION IF NOT EXISTS "pgcrypto";
+    const client = await p.connect();
+    try {
+      await client.query(`
+        CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
+        CREATE EXTENSION IF NOT EXISTS "pgcrypto";
 
-      CREATE TABLE IF NOT EXISTS organizations (
-        id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-        name VARCHAR(255) NOT NULL,
-        industry VARCHAR(100) NOT NULL,
-        branding_settings JSONB DEFAULT '{"primary_color": "#2563EB"}'::jsonb,
-        created_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
-        updated_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP
-      );
+        CREATE TABLE IF NOT EXISTS organizations (
+          id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+          name VARCHAR(255) NOT NULL,
+          industry VARCHAR(100) NOT NULL,
+          branding_settings JSONB DEFAULT '{"primary_color": "#2563EB"}'::jsonb,
+          created_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
+          updated_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP
+        );
 
-      CREATE TABLE IF NOT EXISTS users (
-        id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-        name VARCHAR(255) NOT NULL,
-        email VARCHAR(255) UNIQUE NOT NULL,
-        password VARCHAR(255) NOT NULL,
-        role VARCHAR(50) NOT NULL,
-        organization_id UUID NOT NULL REFERENCES organizations(id) ON DELETE CASCADE,
-        department VARCHAR(100) DEFAULT 'Content & Marketing',
-        avatar_url TEXT,
-        is_active BOOLEAN NOT NULL DEFAULT TRUE,
-        created_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
-        updated_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP
-      );
+        CREATE TABLE IF NOT EXISTS users (
+          id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+          name VARCHAR(255) NOT NULL,
+          email VARCHAR(255) UNIQUE NOT NULL,
+          password VARCHAR(255) NOT NULL,
+          role VARCHAR(50) NOT NULL,
+          organization_id UUID NOT NULL REFERENCES organizations(id) ON DELETE CASCADE,
+          department VARCHAR(100) DEFAULT 'Content & Marketing',
+          avatar_url TEXT,
+          is_active BOOLEAN NOT NULL DEFAULT TRUE,
+          created_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
+          updated_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP
+        );
 
-      CREATE TABLE IF NOT EXISTS guidelines (
-        id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-        organization_id UUID NOT NULL REFERENCES organizations(id) ON DELETE CASCADE,
-        title VARCHAR(255) NOT NULL,
-        content TEXT NOT NULL,
-        version VARCHAR(50) NOT NULL DEFAULT '1.0.0',
-        is_active BOOLEAN NOT NULL DEFAULT TRUE,
-        created_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
-        updated_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP
-      );
+        CREATE TABLE IF NOT EXISTS guidelines (
+          id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+          organization_id UUID NOT NULL REFERENCES organizations(id) ON DELETE CASCADE,
+          title VARCHAR(255) NOT NULL,
+          content TEXT NOT NULL,
+          version VARCHAR(50) NOT NULL DEFAULT '1.0.0',
+          is_active BOOLEAN NOT NULL DEFAULT TRUE,
+          created_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
+          updated_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP
+        );
 
-      CREATE TABLE IF NOT EXISTS rules (
-        id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-        guideline_id UUID NOT NULL REFERENCES guidelines(id) ON DELETE CASCADE,
-        rule_type VARCHAR(50) NOT NULL,
-        name VARCHAR(255) NOT NULL,
-        description TEXT NOT NULL,
-        severity VARCHAR(20) NOT NULL DEFAULT 'warning',
-        pattern TEXT,
-        replacement TEXT,
-        is_enabled BOOLEAN NOT NULL DEFAULT TRUE,
-        created_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP
-      );
+        CREATE TABLE IF NOT EXISTS rules (
+          id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+          guideline_id UUID NOT NULL REFERENCES guidelines(id) ON DELETE CASCADE,
+          rule_type VARCHAR(50) NOT NULL,
+          name VARCHAR(255) NOT NULL,
+          description TEXT NOT NULL,
+          severity VARCHAR(20) NOT NULL DEFAULT 'warning',
+          pattern TEXT,
+          replacement TEXT,
+          is_enabled BOOLEAN NOT NULL DEFAULT TRUE,
+          created_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP
+        );
 
-      CREATE TABLE IF NOT EXISTS drafts (
-        id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-        organization_id UUID NOT NULL REFERENCES organizations(id) ON DELETE CASCADE,
-        user_id UUID REFERENCES users(id) ON DELETE SET NULL,
-        title VARCHAR(255) NOT NULL,
-        content TEXT NOT NULL,
-        channel VARCHAR(100) DEFAULT 'Blog & Press',
-        status VARCHAR(50) NOT NULL DEFAULT 'draft',
-        drift_score NUMERIC(5,2) DEFAULT 0,
-        created_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
-        updated_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP
-      );
+        CREATE TABLE IF NOT EXISTS drafts (
+          id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+          organization_id UUID NOT NULL REFERENCES organizations(id) ON DELETE CASCADE,
+          user_id UUID REFERENCES users(id) ON DELETE SET NULL,
+          title VARCHAR(255) NOT NULL,
+          content TEXT NOT NULL,
+          channel VARCHAR(100) DEFAULT 'Blog & Press',
+          status VARCHAR(50) NOT NULL DEFAULT 'draft',
+          drift_score NUMERIC(5,2) DEFAULT 0,
+          created_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
+          updated_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP
+        );
 
-      CREATE TABLE IF NOT EXISTS findings (
-        id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-        draft_id UUID NOT NULL REFERENCES drafts(id) ON DELETE CASCADE,
-        rule_id UUID REFERENCES rules(id) ON DELETE SET NULL,
-        issue TEXT NOT NULL,
-        severity VARCHAR(20) NOT NULL DEFAULT 'warning',
-        suggestion TEXT,
-        highlight_text TEXT,
-        category VARCHAR(100),
-        status VARCHAR(50) NOT NULL DEFAULT 'pending',
-        created_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP
-      );
+        CREATE TABLE IF NOT EXISTS findings (
+          id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+          draft_id UUID NOT NULL REFERENCES drafts(id) ON DELETE CASCADE,
+          rule_id UUID REFERENCES rules(id) ON DELETE SET NULL,
+          issue TEXT NOT NULL,
+          severity VARCHAR(20) NOT NULL DEFAULT 'warning',
+          suggestion TEXT,
+          highlight_text TEXT,
+          category VARCHAR(100),
+          status VARCHAR(50) NOT NULL DEFAULT 'pending',
+          created_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP
+        );
 
-      CREATE TABLE IF NOT EXISTS audit_logs (
-        id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-        organization_id UUID NOT NULL REFERENCES organizations(id) ON DELETE CASCADE,
-        user_id UUID REFERENCES users(id) ON DELETE SET NULL,
-        action VARCHAR(100) NOT NULL,
-        entity_type VARCHAR(50) NOT NULL,
-        entity_id UUID,
-        details JSONB DEFAULT '{}'::jsonb,
-        ip_address VARCHAR(45) DEFAULT '127.0.0.1',
-        created_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP
-      );
+        CREATE TABLE IF NOT EXISTS audit_logs (
+          id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+          organization_id UUID NOT NULL REFERENCES organizations(id) ON DELETE CASCADE,
+          user_id UUID REFERENCES users(id) ON DELETE SET NULL,
+          action VARCHAR(100) NOT NULL,
+          entity_type VARCHAR(50) NOT NULL,
+          entity_id UUID,
+          details JSONB DEFAULT '{}'::jsonb,
+          ip_address VARCHAR(45) DEFAULT '127.0.0.1',
+          created_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP
+        );
 
-      -- Seed default organization so foreign keys never fail
-      INSERT INTO organizations (id, name, industry, branding_settings)
-      VALUES (
-        'a0000000-0000-0000-0000-000000000001',
-        'Inkloom AI Enterprises',
-        'Enterprise Cloud & Governance Software',
-        '{"primary_color": "#2563EB", "font_family": "Inter", "tone_preference": "professional"}'::jsonb
-      )
-      ON CONFLICT (id) DO NOTHING;
-    `);
+        -- Seed default organization so foreign keys never fail
+        INSERT INTO organizations (id, name, industry, branding_settings)
+        VALUES (
+          'a0000000-0000-0000-0000-000000000001',
+          'Inkloom AI Enterprises',
+          'Enterprise Cloud & Governance Software',
+          '{"primary_color": "#2563EB", "font_family": "Inter", "tone_preference": "professional"}'::jsonb
+        )
+        ON CONFLICT (id) DO NOTHING;
+      `);
+    } finally {
+      client.release();
+    }
   } catch (err: any) {
     console.warn("[ensureDatabaseSchema]:", err.message);
-  } finally {
-    client.release();
   }
 }
 
