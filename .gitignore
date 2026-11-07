@@ -42,6 +42,9 @@ database/live_store.json
 *.sqlite-shm
 *.sqlite-journal
 
+# tunnel binaries
+cloudflared.exe
+
 # Python
 __pycache__/
 *.py[cod]
