@@ -1,0 +1,1 @@
+import{n as e}from"./index-Dg5eugP0.js";function t(){let{navigate:t}=e();return{push:e=>t(e),replace:e=>t(e),back:()=>{typeof window<`u`&&window.history.back()},forward:()=>{typeof window<`u`&&window.history.forward()},refresh:()=>{},prefetch:()=>{}}}function n(){let{currentPath:t}=e();return(t||`/`).split(`?`)[0]}export{t as n,n as t};

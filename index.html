@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes" />
+    <meta name="theme-color" content="#020617" />
+    <meta name="description" content="ECLIPSE — Intelligent Brand Governance & Fact Verification Engine" />
+    <title>ECLIPSE — Intelligent Brand Governance</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
+    <script>
+      // Global browser environment polyfills for React 19 libraries
+      window.global = window;
+      window.process = window.process || { env: { NODE_ENV: 'development' } };
+      window.addEventListener('error', function(e) {
+        console.error('Captured Runtime Error:', e.error || e.message);
+        var errBanner = document.getElementById('runtime-error-banner');
+        if (errBanner) {
+          errBanner.style.display = 'block';
+          errBanner.innerHTML = '<strong>App Error:</strong> ' + (e.error ? e.error.message : e.message);
+        }
+      });
+    </script>
+    <script type="module" crossorigin src="./assets/index-Dg5eugP0.js"></script>
+    <link rel="modulepreload" crossorigin href="./assets/rolldown-runtime-XKyaHtl9.js">
+    <link rel="stylesheet" crossorigin href="./assets/index-BkV_dwFo.css">
+  </head>
+  <body class="bg-slate-950 text-slate-100 antialiased selection:bg-blue-500 selection:text-white min-h-screen">
+    <div id="runtime-error-banner" style="display:none; position:fixed; top:0; left:0; right:0; z-index:9999; background:#ef4444; color:white; padding:12px 20px; font-family:monospace; font-size:13px; box-shadow:0 4px 12px rgba(0,0,0,0.5);"></div>
+    <div id="root"></div>
+  </body>
+</html>
