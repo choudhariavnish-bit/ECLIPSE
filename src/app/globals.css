@@ -3,11 +3,47 @@
 @tailwind utilities;
 
 :root {
-  --foreground-rgb: 15, 23, 42;
-  --background-start-rgb: 248, 250, 252;
-  --background-end-rgb: 255, 255, 255;
+  --first-color: #e0ffcd;
+  /* Ultra-faint, delicate cream ivory instead of bright yellow */
+  --second-color: #fdfdf7;
+  --third-color: #ffebbb;
+  --fourth-color: #ffcab0;
+
+  --foreground-rgb: 28, 25, 23;
+  --background-start-rgb: 253, 253, 247;
+  --background-end-rgb: 255, 251, 242;
 }
 
+/* 1. User Palette Classes (with faint, subtle yellow) */
+.first-color { 
+  background-color: #e0ffcd !important; 
+}
+	
+.second-color { 
+  /* Faint, delicate warm-ivory / faint cream */
+  background-color: #fcfcf5 !important; 
+}
+
+.third-color { 
+  background-color: #ffebbb !important; 
+}
+
+.fourth-color { 
+  background-color: #ffcab0 !important; 
+}
+
+/* 2. Text and Border Palette Helpers */
+.text-first-color { color: #173d09 !important; }
+.text-second-color { color: #44470c !important; }
+.text-third-color { color: #573305 !important; }
+.text-fourth-color { color: #5c1c04 !important; }
+
+.border-first-color { border-color: #b7e89e !important; }
+.border-second-color { border-color: #f0f0dc !important; }
+.border-third-color { border-color: #f2cb7e !important; }
+.border-fourth-color { border-color: #f7a077 !important; }
+
+/* 3. Global HTML & Body Theme: Clean, faint, elegant canvas */
 html {
   scroll-behavior: smooth;
   -webkit-text-size-adjust: 100%;
@@ -16,13 +52,11 @@ html {
 }
 
 body {
-  color: rgb(var(--foreground-rgb));
-  background: linear-gradient(
-      to bottom,
-      transparent,
-      rgb(var(--background-end-rgb))
-    )
-    rgb(var(--background-start-rgb));
+  color: #1c1917;
+  /* Very faint, subtle warm-white gradient without loud yellow */
+  background-color: #fafaf6 !important;
+  background: linear-gradient(135deg, #fdfdf9 0%, #fffcf5 45%, #f6fcf3 100%) !important;
+  background-attachment: fixed !important;
   min-height: 100vh;
   min-height: 100dvh;
   overflow-x: hidden;
@@ -30,26 +64,66 @@ body {
   font-feature-settings: "cv02", "cv03", "cv04", "cv11";
 }
 
-/* Custom sleek scrollbar for desktop & mobile */
+/* 4. Soft, crisp cards with faint warm borders */
+.bg-white {
+  background-color: #ffffff !important;
+  border-color: #f2ead8 !important;
+}
+
+.bg-slate-50, .bg-slate-50\/50, .bg-slate-100 {
+  background-color: #faf9f5 !important;
+  border-color: #f2ead8 !important;
+}
+
+.border-slate-200, .border-slate-100 {
+  border-color: #f2ead8 !important;
+}
+
+/* Primary actions: fourth-color (#ffcab0) */
+.bg-blue-600, .bg-blue-700, .bg-slate-900:not(pre) {
+  background-color: #ffcab0 !important;
+  color: #291206 !important;
+  border-color: #f7a077 !important;
+}
+
+.bg-blue-600:hover, .bg-blue-700:hover, .bg-slate-900:hover:not(pre) {
+  background-color: #ffa985 !important;
+  color: #170902 !important;
+}
+
+/* Positive / Verified / Success: first-color (#e0ffcd) */
+.bg-emerald-50, .bg-emerald-100, .bg-blue-50, .bg-blue-100 {
+  background-color: #e0ffcd !important;
+  color: #173d09 !important;
+  border-color: #b7e89e !important;
+}
+
+/* Notice / Revision / Pending: third-color (#ffebbb) */
+.bg-purple-50, .bg-purple-100, .bg-amber-50, .bg-amber-100 {
+  background-color: #ffebbb !important;
+  color: #573305 !important;
+  border-color: #f2cb7e !important;
+}
+
+/* Custom sleek scrollbar styled to the palette */
 ::-webkit-scrollbar {
   width: 6px;
   height: 6px;
 }
 
 ::-webkit-scrollbar-track {
-  background: transparent;
+  background: rgba(250, 250, 246, 0.4);
 }
 
 ::-webkit-scrollbar-thumb {
-  background: rgba(148, 163, 184, 0.4);
+  background: #ffcab0;
   border-radius: 9999px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(100, 116, 139, 0.6);
+  background: #f7a077;
 }
 
-/* Touch friendly minimum tap targets on mobile devices */
 @media (max-width: 640px) {
   button, a, input, select, textarea {
     touch-action: manipulation;
@@ -61,7 +135,6 @@ body {
     text-wrap: balance;
   }
 }
-
 .first-color { 
 	background: #e0ffcd !important; 
 }
@@ -104,5 +177,3 @@ body {
 .eclipse-pastel-bg {
   background: linear-gradient(135deg, rgba(224, 255, 205, 0.35) 0%, rgba(253, 255, 205, 0.3) 30%, rgba(255, 235, 187, 0.3) 65%, rgba(255, 202, 176, 0.35) 100%) !important;
 }
-
-

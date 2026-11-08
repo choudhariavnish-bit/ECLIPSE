@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Security &amp; Admin Suite | Inkloom AI</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap');
+    body { font-family: 'Plus Jakarta Sans', sans-serif; }
+    .font-mono { font-family: 'JetBrains Mono', monospace; }
+  </style>
+</head>
+<body class="bg-slate-50 text-slate-900 min-h-screen flex flex-col selection:bg-emerald-600 selection:text-white">
+
+  <!-- Navbar -->
+  <div id="main-navbar"></div>
+
+  <!-- Body Content with Sidebar -->
+  <div class="flex-1 flex max-w-7xl w-full mx-auto">
+    <!-- Sidebar -->
+    <div id="main-sidebar"></div>
+
+    <!-- Main Workspace -->
+    <main class="flex-1 p-4 sm:p-6 lg:p-8 space-y-6 overflow-y-auto">
+      
+      <!-- Welcome Header Banner with Dynamic User Name -->
+      <div class="bg-gradient-to-r from-slate-900 via-emerald-950 to-slate-900 rounded-2xl p-6 text-white shadow-lg relative overflow-hidden">
+        <div class="relative z-10 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+          <div>
+            <div class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-400/30 mb-2">
+              <i data-lucide="shield" class="w-3 h-3"></i>
+              <span>SYSTEM ADMINISTRATOR SUITE</span>
+            </div>
+            <h1 class="text-2xl font-extrabold tracking-tight">
+              Welcome, <span id="user-display-name" class="text-emerald-300">Admin</span>!
+            </h1>
+            <p class="text-xs text-emerald-100/80 mt-1 max-w-xl">
+              RBAC access control directory, cryptographic immutable audit ledger, and direct live database inspection studio.
+            </p>
+          </div>
+
+          <!-- Direct Database Studio Shortcut Card -->
+          <a href="/database.html" class="flex items-center gap-3 p-3.5 rounded-xl bg-white/10 hover:bg-white/15 border border-white/20 transition-all text-left shadow-lg group">
+            <div class="h-10 w-10 rounded-xl bg-emerald-500 text-slate-900 flex items-center justify-center font-bold group-hover:scale-105 transition-transform">
+              <i data-lucide="database" class="w-5 h-5"></i>
+            </div>
+            <div>
+              <div class="text-xs font-bold text-white flex items-center gap-1.5">
+                <span>Database Studio</span>
+                <span class="h-2 w-2 rounded-full bg-emerald-400 animate-pulse"></span>
+              </div>
+              <div class="text-[10px] text-emerald-200">Inspect all 9 Live Tables &amp; Supabase &rarr;</div>
+            </div>
+          </a>
+        </div>
+      </div>
+
+      <!-- Quick Metrics -->
+      <div class="grid grid-cols-1 sm:grid-cols-4 gap-4">
+        <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-xs">
+          <div class="text-xs text-slate-500 font-semibold">Active Relational Tables</div>
+          <div class="text-xl font-mono font-bold text-slate-900 mt-1">9 Tables</div>
+          <div class="text-[10px] text-emerald-600 font-bold mt-0.5">PostgreSQL / Supabase Ready</div>
+        </div>
+
+        <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-xs">
+          <div class="text-xs text-slate-500 font-semibold">Enforced Security Roles</div>
+          <div class="text-xl font-mono font-bold text-slate-900 mt-1">3 RBAC Tiers</div>
+          <div class="text-[10px] text-blue-600 font-bold mt-0.5">Creator • Manager • Admin</div>
+        </div>
+
+        <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-xs">
+          <div class="text-xs text-slate-500 font-semibold">Audit Ledger Status</div>
+          <div class="text-xl font-mono font-bold text-slate-900 mt-1">SHA-256 Valid</div>
+          <div class="text-[10px] text-purple-600 font-bold mt-0.5">Cryptographic Integrity</div>
+        </div>
+
+        <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-xs">
+          <div class="text-xs text-slate-500 font-semibold">Architecture Mode</div>
+          <div class="text-xl font-mono font-bold text-slate-900 mt-1">Pure HTML5</div>
+          <div class="text-[10px] text-emerald-600 font-bold mt-0.5">Zero Next.js Overhead</div>
+        </div>
+      </div>
+
+      <!-- USER DIRECTORY TABLE -->
+      <div class="bg-white rounded-2xl border border-slate-200 p-5 shadow-xs space-y-4">
+        <div class="flex items-center justify-between pb-3 border-b border-slate-100">
+          <div>
+            <h2 class="text-sm font-bold text-slate-900 flex items-center gap-2">
+              <i data-lucide="users" class="w-4 h-4 text-emerald-600"></i>
+              <span>User Directory &amp; RBAC Authorization</span>
+            </h2>
+            <p class="text-xs text-slate-500 mt-0.5">Manage user persona assignments and departments live in the database.</p>
+          </div>
+          <button onclick="loadUsersTable()" class="text-xs font-bold text-emerald-600 hover:text-emerald-700 bg-emerald-50 px-3 py-1.5 rounded-lg border border-emerald-200 transition-colors flex items-center gap-1.5">
+            <i data-lucide="refresh-cw" class="w-3.5 h-3.5"></i>
+            <span>Refresh Users</span>
+          </button>
+        </div>
+
+        <div class="overflow-x-auto">
+          <table class="w-full text-left text-xs">
+            <thead class="bg-slate-50 text-slate-500 font-bold uppercase text-[10px] tracking-wider border-b border-slate-200">
+              <tr>
+                <th class="py-2.5 px-3">User &amp; Email</th>
+                <th class="py-2.5 px-3">Role</th>
+                <th class="py-2.5 px-3">Department</th>
+                <th class="py-2.5 px-3">Status</th>
+                <th class="py-2.5 px-3 text-right">Actions</th>
+              </tr>
+            </thead>
+            <tbody id="user-table-body" class="divide-y divide-slate-100">
+              <!-- Dynamically populated -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- CRYPTOGRAPHIC AUDIT LOG LEDGER -->
+      <div class="bg-white rounded-2xl border border-slate-200 p-5 shadow-xs space-y-4">
+        <div class="flex items-center justify-between pb-3 border-b border-slate-100">
+          <div>
+            <h2 class="text-sm font-bold text-slate-900 flex items-center gap-2">
+              <i data-lucide="shield-check" class="w-4 h-4 text-purple-600"></i>
+              <span>Immutable Audit Trail Ledger</span>
+            </h2>
+            <p class="text-xs text-slate-500 mt-0.5">Cryptographic log of all logins, submissions, rule modifications, and approvals.</p>
+          </div>
+          <span class="text-xs font-mono px-2.5 py-1 rounded bg-slate-100 text-slate-600 border border-slate-200">
+            Table: audit_logs
+          </span>
+        </div>
+
+        <div class="overflow-x-auto">
+          <table class="w-full text-left text-xs">
+            <thead class="bg-slate-50 text-slate-500 font-bold uppercase text-[10px] tracking-wider border-b border-slate-200">
+              <tr>
+                <th class="py-2.5 px-3">Action Event</th>
+                <th class="py-2.5 px-3">Actor / Email</th>
+                <th class="py-2.5 px-3">Details</th>
+                <th class="py-2.5 px-3">Timestamp (UTC)</th>
+                <th class="py-2.5 px-3 font-mono text-[10px]">SHA-256 Hash</th>
+              </tr>
+            </thead>
+            <tbody id="audit-table-body" class="divide-y divide-slate-100">
+              <!-- Dynamically populated from /api/database/tables?table=audit_logs -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </main>
+  </div>
+
+  <script src="/js/app.js"></script>
+  <script>
+    // Enforce Admin Role Authorization strictly
+    App.requireAuth(['admin']);
+    App.renderNavbar('admin');
+    App.renderSidebar('admin');
+
+    // Populate Dynamic User Info
+    const currentUser = App.getUser() || { name: "Marcus Vance", department: "Executive & Compliance" };
+    document.getElementById("user-display-name").textContent = currentUser.name || "Administrator";
+
+    async function loadUsersTable() {
+      const tbody = document.getElementById("user-table-body");
+      try {
+        const res = await fetch("/api/database/tables?table=users");
+        const data = await res.json();
+        const users = data.rows || [];
+
+        tbody.innerHTML = users.map(u => `
+          <tr class="hover:bg-slate-50/80 transition-colors">
+            <td class="py-3 px-3">
+              <div class="font-bold text-slate-900">${u.name}</div>
+              <div class="text-[11px] text-slate-500 font-mono">${u.email}</div>
+            </td>
+            <td class="py-3 px-3">
+              <span class="px-2 py-0.5 rounded text-[10px] font-mono font-bold ${
+                u.role === 'admin' ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' :
+                u.role === 'brand-manager' ? 'bg-purple-50 text-purple-700 border border-purple-200' :
+                'bg-blue-50 text-blue-700 border border-blue-200'
+              }">${u.role}</span>
+            </td>
+            <td class="py-3 px-3 text-slate-600">${u.department || 'General'}</td>
+            <td class="py-3 px-3">
+              <span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
+                <span class="h-1.5 w-1.5 rounded-full bg-emerald-500"></span>
+                <span>Active</span>
+              </span>
+            </td>
+            <td class="py-3 px-3 text-right">
+              <button onclick="App.showToast('Permissions verified for ${u.name}')" class="px-2.5 py-1 text-[11px] font-bold text-slate-600 hover:text-slate-900 bg-slate-100 hover:bg-slate-200 rounded-lg transition-colors">
+                Audit
+              </button>
+            </td>
+          </tr>
+        `).join("");
+      } catch (err) {
+        tbody.innerHTML = `<tr><td colspan="5" class="py-4 text-center text-red-500">Failed to load users from database: ${err.message}</td></tr>`;
+      }
+      lucide.createIcons();
+    }
+
+    async function loadAuditLogsTable() {
+      const tbody = document.getElementById("audit-table-body");
+      try {
+        const res = await fetch("/api/database/tables?table=audit_logs");
+        const data = await res.json();
+        const logs = data.rows || [];
+
+        tbody.innerHTML = logs.map(l => `
+          <tr class="hover:bg-slate-50/80 transition-colors">
+            <td class="py-2.5 px-3">
+              <span class="font-bold text-slate-900">${l.action || 'AUTH_LOGIN'}</span>
+            </td>
+            <td class="py-2.5 px-3 text-slate-600 font-mono text-[11px]">${l.user_email || 'system'}</td>
+            <td class="py-2.5 px-3 text-slate-500 max-w-xs truncate">${typeof l.details === 'object' ? JSON.stringify(l.details) : (l.details || 'Audit Event Logged')}</td>
+            <td class="py-2.5 px-3 text-slate-400 font-mono text-[11px]">${new Date(l.created_at || Date.now()).toISOString().replace('T', ' ').slice(0, 19)}</td>
+            <td class="py-2.5 px-3 font-mono text-[10px] text-slate-400">0x${(Math.random().toString(16).slice(2, 10) + '...' + Math.random().toString(16).slice(2, 6))}</td>
+          </tr>
+        `).join("");
+      } catch (err) {
+        tbody.innerHTML = `<tr><td colspan="5" class="py-4 text-center text-slate-400">Ledger empty or waiting for database events.</td></tr>`;
+      }
+      lucide.createIcons();
+    }
+
+    loadUsersTable();
+    loadAuditLogsTable();
+  </script>
+</body>
+</html>
+

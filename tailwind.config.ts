@@ -4,22 +4,33 @@ export default {
   content: [
     "./index.html",
     "./src/**/*.{js,ts,jsx,tsx}",
+    "./public/**/*.{html,js}",
   ],
   theme: {
     extend: {
       colors: {
+        palette: {
+          first: "#e0ffcd",   // Mint Green
+          second: "#fcfcf5",  // Faint Cream Ivory
+          third: "#ffebbb",   // Soft Peach
+          fourth: "#ffcab0",  // Coral Peach
+        },
+        first: "#e0ffcd",
+        second: "#fcfcf5",
+        third: "#ffebbb",
+        fourth: "#ffcab0",
         brand: {
-          50: "#f0f7ff",
-          100: "#e0effe",
-          200: "#bae0fd",
-          300: "#7cc5fb",
-          400: "#36a4f7",
-          500: "#0c86eb",
-          600: "#026ac8",
-          700: "#0354a2",
-          800: "#074785",
-          900: "#0c3c6f",
-          950: "#082649",
+          50: "#fafaf6",
+          100: "#ffebbb",
+          200: "#ffcab0",
+          300: "#fca07a",
+          400: "#f87c4f",
+          500: "#eb5d2a",
+          600: "#c84518",
+          700: "#a23310",
+          800: "#7c270d",
+          900: "#541908",
+          950: "#320e03",
         },
       },
     },

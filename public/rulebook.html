@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Brand Rulebook | Inkloom AI</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap');
+    body { font-family: 'Plus Jakarta Sans', sans-serif; }
+    .font-mono { font-family: 'JetBrains Mono', monospace; }
+  </style>
+</head>
+<body class="bg-slate-50 text-slate-900 min-h-screen flex flex-col selection:bg-blue-600 selection:text-white">
+
+  <!-- Navbar -->
+  <div id="main-navbar"></div>
+
+  <!-- Body Content with Sidebar -->
+  <div class="flex-1 flex max-w-7xl w-full mx-auto">
+    <!-- Sidebar -->
+    <div id="main-sidebar"></div>
+
+    <!-- Main Workspace -->
+    <main class="flex-1 p-4 sm:p-6 lg:p-8 space-y-6 overflow-y-auto">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-200">
+        <div>
+          <h1 class="text-xl font-bold tracking-tight text-slate-900">Multi-Brand Governance Rulebook</h1>
+          <p class="text-xs text-slate-500 mt-0.5">Enforced regulatory standards, prohibited terminology, and contrast requirements.</p>
+        </div>
+
+        <div class="flex items-center gap-2">
+          <span class="text-xs font-semibold text-slate-500">Brand:</span>
+          <select id="rulebook-brand-select" onchange="renderBrandRules()" class="text-xs font-bold bg-white border border-slate-300 rounded-xl px-3 py-1.5 text-slate-800 shadow-xs focus:outline-none focus:border-blue-500">
+            <option value="LoomCraft Studio">LoomCraft Studio (Creative)</option>
+            <option value="NovaPay">NovaPay (Strict FinTech)</option>
+            <option value="PulseHealth">PulseHealth (Healthcare / HIPAA)</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Rule Cards Grid -->
+      <div id="rules-grid" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <!-- Dynamically rendered -->
+      </div>
+    </main>
+  </div>
+
+  <script src="/js/app.js"></script>
+  <script>
+    App.requireAuth();
+    App.renderNavbar('rulebook');
+    App.renderSidebar('rulebook');
+
+    const RULES_DATA = {
+      "LoomCraft Studio": [
+        { id: "RUL-001", name: "Absolute Claims Prohibition", category: "Legal", severity: "critical", desc: "No copy may claim '100% bug-free', 'unbreakable', or 'zero flaws'.", fix: "Change to 'verified 99.99% availability'" },
+        { id: "RUL-002", name: "Superlative Cost Restriction", category: "Pricing", severity: "high", desc: "Phrases like 'guaranteed cheapest' are prohibited without verified competitor price index.", fix: "Change to 'transparent enterprise pricing'" },
+        { id: "RUL-003", name: "WCAG AA Contrast Minimum", category: "Visual", severity: "critical", desc: "Body text must have minimum 4.5:1 contrast against backdrop. Headers require 3:1.", fix: "Apply Slate-900 typography on white card" },
+        { id: "RUL-004", name: "Brand Voice Hyperbole Filter", category: "Voice & Tone", severity: "medium", desc: "Avoid sensationalist expressions such as 'on the planet' or 'insane speeds'.", fix: "Change to professional cloud authority" }
+      ],
+      "NovaPay": [
+        { id: "NP-001", name: "Settlement Speed Disclaimers", category: "FinTech Compliance", severity: "critical", desc: "Claims of 'instantaneous clearing' must feature regulatory caveat footnote #FDIC-4.", fix: "Append '*Subject to clearinghouse processing windows'" },
+        { id: "NP-002", name: "Capital Safety Guarantee", category: "Regulatory", severity: "critical", desc: "Do not imply government bailout guarantee without explicit FDIC coverage scope.", fix: "State 'FDIC insured up to $250,000'" }
+      ],
+      "PulseHealth": [
+        { id: "PH-001", name: "HIPAA Protected Terminology", category: "Healthcare", severity: "critical", desc: "Prohibit any public marketing references to specific patient medical conditions.", fix: "Generalize to 'clinical workflow automation'" },
+        { id: "PH-002", name: "Medical Device Efficacy Claims", category: "FDA Compliance", severity: "critical", desc: "No diagnostic claim permitted without active 510(k) clearance documentation.", fix: "Change to 'investigational clinical decision support'" }
+      ]
+    };
+
+    function renderBrandRules() {
+      const brand = document.getElementById("rulebook-brand-select").value;
+      const rules = RULES_DATA[brand] || RULES_DATA["LoomCraft Studio"];
+      const grid = document.getElementById("rules-grid");
+
+      grid.innerHTML = rules.map(r => `
+        <div class="bg-white rounded-2xl border border-slate-200 p-5 shadow-xs space-y-3">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-mono font-bold text-slate-500">${r.id}</span>
+            <span class="px-2 py-0.5 rounded text-[10px] font-mono font-bold uppercase ${
+              r.severity === 'critical' ? 'bg-red-50 text-red-700 border border-red-200' :
+              r.severity === 'high' ? 'bg-amber-50 text-amber-700 border border-amber-200' :
+              'bg-blue-50 text-blue-700 border border-blue-200'
+            }">${r.severity}</span>
+          </div>
+          <div>
+            <h3 class="text-sm font-bold text-slate-900">${r.name}</h3>
+            <p class="text-xs text-slate-600 mt-1 leading-relaxed">${r.desc}</p>
+          </div>
+          <div class="pt-2 border-t border-slate-100 flex items-center justify-between text-[11px]">
+            <span class="text-slate-400 font-mono">Category: ${r.category}</span>
+            <span class="text-blue-600 font-semibold">${r.fix}</span>
+          </div>
+        </div>
+      `).join("");
+
+      lucide.createIcons();
+    }
+
+    renderBrandRules();
+  </script>
+</body>
+</html>
+

@@ -19,8 +19,6 @@ import {
   Building,
   UserPlus,
   LogIn,
-  Sliders,
-  Scale,
 } from "lucide-react";
 
 export default function LoginPage() {
@@ -151,24 +149,23 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col justify-center items-center py-12 px-4 sm:px-6 lg:px-8 relative overflow-hidden selection:bg-blue-600 selection:text-white">
-      {/* Background Ambience */}
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_80%_at_50%_-20%,rgba(59,130,246,0.2),rgba(255,255,255,0))] pointer-events-none" />
-      <div className="absolute top-1/4 left-1/10 w-96 h-96 bg-blue-600/10 rounded-full blur-3xl pointer-events-none" />
-      <div className="absolute bottom-1/4 right-1/10 w-96 h-96 bg-purple-600/10 rounded-full blur-3xl pointer-events-none" />
+    <div className="min-h-screen bg-gradient-to-br from-[#fdfdf9] via-[#fffcf5] to-[#f6fcf3] text-stone-900 flex flex-col justify-center items-center py-12 px-4 sm:px-6 lg:px-8 relative overflow-hidden selection:bg-[#ffcab0] selection:text-stone-950">
+      {/* Background Ambience Subtle Glows */}
+      <div className="absolute top-1/4 left-1/10 w-96 h-96 bg-[#e0ffcd]/25 rounded-full blur-3xl pointer-events-none" />
+      <div className="absolute bottom-1/4 right-1/10 w-96 h-96 bg-[#ffcab0]/25 rounded-full blur-3xl pointer-events-none" />
 
       {/* Main Container */}
       <div className="w-full max-w-md sm:max-w-lg relative z-10">
         {/* Brand Header */}
         <div className="text-center mb-8">
-          <div className="inline-flex items-center gap-2 rounded-full bg-blue-500/10 border border-blue-400/30 px-3.5 py-1 text-xs font-semibold text-blue-300 mb-4 backdrop-blur-md">
-            <ShieldCheck className="h-4 w-4 text-blue-400" />
+          <div className="inline-flex items-center gap-2 rounded-full bg-[#e0ffcd] border border-[#b7e89e] px-4 py-1.5 text-xs font-bold text-stone-900 mb-4 shadow-xs">
+            <ShieldCheck className="h-4 w-4 text-emerald-800" />
             <span>ECLIPSE • Enterprise Brand Governance</span>
           </div>
-          <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-white">
+          <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-stone-900">
             {mode === "login" ? "Sign in to Workspace" : "Create New Account"}
           </h1>
-          <p className="mt-2 text-xs sm:text-sm text-slate-400">
+          <p className="mt-2 text-xs sm:text-sm text-stone-600 font-medium">
             {mode === "login"
               ? "Access your assigned role workspace with strict zero-leakage RBAC."
               : "Register your corporate credentials and select your dedicated role."}
@@ -176,7 +173,7 @@ export default function LoginPage() {
         </div>
 
         {/* Auth Card */}
-        <div className="bg-slate-900/90 border border-slate-800 rounded-3xl p-6 sm:p-8 shadow-2xl backdrop-blur-xl relative overflow-hidden">
+        <div className="bg-white/95 border border-[#f2ead8] rounded-3xl p-6 sm:p-8 shadow-xl backdrop-blur-xl relative overflow-hidden">
           <div className="absolute top-0 left-0 right-0 eclipse-4color-strip">
             <div className="first-color h-full" />
             <div className="second-color h-full" />
@@ -184,17 +181,17 @@ export default function LoginPage() {
             <div className="fourth-color h-full" />
           </div>
           {/* Tab Switcher */}
-          <div className="flex rounded-xl bg-slate-950 p-1 mb-6 border border-slate-800">
+          <div className="flex rounded-2xl bg-[#faf9f5] p-1.5 mb-6 border border-[#f2ead8]">
             <button
               type="button"
               onClick={() => {
                 setMode("login");
                 setErrorMsg(null);
               }}
-              className={`flex-1 flex items-center justify-center gap-2 py-2 text-xs font-bold rounded-lg transition-all ${
+              className={`flex-1 flex items-center justify-center gap-2 py-2 text-xs font-bold rounded-xl transition-all ${
                 mode === "login"
-                  ? "bg-blue-600 text-white shadow-md"
-                  : "text-slate-400 hover:text-white"
+                  ? "bg-[#ffcab0] text-stone-950 shadow-sm border border-[#f7a077]"
+                  : "text-stone-500 hover:text-stone-900"
               }`}
             >
               <LogIn className="h-3.5 w-3.5" />
@@ -206,10 +203,10 @@ export default function LoginPage() {
                 setMode("signup");
                 setErrorMsg(null);
               }}
-              className={`flex-1 flex items-center justify-center gap-2 py-2 text-xs font-bold rounded-lg transition-all ${
+              className={`flex-1 flex items-center justify-center gap-2 py-2 text-xs font-bold rounded-xl transition-all ${
                 mode === "signup"
-                  ? "bg-blue-600 text-white shadow-md"
-                  : "text-slate-400 hover:text-white"
+                  ? "bg-[#ffcab0] text-stone-950 shadow-sm border border-[#f7a077]"
+                  : "text-stone-500 hover:text-stone-900"
               }`}
             >
               <UserPlus className="h-3.5 w-3.5" />
@@ -219,8 +216,8 @@ export default function LoginPage() {
 
           {/* Error Banner */}
           {errorMsg && (
-            <div className="mb-5 flex items-center gap-2.5 p-3 rounded-xl bg-rose-500/10 border border-rose-500/30 text-rose-300 text-xs">
-              <ShieldAlert className="h-4 w-4 text-rose-400 shrink-0" />
+            <div className="mb-5 flex items-center gap-2.5 p-3 rounded-xl bg-[#ffcab0]/40 border border-[#f7a077] text-stone-900 text-xs font-semibold">
+              <ShieldAlert className="h-4 w-4 text-orange-800 shrink-0" />
               <span>{errorMsg}</span>
             </div>
           )}
@@ -229,40 +226,40 @@ export default function LoginPage() {
           {mode === "login" ? (
             <form onSubmit={handleLoginSubmit} className="space-y-4">
               <div>
-                <label className="block text-xs font-medium text-slate-300 mb-1.5">
+                <label className="block text-xs font-bold text-stone-700 mb-1.5">
                   Corporate Email
                 </label>
                 <div className="relative">
-                  <Mail className="absolute left-3.5 top-3 h-4 w-4 text-slate-500" />
+                  <Mail className="absolute left-3.5 top-3 h-4 w-4 text-stone-400" />
                   <input
                     type="email"
                     required
                     value={loginEmail}
                     onChange={(e) => setLoginEmail(e.target.value)}
                     placeholder="alex.creator@eclipse.ai"
-                    className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-slate-100 placeholder-slate-600 text-xs focus:outline-hidden focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-colors"
+                    className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-white border border-[#f2ead8] text-stone-900 placeholder-stone-400 text-xs focus:outline-hidden focus:border-[#ffcab0] focus:ring-1 focus:ring-[#ffcab0] transition-colors"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block text-xs font-medium text-slate-300 mb-1.5">
+                <label className="block text-xs font-bold text-stone-700 mb-1.5">
                   Password
                 </label>
                 <div className="relative">
-                  <Lock className="absolute left-3.5 top-3 h-4 w-4 text-slate-500" />
+                  <Lock className="absolute left-3.5 top-3 h-4 w-4 text-stone-400" />
                   <input
                     type={showPassword ? "text" : "password"}
                     required
                     value={loginPassword}
                     onChange={(e) => setLoginPassword(e.target.value)}
                     placeholder="••••••••••••"
-                    className="w-full pl-10 pr-10 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-slate-100 placeholder-slate-600 text-xs focus:outline-hidden focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-colors"
+                    className="w-full pl-10 pr-10 py-2.5 rounded-xl bg-white border border-[#f2ead8] text-stone-900 placeholder-stone-400 text-xs focus:outline-hidden focus:border-[#ffcab0] focus:ring-1 focus:ring-[#ffcab0] transition-colors"
                   />
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-3.5 top-3 text-slate-500 hover:text-slate-300"
+                    className="absolute right-3.5 top-3 text-stone-400 hover:text-stone-700"
                   >
                     {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                   </button>
@@ -272,10 +269,10 @@ export default function LoginPage() {
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full mt-2 py-3 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs shadow-lg shadow-blue-600/30 transition-all flex items-center justify-center gap-2 disabled:opacity-50"
+                className="w-full mt-2 py-3 rounded-xl bg-[#ffcab0] hover:bg-[#f7a077] text-stone-950 font-bold text-xs shadow-sm border border-[#f7a077] transition-all flex items-center justify-center gap-2 disabled:opacity-50"
               >
                 {loading ? (
-                  <div className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" />
+                  <div className="h-4 w-4 animate-spin rounded-full border-2 border-stone-900 border-t-transparent" />
                 ) : (
                   <>
                     <span>Sign In</span>
@@ -285,35 +282,35 @@ export default function LoginPage() {
               </button>
 
               {/* Quick Persona Demo Logins */}
-              <div className="pt-4 border-t border-slate-800/80">
-                <span className="block text-[11px] font-mono text-slate-500 uppercase tracking-wider text-center mb-3">
-                  Or 1-Click Demo Evaluation
+              <div className="pt-4 border-t border-[#f2ead8]">
+                <span className="block text-[11px] font-mono text-stone-500 uppercase tracking-wider text-center mb-3 font-semibold">
+                  Or 1-Click Evaluation Persona
                 </span>
                 <div className="grid grid-cols-3 gap-2">
                   <button
                     type="button"
                     onClick={() => handleDemoLogin("creator")}
-                    className="flex flex-col items-center justify-center p-2 rounded-xl border border-blue-500/30 bg-blue-500/10 hover:bg-blue-500/20 text-blue-300 text-[11px] font-semibold transition-all group"
+                    className="flex flex-col items-center justify-center p-2.5 rounded-xl border border-[#b7e89e] bg-[#e0ffcd] hover:bg-[#d2f7be] text-stone-950 text-[11px] font-bold transition-all shadow-2xs group"
                   >
-                    <Sparkles className="h-4 w-4 mb-1 text-blue-400 group-hover:scale-110 transition-transform" />
+                    <Sparkles className="h-4 w-4 mb-1 text-emerald-800 group-hover:scale-110 transition-transform" />
                     <span>Creator</span>
                   </button>
 
                   <button
                     type="button"
                     onClick={() => handleDemoLogin("brand-manager")}
-                    className="flex flex-col items-center justify-center p-2 rounded-xl border border-purple-500/30 bg-purple-500/10 hover:bg-purple-500/20 text-purple-300 text-[11px] font-semibold transition-all group"
+                    className="flex flex-col items-center justify-center p-2.5 rounded-xl border border-[#f2cb7e] bg-[#ffebbb] hover:bg-[#fde1a6] text-stone-950 text-[11px] font-bold transition-all shadow-2xs group"
                   >
-                    <Layers className="h-4 w-4 mb-1 text-purple-400 group-hover:scale-110 transition-transform" />
+                    <Layers className="h-4 w-4 mb-1 text-amber-800 group-hover:scale-110 transition-transform" />
                     <span>Brand Mgr</span>
                   </button>
 
                   <button
                     type="button"
                     onClick={() => handleDemoLogin("admin")}
-                    className="flex flex-col items-center justify-center p-2 rounded-xl border border-emerald-500/30 bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-300 text-[11px] font-semibold transition-all group"
+                    className="flex flex-col items-center justify-center p-2.5 rounded-xl border border-[#f7a077] bg-[#ffcab0] hover:bg-[#ffa882] text-stone-950 text-[11px] font-bold transition-all shadow-2xs group"
                   >
-                    <ShieldCheck className="h-4 w-4 mb-1 text-emerald-400 group-hover:scale-110 transition-transform" />
+                    <ShieldCheck className="h-4 w-4 mb-1 text-orange-950 group-hover:scale-110 transition-transform" />
                     <span>Admin</span>
                   </button>
                 </div>
@@ -323,57 +320,57 @@ export default function LoginPage() {
             /* 2. SIGN UP FORM (NEW ACCOUNT) */
             <form onSubmit={handleSignupSubmit} className="space-y-4">
               <div>
-                <label className="block text-xs font-medium text-slate-300 mb-1.5">
+                <label className="block text-xs font-bold text-stone-700 mb-1.5">
                   Full Name
                 </label>
                 <div className="relative">
-                  <UserIcon className="absolute left-3.5 top-3 h-4 w-4 text-slate-500" />
+                  <UserIcon className="absolute left-3.5 top-3 h-4 w-4 text-stone-400" />
                   <input
                     type="text"
                     required
                     value={signupName}
                     onChange={(e) => setSignupName(e.target.value)}
                     placeholder="e.g. Alex Morgan"
-                    className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-slate-100 placeholder-slate-600 text-xs focus:outline-hidden focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-colors"
+                    className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-white border border-[#f2ead8] text-stone-900 placeholder-stone-400 text-xs focus:outline-hidden focus:border-[#ffcab0] focus:ring-1 focus:ring-[#ffcab0] transition-colors"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block text-xs font-medium text-slate-300 mb-1.5">
+                <label className="block text-xs font-bold text-stone-700 mb-1.5">
                   Work Email
                 </label>
                 <div className="relative">
-                  <Mail className="absolute left-3.5 top-3 h-4 w-4 text-slate-500" />
+                  <Mail className="absolute left-3.5 top-3 h-4 w-4 text-stone-400" />
                   <input
                     type="email"
                     required
                     value={signupEmail}
                     onChange={(e) => setSignupEmail(e.target.value)}
                     placeholder="alex@company.com"
-                    className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-slate-100 placeholder-slate-600 text-xs focus:outline-hidden focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-colors"
+                    className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-white border border-[#f2ead8] text-stone-900 placeholder-stone-400 text-xs focus:outline-hidden focus:border-[#ffcab0] focus:ring-1 focus:ring-[#ffcab0] transition-colors"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block text-xs font-medium text-slate-300 mb-1.5">
+                <label className="block text-xs font-bold text-stone-700 mb-1.5">
                   Password
                 </label>
                 <div className="relative">
-                  <Lock className="absolute left-3.5 top-3 h-4 w-4 text-slate-500" />
+                  <Lock className="absolute left-3.5 top-3 h-4 w-4 text-stone-400" />
                   <input
                     type={showPassword ? "text" : "password"}
                     required
                     value={signupPassword}
                     onChange={(e) => setSignupPassword(e.target.value)}
                     placeholder="Min 6 characters"
-                    className="w-full pl-10 pr-10 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-slate-100 placeholder-slate-600 text-xs focus:outline-hidden focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-colors"
+                    className="w-full pl-10 pr-10 py-2.5 rounded-xl bg-white border border-[#f2ead8] text-stone-900 placeholder-stone-400 text-xs focus:outline-hidden focus:border-[#ffcab0] focus:ring-1 focus:ring-[#ffcab0] transition-colors"
                   />
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-3.5 top-3 text-slate-500 hover:text-slate-300"
+                    className="absolute right-3.5 top-3 text-stone-400 hover:text-stone-700"
                   >
                     {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                   </button>
@@ -382,7 +379,7 @@ export default function LoginPage() {
 
               {/* Dedicated Role Selection with Strict RBAC Isolation */}
               <div>
-                <label className="block text-xs font-medium text-slate-300 mb-1.5">
+                <label className="block text-xs font-bold text-stone-700 mb-1.5">
                   Select Role & Workspace Access
                 </label>
                 <div className="grid grid-cols-1 gap-2">
@@ -392,21 +389,21 @@ export default function LoginPage() {
                       title: "Content Creator",
                       desc: "Author Studio: Content auditing, copy linting, tone inspection",
                       icon: Sparkles,
-                      color: "first-color first-color-border text-slate-900",
+                      activeColor: "border-[#b7e89e] bg-[#e0ffcd] text-stone-950 font-bold",
                     },
                     {
                       role: "brand-manager" as UserRole,
                       title: "Brand Manager",
                       desc: "Approval Pipeline: Review drafts, enforce editorial compliance",
                       icon: Layers,
-                      color: "second-color second-color-border text-slate-900",
+                      activeColor: "border-[#f2cb7e] bg-[#ffebbb] text-stone-950 font-bold",
                     },
                     {
                       role: "admin" as UserRole,
                       title: "Security & Admin",
                       desc: "Admin Console: RBAC permissions, audit trail ledger, rulebooks",
                       icon: ShieldCheck,
-                      color: "third-color third-color-border text-slate-900",
+                      activeColor: "border-[#f7a077] bg-[#ffcab0] text-stone-950 font-bold",
                     },
                   ].map((r) => {
                     const isSelected = signupRole === r.role;
@@ -414,21 +411,21 @@ export default function LoginPage() {
                       <div
                         key={r.role}
                         onClick={() => handleRoleSelect(r.role)}
-                        className={`p-3 rounded-xl border cursor-pointer transition-all flex items-start gap-3 ${
+                        className={`p-3 rounded-2xl border cursor-pointer transition-all flex items-start gap-3 shadow-2xs ${
                           isSelected
-                            ? `${r.color} ring-1 ring-white/20`
-                            : "border-slate-800 bg-slate-950/60 hover:border-slate-700"
+                            ? `${r.activeColor} ring-1 ring-stone-900/10`
+                            : "border-[#f2ead8] bg-[#faf9f5] hover:bg-white text-stone-700"
                         }`}
                       >
                         <r.icon className="h-4 w-4 mt-0.5 shrink-0" />
                         <div className="flex-1">
                           <div className="flex items-center justify-between">
-                            <span className="text-xs font-bold text-white">{r.title}</span>
+                            <span className="text-xs font-bold text-stone-900">{r.title}</span>
                             {isSelected && (
-                              <CheckCircle2 className="h-3.5 w-3.5 text-emerald-400" />
+                              <CheckCircle2 className="h-3.5 w-3.5 text-stone-900" />
                             )}
                           </div>
-                          <p className="text-[11px] text-slate-400 mt-0.5 leading-snug">
+                          <p className="text-[11px] text-stone-600 mt-0.5 leading-snug font-normal">
                             {r.desc}
                           </p>
                         </div>
@@ -439,16 +436,16 @@ export default function LoginPage() {
               </div>
 
               <div>
-                <label className="block text-xs font-medium text-slate-300 mb-1.5">
+                <label className="block text-xs font-bold text-stone-700 mb-1.5">
                   Department
                 </label>
                 <div className="relative">
-                  <Building className="absolute left-3.5 top-3 h-4 w-4 text-slate-500" />
+                  <Building className="absolute left-3.5 top-3 h-4 w-4 text-stone-400" />
                   <input
                     type="text"
                     value={signupDepartment}
                     onChange={(e) => setSignupDepartment(e.target.value)}
-                    className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-slate-100 placeholder-slate-600 text-xs focus:outline-hidden focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-colors"
+                    className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-white border border-[#f2ead8] text-stone-900 placeholder-stone-400 text-xs focus:outline-hidden focus:border-[#ffcab0] focus:ring-1 focus:ring-[#ffcab0] transition-colors"
                   />
                 </div>
               </div>
@@ -456,10 +453,10 @@ export default function LoginPage() {
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full mt-2 py-3 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs shadow-lg shadow-blue-600/30 transition-all flex items-center justify-center gap-2 disabled:opacity-50"
+                className="w-full mt-2 py-3 rounded-xl bg-[#ffcab0] hover:bg-[#f7a077] text-stone-950 font-bold text-xs shadow-sm border border-[#f7a077] transition-all flex items-center justify-center gap-2 disabled:opacity-50"
               >
                 {loading ? (
-                  <div className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" />
+                  <div className="h-4 w-4 animate-spin rounded-full border-2 border-stone-900 border-t-transparent" />
                 ) : (
                   <>
                     <span>Create Account & Enter Workspace</span>
@@ -471,7 +468,7 @@ export default function LoginPage() {
           )}
 
           {/* Footer Mode Switcher */}
-          <div className="mt-6 text-center text-xs text-slate-400">
+          <div className="mt-6 text-center text-xs text-stone-500">
             {mode === "login" ? (
               <p>
                 Don&apos;t have an account?{" "}
@@ -481,7 +478,7 @@ export default function LoginPage() {
                     setMode("signup");
                     setErrorMsg(null);
                   }}
-                  className="font-bold text-blue-400 hover:text-blue-300 transition-colors underline"
+                  className="font-bold text-[#c84518] hover:text-[#a23310] transition-colors underline"
                 >
                   Sign up now
                 </button>
@@ -495,7 +492,7 @@ export default function LoginPage() {
                     setMode("login");
                     setErrorMsg(null);
                   }}
-                  className="font-bold text-blue-400 hover:text-blue-300 transition-colors underline"
+                  className="font-bold text-[#c84518] hover:text-[#a23310] transition-colors underline"
                 >
                   Sign in
                 </button>

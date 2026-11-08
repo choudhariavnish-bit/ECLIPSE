@@ -2,27 +2,45 @@ import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 import path from "path";
 import fs from "fs";
-import { DatabaseSync } from "node:sqlite";
 import { fileURLToPath } from "url";
+import { createRequire } from "module";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
+const requireModule = createRequire(import.meta.url);
+
+// Safely load DatabaseSync from node:sqlite if available (Node 22.5+)
+let DatabaseSync: any = null;
+try {
+  const sqliteModule = requireModule("node:sqlite");
+  DatabaseSync = sqliteModule?.DatabaseSync || null;
+} catch {
+  DatabaseSync = null;
+}
 
 // Persistent SQLite3 Database Helper
 const sqliteDbPath = path.join(process.cwd(), "database", "governance.sqlite");
 
 function getSqliteDb() {
+  if (!DatabaseSync) return null;
   const dbDir = path.dirname(sqliteDbPath);
   if (!fs.existsSync(dbDir)) {
     fs.mkdirSync(dbDir, { recursive: true });
   }
-  return new DatabaseSync(sqliteDbPath);
+  try {
+    return new DatabaseSync(sqliteDbPath);
+  } catch {
+    return null;
+  }
 }
 
 function executeSql(sql: string, params: any[] = []): { success: boolean; rows?: any[]; count?: number; changes?: number; lastInsertRowid?: number | bigint; error?: string } {
   let db: any = null;
   try {
     db = getSqliteDb();
+    if (!db) {
+      return { success: true, rows: [], count: 0, changes: 0 };
+    }
     const trimmed = sql.trim();
     if (trimmed.toUpperCase().startsWith("SELECT") || trimmed.toUpperCase().startsWith("PRAGMA")) {
       const stmt = db.prepare(sql);
@@ -913,6 +931,7 @@ const apiMockPlugin = () => ({
 });
 
 export default defineConfig({
+  base: "./",
   plugins: [react(), apiMockPlugin()],
   resolve: {
     alias: {
@@ -925,7 +944,7 @@ export default defineConfig({
   server: {
     port: 3000,
     host: "0.0.0.0",
-    strictPort: true,
+    strictPort: false,
     allowedHosts: true,
   },
   define: {

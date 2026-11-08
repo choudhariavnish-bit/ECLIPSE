@@ -1,52 +1,47 @@
-# dependencies
-/node_modules
+# Dependencies
 node_modules/
 /.pnp
 .pnp.js
-.yarn/install-state.gz
 
-# testing
+# Testing & Coverage
 /coverage
 
-# builds
-/dist/
+# Production & Build outputs
 dist/
-/build
-/.next/
-/out/
+build/
+.next/
+out/
 
-# misc
-.DS_Store
-*.pem
+# Environment variables
+.env
+.env*.local
 
-# debug
+# Logs
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+tunnel.log
+*.log
 
-# local env files
-.env*.local
-.env
+# Editor & OS files
+.DS_Store
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+.idea/
+.vscode/*
+!.vscode/extensions.json
 
-# vercel
-.vercel
-
-# typescript
-*.tsbuildinfo
-next-env.d.ts
-
-# database data files
-database/*.json
-database/live_store.json
-*.sqlite-wal
-*.sqlite-shm
-*.sqlite-journal
-
-# tunnel binaries
+# Binaries & Large Tools
 cloudflared.exe
+*.exe
+*.node
+*.dll
 
-# Python
-__pycache__/
-*.py[cod]
-*$py.class
-.pytest_cache/
+# Database local binary files
+database/*.sqlite
+database/*.sqlite-journal

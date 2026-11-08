@@ -28,17 +28,54 @@
 
 ---
 
-## 2. Key Technology Stack
+## 2. AI Engineering Roadmap & Deliverables
 
-- **Frontend**: Pure **React 19**, **HTML5**, **Tailwind CSS v3.4**, and **Vite v8** (completely replacing Next.js for high performance and universal device compatibility).
-- **Offline Local Database**: **SQLite 3** (`database/governance.sqlite`) using Node.js native `DatabaseSync` — zero cloud logins, zero DNS lookups, zero latency.
-- **Browser Document Store**: **MongoDB** (`src/lib/mongoClient.ts`) providing standard driver APIs (`find()`, `insertOne()`, `updateOne()`, `deleteOne()`) with persistent browser storage.
-- **AI Multimodal Core**: Google Gemini 2.0 Flash Vision (OCR text extraction, WCAG 2.1 AA visual contrast inspection, brand guidelines verification, autonomous copy correction).
-- **Cross-Device Ready**: Binds to `0.0.0.0:3000`, allowing instant access on PCs, Macs, iPads, and mobile devices connected to the same Wi-Fi.
+| Round | Focus | Key Deliverables | Status |
+| :--- | :--- | :--- | :--- |
+| **Round 1 — Plan** | Foundation & Specification | RAG architecture specification, Gemini prompt schemas, Knowledge base design | **Completed** |
+| **Round 2 — Build** | Governance Engine Core | Gemini integration, deterministic rule parser, fact verification, structured JSON audit | **Completed** |
+| **Round 3 — Advanced** | Multimodal & Evaluation | Image analysis (OCR & OpenCV), accessibility checks, automated benchmark evaluation | **Ready for Stage 3** |
 
 ---
 
-## 3. Four Core Workspaces & Dashboards
+## 3. Five Core Engine Components (`ai-engine/`)
+
+```
+                      ┌─────────────────────────────────────────┐
+                      │            ECLIPSE Engine            │
+                      └────────────────────┬────────────────────┘
+                                           │
+         ┌───────────────────┬─────────────┴───────┬───────────────────┐
+         ▼                   ▼                     ▼                   ▼
+┌─────────────────┐ ┌─────────────────┐   ┌─────────────────┐ ┌─────────────────┐
+│  Prompt Engine  │ │  RAG Retriever  │   │   Rule Parser   │ │  Fact Checker   │
+│Controlled Gemini│ │Approved facts & │   │Exact prohibited │ │Evidence cross-  │
+│ prompts & schema│ │ brand guidelines│   │ terminology scan│ │  referencing    │
+└────────┬────────┘ └────────┬────────┘   └────────┬────────┘ └────────┬────────┘
+         │                   │                     │                   │
+         └───────────────────┴──────────┬──────────┴───────────────────┘
+                                        ▼
+                             ┌─────────────────────┐
+                             │ JSON Audit Generator│
+                             │ Conforms to Pydantic│
+                             │    ReviewReport     │
+                             └─────────────────────┘
+```
+
+1. **Prompt Engine (`ai-engine/app/prompt_engine.py`)**:
+   - `create_review_prompt(content, brand_knowledge)`: Creates controlled instructions grounding Gemini to never invent evidence, cite approved fact IDs, and return structured JSON.
+2. **Knowledge Retriever (`ai-engine/app/brand_retriever.py`)**:
+   - RAG retrieval of approved brand guidelines ([`knowledge/brand_guidelines.json`](file:///c:/Users/Pratik/OneDrive/Desktop/ECLIPSE/ECLIPSE/ai-engine/knowledge/brand_guidelines.json)) and verified facts ([`knowledge/approved_facts.json`](file:///c:/Users/Pratik/OneDrive/Desktop/ECLIPSE/ECLIPSE/ai-engine/knowledge/approved_facts.json)).
+3. **Rule Parser (`ai-engine/app/rule_parser.py`)**:
+   - `check_prohibited_terms(content, prohibited_terms)`: Fast deterministic phrase scanner that runs completely independently of Gemini.
+4. **AI Reviewer (`ai-engine/app/gemini_client.py`)**:
+   - `generate_response(prompt)`: Powered by Google Gemini 3.5 Flash (`google-genai` SDK) with cascading multi-model failover under rate limits.
+5. **JSON Audit Generator (`ai-engine/schemas/review_schema.py` & `ai-engine/app/review_engine.py`)**:
+   - `review_brand_content(content, brand)`: Synthesizes rule findings, fact verification, and Gemini intelligence into a strongly-typed `ReviewReport`.
+
+---
+
+## 4. Frontend & Enterprise Governance Console
 
 | Workspace | Route | Capabilities & Features |
 | :--- | :--- | :--- |
@@ -49,7 +86,7 @@
 
 ---
 
-## 4. Quick Start & Launching ECLIPSE
+## 5. Quick Start & Launching ECLIPSE
 
 ### 🚀 1-Click Launch with `start.bat` (Recommended on Windows)
 
@@ -124,7 +161,7 @@ await mongoClient.db.collection("users").deleteOne({ id: "u-04" });
 
 ---
 
-## 6. Directory Structure
+## 7. Directory Structure
 
 ```
 ECLIPSE/
@@ -165,15 +202,9 @@ ECLIPSE/
 
 ---
 
-## 7. Verification & Production Build
+## 7. Verification & Benchmark Evaluation
 
-Build for production verification:
-
-```bash
-npm run build
-```
-
-Preview production bundle:
+Run the evaluation test suite:
 
 ```bash
 npm run preview

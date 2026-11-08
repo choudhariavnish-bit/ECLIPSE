@@ -12,6 +12,7 @@ import {
   Users,
   Cpu,
   History,
+  TrendingUp,
 } from "lucide-react";
 
 export const MobileNav = () => {
@@ -22,17 +23,20 @@ export const MobileNav = () => {
     { name: "Inspector", href: "/dashboard/creator", icon: CheckSquare, badge: null },
     { name: "Drafts", href: "/dashboard/drafts", icon: FileText, badge: "4" },
     { name: "Rulebook", href: "/dashboard/rulebook", icon: BookOpen, badge: null },
+    { name: "Benefits", href: "/dashboard/benefits", icon: TrendingUp, badge: "ROI" },
   ];
 
   const BRAND_MANAGER_ITEMS = [
     { name: "Approvals", href: "/dashboard/brand-manager", icon: Layers, badge: "3" },
     { name: "Drafts", href: "/dashboard/drafts", icon: FileText, badge: "4" },
     { name: "Rulebook", href: "/dashboard/rulebook", icon: BookOpen, badge: null },
+    { name: "Benefits", href: "/dashboard/benefits", icon: TrendingUp, badge: "ROI" },
   ];
 
   const ADMIN_ITEMS = [
     { name: "Access", href: "/dashboard/admin", icon: Users, badge: "4" },
     { name: "Rulebook", href: "/dashboard/rulebook", icon: BookOpen, badge: null },
+    { name: "Benefits", href: "/dashboard/benefits", icon: TrendingUp, badge: "ROI" },
   ];
 
   const items =

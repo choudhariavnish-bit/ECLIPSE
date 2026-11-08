@@ -1,25 +1,21 @@
 @echo off
 title ECLIPSE Platform Launcher
 echo ============================================================
-echo   ECLIPSE — Multimodal Brand Governance Platform
+echo   ECLIPSE - Multimodal Brand Governance Platform
 echo ============================================================
 echo.
 
 set BASE_DIR=%~dp0
 
-set NODE_EXE=node
-where node >nul 2>nul
-if %errorlevel% neq 0 (
-  if exist "C:\Users\Pratik\Downloads\node-v24.21.0-win-x64\node-v24.21.0-win-x64\node.exe" (
-    set NODE_EXE="C:\Users\Pratik\Downloads\node-v24.21.0-win-x64\node-v24.21.0-win-x64\node.exe"
-  )
-)
-
-echo [1/2] Starting ECLIPSE Engine (FastAPI) on Port 8000...
+echo [1/2] Starting ECLIPSE Backend Engine (FastAPI) on Port 8000...
 start "ECLIPSE Engine (Port 8000)" cmd /k "cd /d %BASE_DIR% && python run_eclipse.py"
 
-echo [2/2] Starting ECLIPSE Frontend (React + Vite) on Port 3000...
-start "ECLIPSE Frontend (Port 3000)" cmd /k "cd /d %BASE_DIR% && %NODE_EXE% node_modules\vite\bin\vite.js --host 0.0.0.0 --port 3000"
+echo [2/2] Starting ECLIPSE Frontend on Port 3000...
+if exist "%BASE_DIR%node_modules\vite\bin\vite.js" (
+  start "ECLIPSE Frontend (Port 3000)" cmd /k "cd /d %BASE_DIR% && node node_modules\vite\bin\vite.js --host 0.0.0.0 --port 3000"
+) else (
+  start "ECLIPSE Frontend (Port 3000)" cmd /k "cd /d %BASE_DIR% && node server.js"
+)
 
 echo.
 echo ============================================================

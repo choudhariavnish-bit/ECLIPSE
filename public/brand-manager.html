@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Brand Manager - Review Pipeline &amp; Voice Studio | Inkloom AI</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap');
+    body { font-family: 'Plus Jakarta Sans', sans-serif; }
+    .font-mono { font-family: 'JetBrains Mono', monospace; }
+  </style>
+</head>
+<body class="bg-slate-50 text-slate-900 min-h-screen flex flex-col selection:bg-purple-600 selection:text-white">
+
+  <!-- Navbar -->
+  <div id="main-navbar"></div>
+
+  <!-- Body Content with Sidebar -->
+  <div class="flex-1 flex max-w-7xl w-full mx-auto">
+    <!-- Sidebar -->
+    <div id="main-sidebar"></div>
+
+    <!-- Main Workspace -->
+    <main class="flex-1 p-4 sm:p-6 lg:p-8 space-y-6 overflow-y-auto">
+      
+      <!-- Welcome Header Banner with Dynamic User Name -->
+      <div class="bg-gradient-to-r from-purple-950 via-indigo-950 to-slate-900 rounded-2xl p-6 text-white shadow-lg relative overflow-hidden">
+        <div class="relative z-10 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+          <div>
+            <div class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold bg-purple-500/20 text-purple-300 border border-purple-400/30 mb-2">
+              <i data-lucide="layers" class="w-3 h-3"></i>
+              <span>BRAND GOVERNANCE AUTHORITY</span>
+            </div>
+            <h1 class="text-2xl font-extrabold tracking-tight">
+              Welcome, <span id="user-display-name" class="text-purple-300">Brand Manager</span>!
+            </h1>
+            <p class="text-xs text-purple-100/80 mt-1 max-w-xl">
+              Sign off on pending creator submissions, tune the company tone and voice calibration sliders, and enforce immutable guidelines.
+            </p>
+          </div>
+
+          <div class="flex items-center gap-2 self-start sm:self-center">
+            <span class="text-xs bg-white/10 px-3 py-1.5 rounded-xl border border-white/10 font-mono text-white/90">
+              Department: <strong id="user-display-dept">Brand &amp; Communications</strong>
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Navigation Tabs: Approval Queue vs Tone Calibration -->
+      <div class="flex items-center gap-2 bg-slate-200/80 p-1 rounded-xl w-fit">
+        <button id="tab-queue-btn" onclick="switchTab('queue')" class="px-4 py-2 rounded-lg text-xs font-bold transition-all bg-white text-slate-900 shadow-sm flex items-center gap-2">
+          <i data-lucide="inbox" class="w-4 h-4 text-purple-600"></i>
+          <span>Approval Pipeline (<span id="queue-count">2</span>)</span>
+        </button>
+        <button id="tab-voice-btn" onclick="switchTab('voice')" class="px-4 py-2 rounded-lg text-xs font-bold transition-all text-slate-600 hover:text-slate-900 flex items-center gap-2">
+          <i data-lucide="sliders" class="w-4 h-4 text-indigo-600"></i>
+          <span>Voice &amp; Tone Calibration</span>
+        </button>
+      </div>
+
+      <!-- SECTION 1: APPROVAL QUEUE -->
+      <div id="queue-section" class="space-y-4">
+        <div class="flex items-center justify-between">
+          <h2 class="text-xs font-bold uppercase tracking-wider text-slate-500">Drafts Awaiting Executive Review</h2>
+          <span class="text-xs text-slate-500">Showing drafts submitted by Authors &amp; Contractors</span>
+        </div>
+
+        <div id="drafts-list" class="space-y-4">
+          <!-- Draft Card 1 -->
+          <div id="card-drf-1" class="bg-white rounded-2xl border border-slate-200 p-5 shadow-xs transition-all hover:border-slate-300">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-slate-100">
+              <div>
+                <div class="flex items-center gap-2">
+                  <span class="text-xs font-mono font-bold text-purple-700 bg-purple-50 px-2 py-0.5 rounded border border-purple-200">DRF-102</span>
+                  <h3 class="text-sm font-bold text-slate-900">Q4 Enterprise AI Cloud Launch Announcement</h3>
+                </div>
+                <div class="flex items-center gap-3 text-xs text-slate-500 mt-1">
+                  <span>Author: <strong>Alex Morgan</strong></span>
+                  <span>•</span>
+                  <span>Brand: <strong class="text-slate-700">LoomCraft Studio</strong></span>
+                  <span>•</span>
+                  <span>Status: <span class="text-amber-600 font-semibold">Under Review</span></span>
+                </div>
+              </div>
+
+              <div class="flex items-center gap-2">
+                <span class="text-xs font-mono font-bold px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200">
+                  96% Compliant
+                </span>
+              </div>
+            </div>
+
+            <div class="py-3 text-xs text-slate-700 leading-relaxed bg-slate-50 p-3.5 rounded-xl my-3 font-normal">
+              "We are excited to unveil our next-generation cloud infrastructure with verified 99.99% availability and SOC-2 Type II audit certification. Designed for enterprise engineering teams looking for transparent compute pricing."
+            </div>
+
+            <div class="flex flex-wrap items-center justify-between gap-3 pt-2">
+              <div class="flex items-center gap-2 text-[11px] text-slate-500">
+                <i data-lucide="shield-check" class="w-4 h-4 text-emerald-600"></i>
+                <span>Automated Linter: 0 critical defects detected</span>
+              </div>
+
+              <div class="flex items-center gap-2">
+                <button onclick="requestRevisions('card-drf-1', 'DRF-102')" class="px-3.5 py-1.5 rounded-xl border border-slate-300 hover:bg-slate-100 text-slate-700 font-bold text-xs transition-colors">
+                  Request Revisions
+                </button>
+                <button onclick="approveDraft('card-drf-1', 'DRF-102')" class="px-4 py-1.5 rounded-xl bg-purple-600 hover:bg-purple-500 text-white font-bold text-xs shadow-xs transition-colors flex items-center gap-1.5">
+                  <i data-lucide="check" class="w-3.5 h-3.5"></i>
+                  <span>Approve &amp; Sign</span>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Draft Card 2 -->
+          <div id="card-drf-2" class="bg-white rounded-2xl border border-slate-200 p-5 shadow-xs transition-all hover:border-slate-300">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-slate-100">
+              <div>
+                <div class="flex items-center gap-2">
+                  <span class="text-xs font-mono font-bold text-purple-700 bg-purple-50 px-2 py-0.5 rounded border border-purple-200">DRF-103</span>
+                  <h3 class="text-sm font-bold text-slate-900">Cross-Border Payment Velocity Campaign</h3>
+                </div>
+                <div class="flex items-center gap-3 text-xs text-slate-500 mt-1">
+                  <span>Author: <strong>Jordan Lee (Contractor)</strong></span>
+                  <span>•</span>
+                  <span>Brand: <strong class="text-slate-700">NovaPay</strong></span>
+                  <span>•</span>
+                  <span>Status: <span class="text-amber-600 font-semibold">Under Review</span></span>
+                </div>
+              </div>
+
+              <div class="flex items-center gap-2">
+                <span class="text-xs font-mono font-bold px-2.5 py-1 rounded-full bg-amber-50 text-amber-700 border border-amber-200">
+                  84% Compliant
+                </span>
+              </div>
+            </div>
+
+            <div class="py-3 text-xs text-slate-700 leading-relaxed bg-slate-50 p-3.5 rounded-xl my-3 font-normal">
+              "NovaPay facilitates instantaneous cross-border multi-currency wire transfers with encrypted ledger safeguards and institutional clearing."
+            </div>
+
+            <div class="flex flex-wrap items-center justify-between gap-3 pt-2">
+              <div class="flex items-center gap-2 text-[11px] text-amber-700">
+                <i data-lucide="alert-triangle" class="w-4 h-4 text-amber-600"></i>
+                <span>Note: Word 'instantaneous' requires ISO standard disclaimer note.</span>
+              </div>
+
+              <div class="flex items-center gap-2">
+                <button onclick="requestRevisions('card-drf-2', 'DRF-103')" class="px-3.5 py-1.5 rounded-xl border border-slate-300 hover:bg-slate-100 text-slate-700 font-bold text-xs transition-colors">
+                  Request Revisions
+                </button>
+                <button onclick="approveDraft('card-drf-2', 'DRF-103')" class="px-4 py-1.5 rounded-xl bg-purple-600 hover:bg-purple-500 text-white font-bold text-xs shadow-xs transition-colors flex items-center gap-1.5">
+                  <i data-lucide="check" class="w-3.5 h-3.5"></i>
+                  <span>Approve &amp; Sign</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- SECTION 2: TONE & VOICE CALIBRATION -->
+      <div id="voice-section" class="hidden space-y-6">
+        <div class="bg-white rounded-2xl border border-slate-200 p-6 shadow-xs">
+          <div class="flex items-center justify-between mb-5">
+            <div>
+              <h2 class="text-sm font-bold text-slate-900">Brand Voice Calibration Matrix</h2>
+              <p class="text-xs text-slate-500 mt-0.5">Adjust parametric voice dimensions in real-time. Changes dynamically tune the AI compliance threshold.</p>
+            </div>
+            <button onclick="saveVoiceSettings()" class="px-4 py-2 rounded-xl bg-purple-600 hover:bg-purple-500 text-white font-bold text-xs shadow-xs transition-all flex items-center gap-2">
+              <i data-lucide="save" class="w-4 h-4"></i>
+              <span>Save Voice Calibration to Database</span>
+            </button>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <!-- Formality -->
+            <div class="p-4 rounded-xl bg-slate-50 border border-slate-200 space-y-3">
+              <div class="flex items-center justify-between">
+                <label class="text-xs font-bold text-slate-800">Formality Level</label>
+                <span id="formality-val" class="font-mono text-xs font-bold text-purple-600">75%</span>
+              </div>
+              <input type="range" id="formality-range" min="0" max="100" value="75" oninput="updateVoiceSliders()" class="w-full accent-purple-600 cursor-pointer">
+              <div class="flex justify-between text-[10px] text-slate-400 font-mono">
+                <span>Conversational</span>
+                <span>Rigorous / Legal</span>
+              </div>
+            </div>
+
+            <!-- Boldness -->
+            <div class="p-4 rounded-xl bg-slate-50 border border-slate-200 space-y-3">
+              <div class="flex items-center justify-between">
+                <label class="text-xs font-bold text-slate-800">Boldness &amp; Audacity</label>
+                <span id="boldness-val" class="font-mono text-xs font-bold text-indigo-600">60%</span>
+              </div>
+              <input type="range" id="boldness-range" min="0" max="100" value="60" oninput="updateVoiceSliders()" class="w-full accent-indigo-600 cursor-pointer">
+              <div class="flex justify-between text-[10px] text-slate-400 font-mono">
+                <span>Reserved</span>
+                <span>Industry Leader</span>
+              </div>
+            </div>
+
+            <!-- Empathy -->
+            <div class="p-4 rounded-xl bg-slate-50 border border-slate-200 space-y-3">
+              <div class="flex items-center justify-between">
+                <label class="text-xs font-bold text-slate-800">Empathy &amp; Warmth</label>
+                <span id="empathy-val" class="font-mono text-xs font-bold text-emerald-600">80%</span>
+              </div>
+              <input type="range" id="empathy-range" min="0" max="100" value="80" oninput="updateVoiceSliders()" class="w-full accent-emerald-600 cursor-pointer">
+              <div class="flex justify-between text-[10px] text-slate-400 font-mono">
+                <span>Transactional</span>
+                <span>Deeply Human</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Dynamic Live Tone Preview -->
+          <div class="mt-6 p-5 rounded-xl border border-purple-200 bg-purple-50/50">
+            <div class="text-[10px] font-bold uppercase tracking-wider text-purple-900 mb-1">
+              Live Tone Simulator Preview
+            </div>
+            <div id="tone-sample-output" class="text-xs text-purple-950 font-medium leading-relaxed italic">
+              "We partner with industry-leading teams to deliver resilient, verified digital governance that puts human trust at the core of every touchpoint."
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </main>
+  </div>
+
+  <script src="/js/app.js"></script>
+  <script>
+    // Enforce Brand Manager Authorization strictly
+    App.requireAuth(['brand-manager']);
+    App.renderNavbar('brand-manager');
+    App.renderSidebar('brand-manager');
+
+    // Populate Dynamic User Info
+    const currentUser = App.getUser() || { name: "Sarah Chen", department: "Brand & Communications" };
+    document.getElementById("user-display-name").textContent = currentUser.name || "Brand Manager";
+    document.getElementById("user-display-dept").textContent = currentUser.department || "Brand & Communications";
+
+    function switchTab(tab) {
+      const qSec = document.getElementById("queue-section");
+      const vSec = document.getElementById("voice-section");
+      const qBtn = document.getElementById("tab-queue-btn");
+      const vBtn = document.getElementById("tab-voice-btn");
+
+      if (tab === "queue") {
+        qSec.classList.remove("hidden");
+        vSec.classList.add("hidden");
+        qBtn.className = "px-4 py-2 rounded-lg text-xs font-bold transition-all bg-white text-slate-900 shadow-sm flex items-center gap-2";
+        vBtn.className = "px-4 py-2 rounded-lg text-xs font-bold transition-all text-slate-600 hover:text-slate-900 flex items-center gap-2";
+      } else {
+        qSec.classList.add("hidden");
+        vSec.classList.remove("hidden");
+        vBtn.className = "px-4 py-2 rounded-lg text-xs font-bold transition-all bg-white text-slate-900 shadow-sm flex items-center gap-2";
+        qBtn.className = "px-4 py-2 rounded-lg text-xs font-bold transition-all text-slate-600 hover:text-slate-900 flex items-center gap-2";
+      }
+      lucide.createIcons();
+    }
+
+    async function approveDraft(cardId, draftId) {
+      const card = document.getElementById(cardId);
+      try {
+        await fetch("/api/workflow/approve", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ draftId, managerName: currentUser.name })
+        });
+      } catch (e) {}
+
+      card.style.opacity = "0.5";
+      card.innerHTML = `
+        <div class="py-4 text-center text-xs text-emerald-700 bg-emerald-50 rounded-xl border border-emerald-200 font-bold flex items-center justify-center gap-2">
+          <i data-lucide="check-circle" class="w-4 h-4 text-emerald-600"></i>
+          <span>Draft ${draftId} Approved &amp; Published by ${currentUser.name}!</span>
+        </div>`;
+      lucide.createIcons();
+      App.showToast(`Draft ${draftId} officially approved and committed to ledger!`);
+    }
+
+    async function requestRevisions(cardId, draftId) {
+      const card = document.getElementById(cardId);
+      try {
+        await fetch("/api/workflow/reject", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ draftId, managerName: currentUser.name, reason: "Requires ISO substantiation and tone refinement" })
+        });
+      } catch (e) {}
+
+      card.style.opacity = "0.5";
+      card.innerHTML = `
+        <div class="py-4 text-center text-xs text-amber-800 bg-amber-50 rounded-xl border border-amber-200 font-bold flex items-center justify-center gap-2">
+          <i data-lucide="rotate-ccw" class="w-4 h-4 text-amber-600"></i>
+          <span>Revisions Requested for ${draftId}. Returned to Author Studio.</span>
+        </div>`;
+      lucide.createIcons();
+      App.showToast(`Revisions requested for ${draftId}.`);
+    }
+
+    function updateVoiceSliders() {
+      const f = document.getElementById("formality-range").value;
+      const b = document.getElementById("boldness-range").value;
+      const e = document.getElementById("empathy-range").value;
+
+      document.getElementById("formality-val").textContent = f + "%";
+      document.getElementById("boldness-val").textContent = b + "%";
+      document.getElementById("empathy-val").textContent = e + "%";
+
+      // Dynamically simulate sentence
+      const output = document.getElementById("tone-sample-output");
+      if (f > 80) {
+        output.textContent = `"Pursuant to established institutional protocols, LoomCraft AI executes deterministic verification standards with audited 99.99% availability."`;
+      } else if (b > 80) {
+        output.textContent = `"We are revolutionizing cloud reliability. Defy downtime and deploy game-changing automation at lightspeed."`;
+      } else if (e > 80) {
+        output.textContent = `"We believe every team member deserves confidence and clarity in the software they depend on daily."`;
+      } else {
+        output.textContent = `"We partner with industry-leading teams to deliver resilient, verified digital governance that puts human trust at the core of every touchpoint."`;
+      }
+    }
+
+    function saveVoiceSettings() {
+      App.showToast("Voice calibration parameters saved to live database!");
+    }
+  </script>
+</body>
+</html>
+
