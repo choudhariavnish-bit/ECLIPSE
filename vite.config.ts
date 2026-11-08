@@ -913,6 +913,7 @@ const apiMockPlugin = () => ({
 });
 
 export default defineConfig({
+  base: "./",
   plugins: [react(), apiMockPlugin()],
   resolve: {
     alias: {
