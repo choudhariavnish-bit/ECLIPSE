@@ -14,6 +14,7 @@ import {
   Layers,
   BookOpen,
   Database,
+  TrendingUp,
 } from "lucide-react";
 
 interface NavItem {
@@ -27,18 +28,21 @@ const CREATOR_NAV: NavItem[] = [
   { name: "Compliance Inspector", href: "/dashboard/creator", icon: CheckSquare },
   { name: "Active Drafts", href: "/dashboard/drafts", icon: FileText, badge: "4" },
   { name: "Brand Rulebook", href: "/dashboard/rulebook", icon: BookOpen },
+  { name: "Impact & Benefits", href: "/dashboard/benefits", icon: TrendingUp, badge: "ROI" },
 ];
 
 const BRAND_MANAGER_NAV: NavItem[] = [
   { name: "Approval Pipeline", href: "/dashboard/brand-manager", icon: Layers, badge: "3" },
   { name: "Active Drafts", href: "/dashboard/drafts", icon: FileText, badge: "4" },
   { name: "Brand Rulebook", href: "/dashboard/rulebook", icon: BookOpen },
+  { name: "Impact & Benefits", href: "/dashboard/benefits", icon: TrendingUp, badge: "ROI" },
 ];
 
 const ADMIN_NAV: NavItem[] = [
   { name: "Access & RBAC", href: "/dashboard/admin", icon: Users, badge: "4" },
   { name: "Database Studio", href: "/dashboard/database", icon: Database, badge: "Live" },
   { name: "Brand Rulebooks", href: "/dashboard/rulebook", icon: BookOpen },
+  { name: "Impact & Benefits", href: "/dashboard/benefits", icon: TrendingUp, badge: "ROI" },
   { name: "System Settings", href: "/dashboard/admin", icon: Cpu },
   { name: "Audit Trail Ledger", href: "/dashboard/admin", icon: History },
 ];

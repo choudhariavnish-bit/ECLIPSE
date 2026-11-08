@@ -19,6 +19,7 @@ import {
   Users,
   ChevronDown,
   Sparkles,
+  TrendingUp,
 } from "lucide-react";
 import { DatabaseStatusBadge } from "./DatabaseStatusBadge";
 import { AiEngineStatusBadge } from "./AiEngineStatusBadge";
@@ -70,6 +71,7 @@ export const Navbar = () => {
     { name: "Security & RBAC", desc: "Governance parameters & audit log", href: "/dashboard/admin", icon: Users, badge: "Admin", role: "admin" as UserRole },
     { name: "Active Drafts", desc: "Manage & edit saved drafts", href: "/dashboard/drafts", icon: FileText, badge: "3 Active", role: activeRole },
     { name: "Brand Rulebook", desc: "Multi-brand voice guidelines", href: "/dashboard/rulebook", icon: BookOpen, badge: "Rulebook", role: activeRole },
+    { name: "Impact & Benefits", desc: "Architecture, ROI & benchmarks", href: "/dashboard/benefits", icon: TrendingUp, badge: "ROI", role: activeRole },
     { name: "Database Studio", desc: "Live table records & schemas", href: "/dashboard/database", icon: Database, badge: "Live DB", role: "admin" as UserRole },
   ];
 
@@ -188,6 +190,19 @@ export const Navbar = () => {
                       <div>
                         <div>Database Studio</div>
                         <div className="text-[10px] text-slate-400 font-normal">Live Table Inspector</div>
+                      </div>
+                    </button>
+                    <button
+                      onClick={() => {
+                        setWorkspaceMenuOpen(false);
+                        router.push("/dashboard/benefits");
+                      }}
+                      className="w-full flex items-center gap-2.5 px-2.5 py-2 rounded-lg text-xs font-medium text-left text-slate-700 hover:bg-slate-50 transition-colors"
+                    >
+                      <TrendingUp className="h-4 w-4 text-emerald-600" />
+                      <div>
+                        <div>Impact &amp; Benefits</div>
+                        <div className="text-[10px] text-slate-400 font-normal">Architecture &amp; Metrics</div>
                       </div>
                     </button>
                   </div>

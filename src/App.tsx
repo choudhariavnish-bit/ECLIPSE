@@ -9,6 +9,7 @@ const AdminPage = React.lazy(() => import("@/app/dashboard/admin/page"));
 const DraftsPage = React.lazy(() => import("@/app/dashboard/drafts/page"));
 const RulebookPage = React.lazy(() => import("@/app/dashboard/rulebook/page"));
 const DatabasePage = React.lazy(() => import("@/app/dashboard/database/page"));
+const ImpactBenefitsPage = React.lazy(() => import("@/app/dashboard/benefits/page"));
 
 function PageLoader() {
   return (
@@ -53,6 +54,10 @@ export default function App() {
       case "/dashboard/database":
         pageComponent = <DatabasePage />;
         break;
+      case "/dashboard/benefits":
+      case "/dashboard/impact":
+        pageComponent = <ImpactBenefitsPage />;
+        break;
       default:
         if (cleanPath.startsWith("/dashboard/creator")) pageComponent = <CreatorPage />;
         else if (cleanPath.startsWith("/dashboard/brand-manager") || cleanPath.startsWith("/dashboard/approvals")) pageComponent = <BrandManagerPage />;
@@ -60,6 +65,7 @@ export default function App() {
         else if (cleanPath.startsWith("/dashboard/drafts")) pageComponent = <DraftsPage />;
         else if (cleanPath.startsWith("/dashboard/rulebook")) pageComponent = <RulebookPage />;
         else if (cleanPath.startsWith("/dashboard/database")) pageComponent = <DatabasePage />;
+        else if (cleanPath.startsWith("/dashboard/benefits") || cleanPath.startsWith("/dashboard/impact")) pageComponent = <ImpactBenefitsPage />;
         else pageComponent = <LoginPage />;
         break;
     }
