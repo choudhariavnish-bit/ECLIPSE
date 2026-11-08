@@ -65,14 +65,20 @@ export const Sidebar = () => {
   return (
     <aside className="w-56 border-r border-slate-200 bg-slate-50/50 min-h-[calc(100vh-3.5rem)] flex flex-col justify-between p-3 hidden md:flex">
       <div className="space-y-5">
-        {/* Active Role Indicator (Strict RBAC - No cross-role switching) */}
-        <div className="px-3 py-2.5 rounded-xl bg-white border border-slate-200 shadow-xs">
-          <div className="text-[10px] font-bold uppercase tracking-wider text-slate-400">
+        {/* Active Role Indicator */}
+        <div className={`px-3 py-2.5 rounded-xl border shadow-xs transition-colors ${
+          activeRole === "creator"
+            ? "first-color first-color-border"
+            : activeRole === "brand-manager"
+            ? "second-color second-color-border"
+            : "third-color third-color-border"
+        }`}>
+          <div className="text-[10px] font-bold uppercase tracking-wider text-slate-700">
             Your Workspace
           </div>
           <div className="flex items-center gap-2 mt-1">
-            <span className="h-2 w-2 rounded-full bg-emerald-500" />
-            <span className="text-xs font-bold text-slate-800">{roleTitle}</span>
+            <span className="h-2 w-2 rounded-full bg-slate-900" />
+            <span className="text-xs font-bold text-slate-900">{roleTitle}</span>
           </div>
         </div>
 
@@ -117,12 +123,12 @@ export const Sidebar = () => {
         </div>
 
         {/* Brand Governance Protection Badge */}
-        <div className="rounded-xl border border-blue-100 bg-gradient-to-br from-blue-50 to-indigo-50/40 p-3.5 text-xs">
-          <div className="flex items-center gap-2 text-blue-900 font-semibold mb-1">
-            <ShieldCheck className="h-4 w-4 text-blue-600" />
+        <div className="rounded-xl border fourth-color-border fourth-color p-3.5 text-xs shadow-xs">
+          <div className="flex items-center gap-2 text-slate-900 font-bold mb-1">
+            <ShieldCheck className="h-4 w-4 text-slate-900" />
             <span>Pre-Publication Guard</span>
           </div>
-          <p className="text-[11px] text-slate-600 leading-relaxed">
+          <p className="text-[11px] text-slate-800 leading-relaxed font-medium">
             All content inspected against active Brand Rulebook before public release.
           </p>
         </div>

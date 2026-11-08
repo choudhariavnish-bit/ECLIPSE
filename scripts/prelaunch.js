@@ -29,7 +29,16 @@ try {
   console.log("[1/3] Port 3000 is clean and available.");
 }
 
-// 2. Resolve local LAN IP for multi-device / mobile testing
+// 2. Ensure local SQLite3 file database exists
+const sqliteDbPath = path.join(process.cwd(), "database", "governance.sqlite");
+if (!fs.existsSync(sqliteDbPath)) {
+  try {
+    console.log("[DB] Seeding local SQLite3 offline database...");
+    execSync("node scripts/init_sqlite.js", { stdio: "inherit" });
+  } catch (e) {}
+}
+
+// 3. Resolve local LAN IP for multi-device / mobile testing
 let lanIp = "localhost";
 const ifaces = os.networkInterfaces();
 for (const dev in ifaces) {
@@ -42,18 +51,18 @@ for (const dev in ifaces) {
   if (lanIp !== "localhost") break;
 }
 
-console.log("[2/3] Network endpoints ready:");
-console.log("      - Primary:          http://localhost:3000");
-console.log("      - Alternative:      http://127.0.0.1:3000");
+console.log("[2/3] Database & Network endpoints ready:");
+console.log("      - Local Disk DB:    SQLite3 (database/governance.sqlite)");
+console.log("      - Browser DB:       MongoDB (Document Collections Engine)");
+console.log("      - Primary Web:      http://localhost:3000");
 if (lanIp !== "localhost") {
   console.log(`      - Wi-Fi Devices:    http://${lanIp}:3000`);
 }
 console.log("      - Database Studio:  http://localhost:3000/dashboard/database\n");
 
-// 3. Start smart background browser monitor:
-// Polls http://localhost:3000 until it returns HTTP 200/307, then opens Chrome immediately.
+// 4. Start smart background browser monitor:
 console.log("[3/3] Starting server & smart browser monitor...");
-console.log("      Browser will open automatically once the server is ready (no ERR_CONNECTION_REFUSED).\n");
+console.log("      Browser will open automatically once the server is ready.\n");
 
 const launcherScript = `
   const http = require('http');
@@ -84,9 +93,7 @@ try {
     windowsHide: true,
   });
   launcher.unref();
-} catch (e) {
-  // Silent fallback
-}
+} catch (e) {}
 
 console.log("=====================================================================");
 console.log("  SERVER LAUNCHING — KEEP THIS WINDOW OPEN WHILE USING ECLIPSE");

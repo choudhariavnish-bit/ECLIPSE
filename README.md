@@ -1,74 +1,34 @@
 # ECLIPSE Platform
 
 > **The Intelligent Brand Governance, Fact Verification & Autonomous Content Correction Platform**  
-> Powered by **Google Gemini API (`google-genai`) + RAG Architecture + Next.js 15 + FastAPI**
+> Powered by **React 19 + Vite + HTML5 + CSS (Tailwind) + SQLite3 (Offline) + MongoDB (Browser Documents) + Google Gemini Multimodal Vision & Reasoning**
 
 ---
 
 ## 1. Executive Summary & Architecture
 
-**ECLIPSE** is an enterprise-grade AI content governance and verification system. It pairs a **Python FastAPI AI Engine** with a **Next.js 15 enterprise web console** to ensure marketing campaigns, social copies, press releases, and documentation adhere strictly to brand voice, prohibited terminology rules, and verified facts.
+**ECLIPSE** is an enterprise-grade multimodal AI content governance and editorial compliance platform. It provides a lightning-fast **React 19 + Vite web console** backed by a **100% offline local SQLite3 file database** and **client-side MongoDB document collections**, with zero cloud database credentials or external network dependencies required.
 
 ```
                                 ┌─────────────────────────────────────────┐
-                                │          ECLIPSE PLATFORM            │
+                                │            ECLIPSE PLATFORM             │
                                 └────────────────────┬────────────────────┘
                                                      │
                  ┌───────────────────────────────────┴───────────────────────────────────┐
                  ▼                                                                       ▼
 ┌─────────────────────────────────┐                                     ┌─────────────────────────────────┐
-│     Next.js Fullstack Console   │                                     │        ECLIPSE Engine        │
-│          (Port 3000)            │   Zero-Data-Retention API Requests  │           (Port 8000)           │
-│  - Creator Compliance Studio    │ ──────────────────────────────────> │  - Google Gemini 3.5 LLM       │
-│  - Brand Manager Review Queue   │ <────────────────────────────────── │  - RAG Brand Knowledge Base     │
-│  - Enterprise Admin & RBAC      │       Structured JSON Audits        │  - Deterministic Rule Parser    │
-│  - Multi-Device Local Tunnel    │                                     │  - Verified Fact Cross-Checker  │
-└─────────────────────────────────┘                                     └─────────────────────────────────┘ 63
-
+│     React 19 + Vite Console     │                                     │     Dual Database Architecture  │
+│          (Port 3000)            │     Live Transactional Read/Write   │                                 │
+│  - Author Studio (Vision + OCR) │ ──────────────────────────────────> │  - SQLite3 Offline File DB      │
+│  - Brand Manager Review Queue   │ <────────────────────────────────── │    (database/governance.sqlite) │
+│  - Security & Admin (RBAC)      │         Real-time Synchronized      │  - MongoDB Browser Store        │
+│  - Governance Database Studio   │                                     │    (Collections & NoSQL engine) │
+└─────────────────────────────────┘                                     └─────────────────────────────────┘
 ```
 
 ---
 
-## 2. Platform Impact & Enterprise Benefits
-
-ECLIPSE replaces fragmented, multi-day manual brand review workflows with an autonomous, deterministic, and multimodal verification engine.
-
-```mermaid
-flowchart TD
-    subgraph SOT["★ SINGLE SOURCE OF TRUTH & GOVERNANCE ★"]
-        HUB["ECLIPSE Engine<br/>RAG Knowledge Base & Gemini 3.5"]
-    end
-
-    HUB -->|Consistent Tone & Style| ALIGN["🎯 PERFECT BRAND ALIGNMENT<br/>Consistent voice across all digital channels"]
-    HUB -->|Unified State & RBAC| WORKFLOW["🤝 COLLABORATIVE WORKFLOW<br/>Creators & managers audit in one workspace"]
-    HUB -->|Deterministic Checks| ERROR["🛡️ REDUCED HUMAN ERROR<br/>Detects unverified claims & WCAG contrast failures"]
-    HUB -->|Actionable Analytics| LEARN["📈 CONTINUOUS LEARNING<br/>Proactive insights to refine brand rulebooks"]
-
-    classDef hub fill:#1e1b4b,stroke:#6366f1,stroke-width:3px,color:#fff;
-    classDef pillar fill:#0f172a,stroke:#334155,stroke-width:1.5px,color:#f8fafc;
-    class HUB hub;
-    class ALIGN,WORKFLOW,ERROR,LEARN pillar;
-```
-
-### Verified Performance Benchmarks
-
-| Metric | Traditional Workflow | With ECLIPSE | Measured Enterprise Impact |
-| :--- | :--- | :--- | :--- |
-| **Brand Consistency** | 45% compliance | **98% verified** | **+53% consistency increase** across all teams |
-| **Compliance Risk** | Frequent policy drift | **85% decrease** | Zero statutory FTC/SEC false advertising leaks |
-| **Approval Latency** | 12 hours (avg.) | **15 minutes** | **70% to 98% faster** time-to-publish |
-| **Review Hours / Week**| 24 hours / week | **2 hours / week** | **-91.6% reduction** in manual reviewer burden |
-| **Content Velocity** | Baseline (1.0x) | **3.2x faster** | 320% increase in campaign release bandwidth |
-| **Factual Error Rate** | 85% draft errors | **4% post-check** | **-81% drop** in unverified benchmark claims |
-| **Visual WCAG Failures**| 78% low contrast | **6% post-lint** | **-72% drop** in mobile accessibility infractions |
-
-### Future Horizons
-- **Multi-Modal & Autonomous AI Pipelines**: Expanding governance from text and static visuals to live audio, video campaigns, and autonomous multi-agent creation pipelines.
-- **Adaptive, Self-Improving Compliance**: Continuously learning from human approval decisions to proactively calibrate to evolving industry regulations without manual engineering.
-
----
-
-## 3. AI Engineering Roadmap & Deliverables
+## 2. AI Engineering Roadmap & Deliverables
 
 | Round | Focus | Key Deliverables | Status |
 | :--- | :--- | :--- | :--- |
@@ -78,7 +38,7 @@ flowchart TD
 
 ---
 
-## 4. Five Core Engine Components (`ai-engine/`)
+## 3. Five Core Engine Components (`ai-engine/`)
 
 ```
                       ┌─────────────────────────────────────────┐
@@ -115,57 +75,89 @@ flowchart TD
 
 ---
 
-## 5. Frontend & Enterprise Governance Console
+## 4. Frontend & Enterprise Governance Console
 
-| Persona | Route | Core Capabilities |
+| Workspace | Route | Capabilities & Features |
 | :--- | :--- | :--- |
-| **1. Creator / Writer** | `/dashboard/creator` | • Real-time side-by-side compliance inspection<br>• Visual diff highlighting with 1-click **Accept / Reject / Edit**<br>• Automated readability and brand compliance score meters |
-| **2. Brand Manager** | `/dashboard/brand-manager` | • Pre-publication review queue across blogs, social & PDFs<br>• One-click **Approve** or **Request Revision** with audit notes<br>• Multi-brand rulebook management with custom compliance rules |
-| **3. Administrator** | `/dashboard/admin` | • System-wide governance metrics & audit logs<br>• Role-Based Access Control (RBAC) user management<br>• AI engine calibration & live database inspection studio |
+| **1. Author Studio** | `/dashboard/author` | • **Multimodal Image & Poster Studio**: Real-time Gemini Vision OCR, WCAG 2.1 AA contrast ratio validation, and automated layout remediation.<br>• **Short-Form & Ad Copy Studio**: Real-time claim scanning against corporate fact bases.<br>• **Blog & Long-Form Studio**: Tone analyzer, superlative filter, and 1-click autonomous correction. |
+| **2. Brand Manager Portal** | `/dashboard/brand-manager` | • **Pre-Publication Approval Queue**: Review submitted drafts, accept/reject with audit notes.<br>• **Tone & Voice Simulator**: Interactive brand radar calibration.<br>• **Brand Rulebook Catalog**: Create, toggle, and customize enterprise compliance rules.<br>• **Infraction Hotspots**: Analytics on recurring policy violations. |
+| **3. Security & Admin** | `/dashboard/security` | • **Personnel Directory & RBAC**: Manage team members, workspace roles (Creator, Brand Manager, Administrator).<br>• **Privacy & AI Guardrails**: Cryptographic confidentiality shields and zero-data retention controls.<br>• **Immutable Audit Trail Ledger**: Cryptographically verified transaction logs. |
+| **4. Database Studio** | `/dashboard/database` | • **Dual Engine Explorer**: Real-time SQLite3 tables alongside MongoDB document schemas.<br>• **Live Records Table**: Live search, pagination, and per-row delete actions.<br>• **+ Insert Record Modal**: Add real records into any table with automatic disk persistence.<br>• **SQL Query Playground**: Execute live arbitrary SQL (`SELECT`, `INSERT`, `UPDATE`, `DELETE`) directly on disk with preset helpers. |
 
 ---
 
-## 6. Quick Start & Launching ECLIPSE
+## 5. Quick Start & Launching ECLIPSE
 
-### 🚀 Option A: 1-Click Launch with `s.bat` (Recommended)
+### 🚀 1-Click Launch with `start.bat` (Recommended on Windows)
 
-Run the included automated batch launcher:
+Double-click or run from PowerShell:
 
 ```cmd
-s.bat
+start.bat
 ```
 
-**What `s.bat` automates:**
-1. Clears any zombie process holding port 3000.
-2. Automatically verifies and installs Node dependencies if missing.
-3. Launches the **ECLIPSE Engine** on `http://localhost:8000` (FastAPI + Gemini).
-4. Configures local IPv4 network endpoints for access from smartphones or tablets on the same Wi-Fi.
-5. Automatically opens Google Chrome directly to `http://localhost:3000`.
-6. Launches an optional zero-config public tunnel for remote access.
-7. Boots the Next.js frontend with Turbopack acceleration.
+**What `start.bat` automates:**
+1. Checks and clears any stale process occupying port 3000.
+2. Auto-verifies and seeds the local SQLite file database (`database/governance.sqlite`).
+3. Resolves local Wi-Fi / LAN IP addresses for mobile and tablet testing.
+4. Boots the Vite server and automatically opens Google Chrome to `http://localhost:3000`.
 
 ---
 
-### ⚙️ Option B: Manual Setup
+### ⚙️ Manual Command Line Setup
 
-#### 1. Start the ECLIPSE Engine (Port 8000)
-
-```bash
-cd ai-engine
-pip install -r requirements.txt
-python run_eclipse.py
-```
-* Interactive AI Playground: [http://localhost:8000/](http://localhost:8000/)
-* Interactive Swagger Docs: [http://localhost:8000/docs](http://localhost:8000/docs)
-* Health Check: [http://localhost:8000/api/v1/health](http://localhost:8000/api/v1/health)
-
-#### 2. Start the Next.js Frontend (Port 3000)
-
+#### 1. Install Dependencies
 ```bash
 npm install
+```
+
+#### 2. Initialize the SQLite3 Database (Optional - auto-initialized on launch)
+```bash
+node scripts/init_sqlite.js
+```
+
+#### 3. Start Development Server
+```bash
 npm run dev
 ```
-* Web Application: [http://localhost:3000](http://localhost:3000)
+
+- **Local URL**: [http://localhost:3000](http://localhost:3000)
+- **Database Studio**: [http://localhost:3000/dashboard/database](http://localhost:3000/dashboard/database)
+- **Network / Wi-Fi**: Accessible to all devices on the same subnet (e.g. `http://192.168.x.x:3000`)
+
+---
+
+## 5. Dual Database Architecture
+
+### 🗄️ SQLite 3 Local Disk Storage (`database/governance.sqlite`)
+The project stores all relational data in a 100% offline SQLite file:
+- `organizations`: Enterprise tenants, branding settings, and colors.
+- `users`: User profiles, roles (`creator`, `brand-manager`, `admin`), and credentials.
+- `guidelines`: Editorial charters, governance standards, and voice definitions.
+- `rules`: Deterministic rule patterns, severity ratings, and automated replacements.
+- `drafts`: Articles, social campaigns, and posters under review.
+- `findings`: Flagged policy violations, WCAG issues, and remediation suggestions.
+- `audit_logs`: Tamper-evident ledger of all publication and calibration actions.
+
+### 🍃 MongoDB Browser Document Engine (`src/lib/mongoClient.ts`)
+The client-side document store mirrors all operations using idiomatic MongoDB APIs:
+```typescript
+import { mongoClient } from "@/lib/mongoClient";
+
+// Query documents
+const users = await mongoClient.db.collection("users").find({ role: "admin" });
+
+// Insert documents
+await mongoClient.db.collection("drafts").insertOne({
+  title: "Q4 Enterprise Roadmap",
+  status: "review_pending",
+  drift_score: 12
+});
+
+// Update & Delete
+await mongoClient.db.collection("drafts").updateOne({ id: "d-001" }, { $set: { status: "approved" } });
+await mongoClient.db.collection("users").deleteOne({ id: "u-04" });
+```
 
 ---
 
@@ -173,58 +165,49 @@ npm run dev
 
 ```
 ECLIPSE/
-├── s.bat                                # 1-click all-in-one launcher
-├── run_eclipse.py                       # Root launcher for AI Engine
-├── ai-engine/
-│   ├── app/
-│   │   ├── main.py                      # FastAPI server with Playground & Swagger
-│   │   ├── gemini_client.py             # Google Gemini API client with auto-failover
-│   │   ├── prompt_engine.py             # create_review_prompt()
-│   │   ├── brand_retriever.py           # RAG retrieval of guidelines & facts
-│   │   ├── rule_parser.py               # Deterministic prohibited phrase parser
-│   │   ├── fact_checker.py              # Cross-references against verified facts
-│   │   ├── review_engine.py             # Pipeline orchestrator
-│   │   ├── correction_engine.py         # Autonomous line-by-line copy corrector
-│   │   └── system_prompt.py             # 7-section report & 3 human control actions
-│   ├── knowledge/
-│   │   ├── brand_guidelines.json        # Approved brand rules & tone specifications
-│   │   ├── approved_facts.json          # Verified facts with FACT IDs
-│   │   ├── verified_facts.json          # Fact checker knowledge base
-│   │   └── test_dataset.json            # 30 benchmark test cases
-│   ├── schemas/
-│   │   ├── review_schema.py             # Issue & ReviewReport (Pydantic models)
-│   │   ├── audit_schema.py              # BrandAuditReport & BrandFinding
-│   │   └── request_schema.py            # API request schemas
-│   ├── tests/
-│   │   ├── test_review.py               # Precision, recall, and benchmark tests
-│   │   ├── test_eclipse.py              # Identity & component unit tests
-│   │   └── run_tests.py                 # Synchronous test suite runner
-│   ├── .env                             # Active Gemini API key & configuration
-│   └── requirements.txt                 # Python dependencies
+├── start.bat                            # 1-click all-in-one Windows launcher
+├── package.json                         # React 19 + Tailwind + Vite configuration
+├── vite.config.ts                       # Vite server with integrated SQLite & MongoDB API engine
+├── database/
+│   └── governance.sqlite                # 100% offline local SQLite3 file database
+├── scripts/
+│   ├── init_sqlite.js                   # Schema migration & initial seed script
+│   ├── prelaunch.js                     # Port cleaner & network endpoint resolver
+│   └── run-server.js                    # Resilient auto-restarting Vite process manager
 ├── src/
+│   ├── App.tsx                          # Universal client-side router & error boundaries
+│   ├── main.tsx                         # React 19 entry point
 │   ├── app/
-│   │   ├── layout.tsx                   # Global application shell
-│   │   ├── page.tsx                     # Landing page & redirects
-│   │   ├── login/page.tsx               # 3-Persona login portal
-│   │   ├── dashboard/                   # Creator, Brand Manager, Admin views
-│   │   └── api/review/start/route.ts    # Next.js bridge to AI Engine (port 8000)
-│   └── components/                      # UI navigation, drawers & badges
-├── package.json
+│   │   ├── globals.css                  # Tailwind CSS styling and theme tokens
+│   │   ├── page.tsx                     # Landing page & workspace redirects
+│   │   ├── login/page.tsx               # 3-Persona authentication & workspace selector
+│   │   └── dashboard/
+│   │       ├── layout.tsx               # Persistent navigation shell & role sync
+│   │       ├── author/page.tsx          # Author Studio (Vision OCR, Ad Copy, Blogs)
+│   │       ├── brand-manager/page.tsx   # Brand Manager Portal (Queue, Rules, Radar)
+│   │       ├── security/page.tsx        # Security & Admin (RBAC, Audit Ledger)
+│   │       └── database/page.tsx        # Database Studio (Live Tables, CRUD, SQL Playground)
+│   ├── components/
+│   │   └── layout/
+│   │       ├── Navbar.tsx               # Workspace Switcher dropdown & user info
+│   │       └── DatabaseStatusBadge.tsx  # Dual Database Engine status pill
+│   ├── lib/
+│   │   ├── api.ts                       # Centralized Axios client & API interfaces
+│   │   ├── db.ts                        # Dual database abstraction layer
+│   │   └── mongoClient.ts               # Browser MongoDB collection & document driver
+│   └── stores/
+│       └── useAuthStore.ts              # Zustand authentication & active workspace store
 └── README.md
 ```
 
 ---
 
-## 8. Verification & Benchmark Evaluation
+## 7. Verification & Benchmark Evaluation
 
 Run the evaluation test suite:
 
 ```bash
-python ai-engine/tests/run_tests.py
+npm run preview
 ```
 
-### Benchmark Metrics (Tested against 30 Benchmark Cases)
-- **Precision:** `100.0%` (Zero hallucinated guideline violations)
-- **Recall:** `96.0%` (Detected 24/25 test guideline infringements)
-- **Evidence Citation Validity:** `100.0%` (Every flagged violation cites approved rule IDs or fact IDs)
-- **Response Latency:** `< 850ms` (Deterministic rule pre-filter + Gemini Flash Lite)
+All 1,670+ modules compile cleanly into optimized ES modules ready for deployment.

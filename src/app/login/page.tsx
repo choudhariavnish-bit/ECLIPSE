@@ -176,7 +176,13 @@ export default function LoginPage() {
         </div>
 
         {/* Auth Card */}
-        <div className="bg-slate-900/90 border border-slate-800 rounded-3xl p-6 sm:p-8 shadow-2xl backdrop-blur-xl">
+        <div className="bg-slate-900/90 border border-slate-800 rounded-3xl p-6 sm:p-8 shadow-2xl backdrop-blur-xl relative overflow-hidden">
+          <div className="absolute top-0 left-0 right-0 eclipse-4color-strip">
+            <div className="first-color h-full" />
+            <div className="second-color h-full" />
+            <div className="third-color h-full" />
+            <div className="fourth-color h-full" />
+          </div>
           {/* Tab Switcher */}
           <div className="flex rounded-xl bg-slate-950 p-1 mb-6 border border-slate-800">
             <button
@@ -386,21 +392,21 @@ export default function LoginPage() {
                       title: "Content Creator",
                       desc: "Author Studio: Content auditing, copy linting, tone inspection",
                       icon: Sparkles,
-                      color: "border-blue-500/50 bg-blue-500/10 text-blue-300",
+                      color: "first-color first-color-border text-slate-900",
                     },
                     {
                       role: "brand-manager" as UserRole,
                       title: "Brand Manager",
                       desc: "Approval Pipeline: Review drafts, enforce editorial compliance",
                       icon: Layers,
-                      color: "border-purple-500/50 bg-purple-500/10 text-purple-300",
+                      color: "second-color second-color-border text-slate-900",
                     },
                     {
                       role: "admin" as UserRole,
                       title: "Security & Admin",
                       desc: "Admin Console: RBAC permissions, audit trail ledger, rulebooks",
                       icon: ShieldCheck,
-                      color: "border-emerald-500/50 bg-emerald-500/10 text-emerald-300",
+                      color: "third-color third-color-border text-slate-900",
                     },
                   ].map((r) => {
                     const isSelected = signupRole === r.role;
