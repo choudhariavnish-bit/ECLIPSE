@@ -45,3 +45,4 @@ cloudflared.exe
 # Database local binary files
 database/*.sqlite
 database/*.sqlite-journal
+
