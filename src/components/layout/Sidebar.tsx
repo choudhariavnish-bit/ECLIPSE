@@ -81,8 +81,6 @@ export const Sidebar = () => {
             <span className="text-xs font-bold text-stone-900">{roleTitle}</span>
           </div>
         </div>
-          </div>
-        </div>
 
         {/* Section Navigation */}
         <div className="space-y-1">
