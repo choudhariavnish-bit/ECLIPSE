@@ -205,6 +205,19 @@ export const Navbar = () => {
                         <div className="text-[10px] text-slate-400 font-normal">Architecture &amp; Metrics</div>
                       </div>
                     </button>
+                    <button
+                      onClick={() => {
+                        setWorkspaceMenuOpen(false);
+                        router.push("/dashboard/benefits");
+                      }}
+                      className="w-full flex items-center gap-2.5 px-2.5 py-2 rounded-lg text-xs font-medium text-left text-slate-700 hover:bg-slate-50 transition-colors"
+                    >
+                      <TrendingUp className="h-4 w-4 text-emerald-600" />
+                      <div>
+                        <div>Impact &amp; Benefits</div>
+                        <div className="text-[10px] text-slate-400 font-normal">Architecture &amp; Metrics</div>
+                      </div>
+                    </button>
                   </div>
                 </>
               )}
