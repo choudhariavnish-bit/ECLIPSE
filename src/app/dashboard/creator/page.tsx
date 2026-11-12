@@ -6,6 +6,7 @@ import { api } from "@/lib/api";
 import { useAuthStore } from "@/stores/useAuthStore";
 import { BlogReviewStudio } from "@/components/blog/BlogReviewStudio";
 import { ImageReviewStudio } from "@/components/image/ImageReviewStudio";
+import { UniversalDocumentStudio } from "@/components/documents/UniversalDocumentStudio";
 import { IssueList, OriginalCorrectedView, AuditSummary, EmptyAuditState } from "@/components/audit";
 import { StatsCard } from "@/components/dashboard/StatsCard";
 import {
@@ -193,7 +194,7 @@ export default function CreatorDashboard() {
   }, [userName]);
   const userDepartment = currentUser?.department || "Content & Communications";
 
-  const [studioMode, setStudioMode] = useState<"image" | "social" | "blog">("image");
+  const [studioMode, setStudioMode] = useState<"image" | "social" | "blog" | "documents">("image");
   const [inputText, setInputText] = useState(TEMPLATES[0].text);
   const [selectedChannel, setSelectedChannel] = useState("LinkedIn & Social");
   const [contentFormat, setContentFormat] = useState<"text" | "graphic">("text");
@@ -682,6 +683,23 @@ export default function CreatorDashboard() {
               Reasoning Engine
             </span>
           </button>
+          <button
+            onClick={() => {
+              setStudioMode("documents");
+              if (typeof window !== "undefined") localStorage.setItem("eclipse_creator_mode", "documents");
+            }}
+            className={`flex items-center justify-center gap-2 px-3.5 py-2 rounded-md transition-all flex-1 sm:flex-none ${
+              studioMode === "documents"
+                ? "bg-blue-700 text-white shadow-xs"
+                : "text-slate-600 hover:text-slate-900"
+            }`}
+          >
+            <FileText className="h-4 w-4 text-blue-300" />
+            <span>Document Intelligence & Copilot</span>
+            <span className="px-1.5 py-0.2 rounded bg-blue-500/30 text-blue-200 text-[10px] font-mono uppercase">
+              RAG Copilot
+            </span>
+          </button>
         </div>
 
         <div className="hidden md:flex items-center gap-2 text-xs text-slate-500 font-medium pr-2">
@@ -690,7 +708,9 @@ export default function CreatorDashboard() {
         </div>
       </div>
 
-      {studioMode === "image" ? (
+      {studioMode === "documents" ? (
+        <UniversalDocumentStudio />
+      ) : studioMode === "image" ? (
         <ImageReviewStudio
           initialDraftId={activeDraftInfo?.id}
           initialHeadline={activeDraftInfo?.title}

@@ -1,14 +1,35 @@
 import os
-from fastapi import FastAPI, HTTPException
+from typing import Optional, List
+from fastapi import FastAPI, HTTPException, UploadFile, File
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import HTMLResponse, JSONResponse
 from schemas.request_schema import ReviewRequest, ChatRequest, ChatResponse
 from schemas.audit_schema import BrandAuditReport
+from schemas.document_schema import (
+    DocumentMetadata,
+    DocumentSection,
+    DocumentUploadResponse,
+    DocumentListResponse,
+    DocumentContentResponse,
+    DocumentScanRequest,
+    DocumentScanResponse
+)
+from schemas.copilot_schema import (
+    CopilotChatRequest,
+    CopilotChatResponse,
+    CopilotHistoryResponse,
+    DocumentCompareRequest,
+    DocumentCompareResponse
+)
 from app.review_engine import review_engine
 from app.gemini_client import gemini_client
 from app.prompt_engine import PromptEngine
 from app.brand_retriever import brand_retriever
 from app.system_prompt import ECLIPSE_IDENTITY
+from app.document_processor import document_processor
+from app.document_retriever import document_retriever
+from app.copilot_engine import copilot_engine
+from app.document_review import document_review_engine
 
 # Initialize FastAPI app
 app = FastAPI(
@@ -82,6 +103,107 @@ def get_brand_rules():
 def get_verified_facts():
     """Returns the verified facts database used by ECLIPSE for claim verification."""
     return brand_retriever.facts
+
+# -------------------------------------------------------------
+# FEATURE 4: UNIVERSAL DOCUMENT INTELLIGENCE ENDPOINTS
+# -------------------------------------------------------------
+
+@app.post("/documents/upload", response_model=DocumentUploadResponse)
+@app.post("/api/documents/upload", response_model=DocumentUploadResponse)
+async def upload_document_endpoint(file: UploadFile = File(...)):
+    """Uploads, validates, extracts text & sections, and indexes document for RAG."""
+    try:
+        content_bytes = await file.read()
+        metadata, sections = document_processor.process_document(content_bytes, file.filename)
+        if metadata.status == "error":
+            raise HTTPException(status_code=400, detail=metadata.error_message or "Document processing failed.")
+
+        # Index chunks in RAG retrieval system
+        document_retriever.index_document(metadata, sections)
+
+        return DocumentUploadResponse(
+            document=metadata,
+            message=f"Document '{metadata.filename}' successfully processed ({metadata.section_count} section(s), {metadata.file_type})."
+        )
+    except ValueError as ve:
+        raise HTTPException(status_code=400, detail=str(ve))
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Document upload failed: {str(e)}")
+
+@app.get("/documents", response_model=DocumentListResponse)
+@app.get("/api/documents", response_model=DocumentListResponse)
+def list_documents_endpoint():
+    """Lists all catalogued and uploaded documents."""
+    docs = document_processor.list_documents()
+    return DocumentListResponse(documents=docs, total=len(docs))
+
+@app.get("/documents/{document_id}", response_model=DocumentMetadata)
+@app.get("/api/documents/{document_id}", response_model=DocumentMetadata)
+def get_document_endpoint(document_id: str):
+    """Retrieves document metadata by ID."""
+    doc_tuple = document_processor.get_document(document_id)
+    if not doc_tuple:
+        raise HTTPException(status_code=404, detail=f"Document '{document_id}' not found.")
+    return doc_tuple[0]
+
+@app.get("/documents/{document_id}/content", response_model=DocumentContentResponse)
+@app.get("/api/documents/{document_id}/content", response_model=DocumentContentResponse)
+def get_document_content_endpoint(document_id: str):
+    """Retrieves extracted sections and normalized full text."""
+    doc_tuple = document_processor.get_document(document_id)
+    if not doc_tuple:
+        raise HTTPException(status_code=404, detail=f"Document '{document_id}' not found.")
+    meta, sections = doc_tuple
+    full_text = "\n\n".join([f"[{s.heading}]:\n{s.content}" for s in sections])
+    return DocumentContentResponse(document=meta, sections=sections, full_text=full_text)
+
+@app.post("/documents/{document_id}/scan", response_model=DocumentScanResponse)
+@app.post("/api/documents/{document_id}/scan", response_model=DocumentScanResponse)
+def scan_document_endpoint(document_id: str, request: Optional[DocumentScanRequest] = None):
+    """Runs ECLIPSE brand compliance, tone, prohibited terms, and fact verification analysis."""
+    brand = request.brand_id if request else "ECLIPSE"
+    try:
+        report = document_review_engine.review_document(document_id, brand_id=brand)
+        return report
+    except ValueError as ve:
+        raise HTTPException(status_code=404, detail=str(ve))
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Document audit scan failed: {str(e)}")
+
+@app.delete("/documents/{document_id}")
+@app.delete("/api/documents/{document_id}")
+def delete_document_endpoint(document_id: str):
+    """Deletes raw upload, extracted content, embeddings, and metadata."""
+    success = document_processor.delete_document(document_id)
+    document_retriever.delete_document_chunks(document_id)
+    if not success:
+        raise HTTPException(status_code=404, detail=f"Document '{document_id}' not found.")
+    return {"message": f"Document '{document_id}' successfully deleted.", "document_id": document_id}
+
+@app.post("/copilot/chat", response_model=CopilotChatResponse)
+@app.post("/api/copilot/chat", response_model=CopilotChatResponse)
+def copilot_chat_endpoint(request: CopilotChatRequest):
+    """Ask questions about uploaded documents with grounded citations."""
+    try:
+        return copilot_engine.chat(request)
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Copilot chat failed: {str(e)}")
+
+@app.get("/copilot/history/{session_id}", response_model=CopilotHistoryResponse)
+@app.get("/api/copilot/history/{session_id}", response_model=CopilotHistoryResponse)
+def copilot_history_endpoint(session_id: str):
+    """Retrieves conversation history for a copilot session."""
+    history = copilot_engine.get_history(session_id)
+    return CopilotHistoryResponse(session_id=session_id, messages=history)
+
+@app.post("/copilot/compare", response_model=DocumentCompareResponse)
+@app.post("/api/copilot/compare", response_model=DocumentCompareResponse)
+def copilot_compare_endpoint(request: DocumentCompareRequest):
+    """Compares multiple documents for specification mismatches and contradictions."""
+    try:
+        return copilot_engine.compare_documents(request)
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Document comparison failed: {str(e)}")
 
 @app.get("/", response_class=HTMLResponse)
 def serve_playground():

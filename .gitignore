@@ -52,4 +52,12 @@ __pycache__/
 *$py.class
 .pytest_cache/
 
+# Dynamic document uploads and extracted caches
+ai-engine/knowledge/uploads/*
+!ai-engine/knowledge/uploads/.gitkeep
+ai-engine/knowledge/extracted/*
+!ai-engine/knowledge/extracted/.gitkeep
+ai-engine/knowledge/embeddings/*
+!ai-engine/knowledge/embeddings/.gitkeep
+
 
