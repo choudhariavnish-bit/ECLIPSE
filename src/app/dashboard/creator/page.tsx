@@ -695,10 +695,7 @@ export default function CreatorDashboard() {
             }`}
           >
             <FileText className="h-4 w-4 text-blue-300" />
-            <span>Document Intelligence & Copilot</span>
-            <span className="px-1.5 py-0.2 rounded bg-blue-500/30 text-blue-200 text-[10px] font-mono uppercase">
-              RAG Copilot
-            </span>
+            <span>Document Intelligence</span>
           </button>
         </div>
 

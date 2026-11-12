@@ -453,7 +453,7 @@ export function UniversalDocumentStudio() {
           </div>
           <div>
             <div className="flex items-center gap-2">
-              <h1 className="text-base font-bold text-slate-900">ECLIPSE AI — Universal Document Intelligence & Copilot</h1>
+              <h1 className="text-base font-bold text-slate-900">ECLIPSE AI — Universal Document Intelligence</h1>
               <span className="bg-blue-100 text-blue-800 text-[10px] font-mono px-2 py-0.5 rounded font-bold border border-blue-200">
                 Multimodal OCR + RAG
               </span>
@@ -1082,3 +1082,4 @@ export function UniversalDocumentStudio() {
 }
 
 export default UniversalDocumentStudio;
+
