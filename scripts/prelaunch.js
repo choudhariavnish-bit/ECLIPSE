@@ -32,16 +32,7 @@ try {
   console.log("[1/3] Port 3000 is clean and available.");
 }
 
-// 2. Ensure local SQLite3 file database exists
-const sqliteDbPath = path.join(process.cwd(), "database", "governance.sqlite");
-if (!fs.existsSync(sqliteDbPath)) {
-  try {
-    console.log("[DB] Seeding local SQLite3 offline database...");
-    execSync("node scripts/init_sqlite.js", { stdio: "inherit" });
-  } catch (e) {}
-}
-
-// 3. Patch Vite Windows spawn EPERM bug if present
+// 2. Patch Vite Windows spawn EPERM bug if present
 try {
   const viteChunkPath = path.join(__dirname, "..", "node_modules", "vite", "dist", "node", "chunks", "node.js");
   if (fs.existsSync(viteChunkPath)) {
@@ -69,6 +60,15 @@ try {
   }
 } catch (e) {}
 
+// 3. Ensure local SQLite3 file database exists
+const sqliteDbPath = path.join(process.cwd(), "database", "governance.sqlite");
+if (!fs.existsSync(sqliteDbPath)) {
+  try {
+    console.log("[DB] Seeding local SQLite3 offline database...");
+    execSync("node scripts/init_sqlite.js", { stdio: "ignore" });
+  } catch (e) {}
+}
+
 // 4. Resolve local LAN IP for multi-device / mobile testing
 let lanIp = "localhost";
 try {
@@ -84,18 +84,18 @@ try {
   }
 } catch (e) {}
 
-console.log("[2/3] Database & Network endpoints ready:");
-console.log("      - Local Disk DB:    SQLite3 (database/governance.sqlite)");
-console.log("      - Browser DB:       MongoDB (Document Collections Engine)");
-console.log("      - Primary Web:      http://localhost:3000");
+console.log("[2/3] Database & Network Endpoints Configured:");
+console.log(`      - Local Disk DB:    SQLite3 (database/governance.sqlite)`);
+console.log(`      - Browser DB:       MongoDB (Document Collections Engine)`);
+console.log(`      - Primary Web:      http://localhost:3000`);
 if (lanIp !== "localhost") {
   console.log(`      - Wi-Fi Devices:    http://${lanIp}:3000`);
 }
-console.log("      - Database Studio:  http://localhost:3000/dashboard/database\n");
+console.log(`      - Database Studio:  http://localhost:3000/dashboard/database\n`);
 
 console.log("[3/3] Platform Engine Ready (Pure React + Vite)...\n");
 console.log("=====================================================================");
 console.log("  SERVER LAUNCHING — ACCESS ON ANY DEVICE ON YOUR WI-FI");
-console.log("=====================================================================\n");
+console.log("=====================================================================");
 
 process.exit(0);

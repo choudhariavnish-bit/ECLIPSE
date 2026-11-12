@@ -180,7 +180,46 @@ export default function LoginPage() {
             <div className="third-color h-full" />
             <div className="fourth-color h-full" />
           </div>
-          {/* Tab Switcher */}
+          {/* Quick Persona Demo Logins (UP SIDE) */}
+          <div className="mb-6 pt-2">
+            <span className="block text-[11px] font-mono text-stone-500 uppercase tracking-wider text-center mb-3 font-semibold">
+              Demo Login
+            </span>
+            <div className="grid grid-cols-3 gap-2">
+              <button
+                type="button"
+                onClick={() => handleDemoLogin("creator")}
+                className="flex flex-col items-center justify-center p-2.5 rounded-xl border border-[#b7e89e] bg-[#e0ffcd] hover:bg-[#d2f7be] text-stone-950 text-[11px] font-bold transition-all shadow-2xs group cursor-pointer"
+              >
+                <Sparkles className="h-4 w-4 mb-1 text-emerald-800 group-hover:scale-110 transition-transform" />
+                <span>Creator</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => handleDemoLogin("brand-manager")}
+                className="flex flex-col items-center justify-center p-2.5 rounded-xl border border-[#f2cb7e] bg-[#ffebbb] hover:bg-[#fde1a6] text-stone-950 text-[11px] font-bold transition-all shadow-2xs group cursor-pointer"
+              >
+                <Layers className="h-4 w-4 mb-1 text-amber-800 group-hover:scale-110 transition-transform" />
+                <span>Brand Mgr</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => handleDemoLogin("admin")}
+                className="flex flex-col items-center justify-center p-2.5 rounded-xl border border-[#f7a077] bg-[#ffcab0] hover:bg-[#ffa882] text-stone-950 text-[11px] font-bold transition-all shadow-2xs group cursor-pointer"
+              >
+                <ShieldCheck className="h-4 w-4 mb-1 text-orange-950 group-hover:scale-110 transition-transform" />
+                <span>Admin</span>
+              </button>
+            </div>
+          </div>
+
+          {/* Divider */}
+          <div className="border-t border-[#f2ead8] mb-6" />
+
+          {/* Tab Switcher (DOWN WORDS) */}
+>>>>>>> 6344eba7daa241684b34ae9b5d2b3c8b66cf5d45
           <div className="flex rounded-2xl bg-[#faf9f5] p-1.5 mb-6 border border-[#f2ead8]">
             <button
               type="button"
@@ -280,41 +319,6 @@ export default function LoginPage() {
                   </>
                 )}
               </button>
-
-              {/* Quick Persona Demo Logins */}
-              <div className="pt-4 border-t border-[#f2ead8]">
-                <span className="block text-[11px] font-mono text-stone-500 uppercase tracking-wider text-center mb-3 font-semibold">
-                  Or 1-Click Evaluation Persona
-                </span>
-                <div className="grid grid-cols-3 gap-2">
-                  <button
-                    type="button"
-                    onClick={() => handleDemoLogin("creator")}
-                    className="flex flex-col items-center justify-center p-2.5 rounded-xl border border-[#b7e89e] bg-[#e0ffcd] hover:bg-[#d2f7be] text-stone-950 text-[11px] font-bold transition-all shadow-2xs group"
-                  >
-                    <Sparkles className="h-4 w-4 mb-1 text-emerald-800 group-hover:scale-110 transition-transform" />
-                    <span>Creator</span>
-                  </button>
-
-                  <button
-                    type="button"
-                    onClick={() => handleDemoLogin("brand-manager")}
-                    className="flex flex-col items-center justify-center p-2.5 rounded-xl border border-[#f2cb7e] bg-[#ffebbb] hover:bg-[#fde1a6] text-stone-950 text-[11px] font-bold transition-all shadow-2xs group"
-                  >
-                    <Layers className="h-4 w-4 mb-1 text-amber-800 group-hover:scale-110 transition-transform" />
-                    <span>Brand Mgr</span>
-                  </button>
-
-                  <button
-                    type="button"
-                    onClick={() => handleDemoLogin("admin")}
-                    className="flex flex-col items-center justify-center p-2.5 rounded-xl border border-[#f7a077] bg-[#ffcab0] hover:bg-[#ffa882] text-stone-950 text-[11px] font-bold transition-all shadow-2xs group"
-                  >
-                    <ShieldCheck className="h-4 w-4 mb-1 text-orange-950 group-hover:scale-110 transition-transform" />
-                    <span>Admin</span>
-                  </button>
-                </div>
-              </div>
             </form>
           ) : (
             /* 2. SIGN UP FORM (NEW ACCOUNT) */
