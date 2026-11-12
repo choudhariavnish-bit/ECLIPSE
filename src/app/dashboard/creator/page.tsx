@@ -648,9 +648,6 @@ export default function CreatorDashboard() {
           >
             <Scan className="h-4 w-4 text-indigo-300" />
             <span>Image & Poster Studio</span>
-            <span className="px-1.5 py-0.2 rounded bg-indigo-500/30 text-indigo-100 text-[10px] font-mono uppercase">
-              Vision OCR
-            </span>
           </button>
           <button
             onClick={() => {
@@ -679,9 +676,6 @@ export default function CreatorDashboard() {
           >
             <BookOpen className="h-4 w-4 text-purple-300" />
             <span>Blog & Article Studio</span>
-            <span className="px-1.5 py-0.2 rounded bg-purple-500/30 text-purple-200 text-[10px] font-mono uppercase">
-              Reasoning Engine
-            </span>
           </button>
           <button
             onClick={() => {
