@@ -277,3 +277,4 @@ class DocumentProcessor:
         return deleted
 
 document_processor = DocumentProcessor()
+

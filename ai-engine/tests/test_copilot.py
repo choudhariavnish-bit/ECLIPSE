@@ -60,3 +60,4 @@ def test_multi_document_comparison():
     assert len(res.document_names) == 2
     assert "doc_a.txt" in res.document_names
     assert "doc_b.txt" in res.document_names
+

@@ -158,3 +158,4 @@ class PptxExtractor:
             raise ValueError(f"Could not read legacy PPT presentation: {str(e)}")
 
 pptx_extractor = PptxExtractor()
+

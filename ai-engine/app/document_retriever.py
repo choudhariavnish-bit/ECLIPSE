@@ -140,3 +140,4 @@ class DocumentRetriever:
         return citations
 
 document_retriever = DocumentRetriever()
+

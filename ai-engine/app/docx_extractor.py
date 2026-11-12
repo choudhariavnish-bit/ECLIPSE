@@ -211,3 +211,4 @@ class DocxExtractor:
             raise ValueError(f"Could not read legacy DOC file: {str(e)}")
 
 docx_extractor = DocxExtractor()
+

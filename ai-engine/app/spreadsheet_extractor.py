@@ -229,3 +229,4 @@ class SpreadsheetExtractor:
             }
 
 spreadsheet_extractor = SpreadsheetExtractor()
+

@@ -66,3 +66,4 @@ class DocumentScanResponse(BaseModel):
     findings: List[DocumentScanFinding]
     executive_summary: str
     reviewed_at: str
+

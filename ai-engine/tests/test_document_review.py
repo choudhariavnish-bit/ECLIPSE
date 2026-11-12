@@ -36,3 +36,4 @@ Deployments adhere to ISO 27001 and SOC 2 Type II compliance standards.
 
     assert report.compliance_score >= 85
     assert report.critical_issues == 0
+

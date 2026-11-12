@@ -105,3 +105,4 @@ class OCREngine:
         }
 
 ocr_engine = OCREngine()
+

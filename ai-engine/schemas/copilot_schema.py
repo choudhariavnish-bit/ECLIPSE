@@ -45,3 +45,4 @@ class DocumentCompareResponse(BaseModel):
     key_differences: List[Dict[str, Any]]
     contradictions: List[Dict[str, Any]]
     citations: List[SourceCitation]
+

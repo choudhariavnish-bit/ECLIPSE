@@ -128,3 +128,4 @@ class PDFExtractor:
             raise ValueError(f"Could not parse PDF document: {str(e)}")
 
 pdf_extractor = PDFExtractor()
+

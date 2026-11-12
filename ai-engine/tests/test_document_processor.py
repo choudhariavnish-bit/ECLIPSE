@@ -54,3 +54,4 @@ def test_csv_extraction():
     assert len(sections) == 1
     assert "NovaBook X1" in sections[0].content
     assert "16 GB" in sections[0].content
+

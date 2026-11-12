@@ -234,7 +234,7 @@ const apiMockPlugin = () => ({
   name: "vite-plugin-api-mock",
   configureServer(server: any) {
     server.middlewares.use((req: any, res: any, next: any) => {
-      if (!req.url.startsWith("/api")) {
+      if (!req.url.startsWith("/api") && !req.url.startsWith("/documents") && !req.url.startsWith("/copilot")) {
         return next();
       }
 
@@ -262,6 +262,14 @@ const apiMockPlugin = () => ({
           "/api/blog/review": "http://127.0.0.1:8000/api/v1/blog/review",
           "/api/review/start": "http://127.0.0.1:8000/api/v1/review",
           "/api/chat": "http://127.0.0.1:8000/api/v1/chat",
+          "/api/copilot/chat": "http://127.0.0.1:8000/copilot/chat",
+          "/copilot/chat": "http://127.0.0.1:8000/copilot/chat",
+          "/api/copilot/compare": "http://127.0.0.1:8000/copilot/compare",
+          "/copilot/compare": "http://127.0.0.1:8000/copilot/compare",
+          "/api/documents/upload": "http://127.0.0.1:8000/documents/upload",
+          "/documents/upload": "http://127.0.0.1:8000/documents/upload",
+          "/api/documents": "http://127.0.0.1:8000/documents",
+          "/documents": "http://127.0.0.1:8000/documents",
         };
 
         const targetBackendUrl = fastApiRoutes[req.url.split("?")[0]];
@@ -920,6 +928,232 @@ const apiMockPlugin = () => ({
               message: "Dual engine connected: SQLite 3 (database/governance.sqlite) and MongoDB browser collection store.",
             })
           );
+        }
+
+        // 10. ECLIPSE Floating Brand Copilot Chat (/api/chat)
+        if (req.url === "/api/chat" || req.url === "/api/v1/chat") {
+          const userMsg = parsedBody.message || parsedBody.text || "";
+          const msgLower = userMsg.toLowerCase();
+          let reply = "";
+
+          if (msgLower.includes("100% bug-free") || msgLower.includes("bug-free") || msgLower.includes("foolproof")) {
+            reply = "No, '100% bug-free' and '100% foolproof' are prohibited superlative guarantees under ECLIPSE rule CLM-01 and advertising compliance standards. Recommended compliant replacement: 'enterprise-grade verified high-availability with 99.99% uptime resilience'.";
+          } else if (msgLower.includes("uptime") || msgLower.includes("sla") || msgLower.includes("guarantee")) {
+            reply = "ECLIPSE's verified enterprise SLA guarantee is 99.99% uptime with 24/7 mission-critical monitoring, certified SOC 2 Type II and ISO/IEC 27001:2022 compliance (Source: Approved Facts Index FACT-001).";
+          } else if (msgLower.includes("prohibited") || msgLower.includes("superlative") || msgLower.includes("forbidden")) {
+            reply = "Key prohibited terms in ECLIPSE brand guidelines include: '100% bug-free', '100% foolproof', 'zero defect infallibility', 'cheapest' (use 'cost-effective, highly competitive'), 'unbreakable', and 'destroy our competitors'.";
+          } else if (msgLower.includes("cheapest") || msgLower.includes("rephrase") || msgLower.includes("price")) {
+            reply = "Recommended enterprise-compliant phrasing: 'ECLIPSE offers cost-effective, highly competitive pricing engineered for rapid ROI and multi-tenant scalability across global teams.'";
+          } else if (msgLower.includes("summarize") || msgLower.includes("overview")) {
+            reply = "Here is your executive brand governance summary:\n\n• **Brand Tone:** Maintain an authoritative, confident, and empowering voice.\n• **Claims Substantiation:** Support all statistical performance claims with benchmark citations.\n• **Terminology:** Replace prohibited superlatives with verifiable enterprise metrics.\n• **Compliance Score:** Target >95% adherence across all public communications.";
+          } else {
+            reply = `I analyzed your inquiry: "${userMsg}". Under ECLIPSE brand governance, ensure all terminology adheres to our verified 99.99% SLA benchmarks, avoids unprovable superlatives (like '100% bug-free'), and preserves our authoritative enterprise voice.`;
+          }
+
+          res.statusCode = 200;
+          return res.end(JSON.stringify({
+            reply,
+            engine_name: "ECLIPSE Brand Copilot",
+            powered_by: "Google Gemini",
+            timestamp: new Date().toISOString()
+          }));
+        }
+
+        // 11. Document Intelligence Copilot Chat (/copilot/chat)
+        if (req.url.startsWith("/copilot/chat") || req.url.startsWith("/api/copilot/chat")) {
+          const userMsg = parsedBody.message || "";
+          const msgLower = userMsg.toLowerCase();
+          const docIds = parsedBody.selected_document_ids || [];
+          let reply = "";
+          const citations: any[] = [];
+
+          if (msgLower.includes("summarize") || msgLower.includes("summary") || msgLower.includes("main points") || msgLower.includes("explain")) {
+            reply = "### Document Summary — NovaBook X1 Specifications\n\nBased on the uploaded technical collateral, here are the verified core takeaways:\n\n• **Hardware Architecture:** NovaBook X1 features 16 GB unified RAM and 512 GB high-speed PCIe SSD storage.\n• **Infrastructure & SLA:** Enterprise cloud tier provides guaranteed 99.99% uptime with SOC 2 Type II certified compliance.\n• **Brand Alignment:** Marketing materials must avoid unapproved claims such as '32 GB RAM' or '100% bug-free'.";
+            citations.push({
+              document_id: docIds[0] || "doc_novabook_specs",
+              document_name: "NovaBook_X1_Specs.docx",
+              page_number: 1,
+              excerpt: "NovaBook X1 features 16 GB unified RAM and 512 GB SSD storage with 99.99% enterprise SLA uptime guarantee.",
+              relevance_score: 0.98
+            });
+          } else if (msgLower.includes("ram") || msgLower.includes("spec") || msgLower.includes("specification") || msgLower.includes("storage") || msgLower.includes("ssd") || msgLower.includes("hardware")) {
+            reply = "### Verified Hardware Specifications — NovaBook X1\n\nAccording to the uploaded product documentation:\n\n• **RAM / Memory:** 16 GB Unified Memory (Claims of 32 GB are unverified and prohibited)\n• **Storage:** 512 GB High-Speed PCIe NVMe SSD\n• **Service Level Agreement:** 99.99% Enterprise Cloud SLA\n• **Compliance Standards:** ISO 27001 and SOC 2 Type II Certified";
+            citations.push({
+              document_id: docIds[0] || "doc_novabook_specs",
+              document_name: "NovaBook_X1_Specs.docx",
+              page_number: 1,
+              excerpt: "Standard production model includes 16 GB unified RAM and 512 GB SSD storage.",
+              relevance_score: 0.99
+            });
+          } else if (msgLower.includes("violation") || msgLower.includes("prohibit") || msgLower.includes("guideline") || msgLower.includes("brand")) {
+            reply = "### Detected Brand Guideline Violations\n\n• **Hardware Misstatement:** Collateral claiming '32 GB RAM' directly contradicts approved specification (16 GB unified RAM).\n• **Superlative Guarantee:** Phrasing such as '100% bug-free' or 'unbreakable' violates Rule CLM-01 (FTC advertising compliance).\n• **Recommended Correction:** State '16 GB unified RAM with enterprise-grade 99.99% uptime resilience'.";
+            citations.push({
+              document_id: docIds[0] || "doc_novabook_specs",
+              document_name: "NovaBook_X1_Specs.docx",
+              page_number: 1,
+              excerpt: "Marketing communications must strictly reflect 16 GB RAM baseline and 99.99% uptime SLA.",
+              relevance_score: 0.95
+            });
+          } else if (msgLower.includes("ipad") || msgLower.includes("apple") || msgLower.includes("2029") || msgLower.includes("unrelated") || msgLower.includes("weather")) {
+            reply = "I could not find sufficient information in the selected documents to answer this question.";
+          } else {
+            reply = `Based on the uploaded documentation for NovaBook X1, the verified details state 16 GB unified RAM, 512 GB SSD storage, and a 99.99% enterprise cloud uptime guarantee. All collateral must remain grounded in verified engineering benchmarks.`;
+            citations.push({
+              document_id: docIds[0] || "doc_novabook_specs",
+              document_name: "NovaBook_X1_Specs.docx",
+              page_number: 1,
+              excerpt: "NovaBook X1 features 16 GB unified RAM and 512 GB SSD storage with 99.99% enterprise SLA uptime guarantee.",
+              relevance_score: 0.92
+            });
+          }
+
+          res.statusCode = 200;
+          return res.end(JSON.stringify({
+            reply,
+            session_id: parsedBody.session_id || `sess_${Date.now()}`,
+            citations,
+            selected_documents: ["NovaBook_X1_Specs.docx"],
+            confidence: citations.length > 0 ? 0.97 : 0.0,
+            model_used: "ECLIPSE Grounded RAG (Gemini 3.5)"
+          }));
+        }
+
+        // 12. Document Comparison (/copilot/compare)
+        if (req.url.startsWith("/copilot/compare") || req.url.startsWith("/api/copilot/compare")) {
+          res.statusCode = 200;
+          return res.end(JSON.stringify({
+            summary: "Cross-comparison between NovaBook Specification v1.0 and Marketing Deck v2.4 reveals 1 critical specification conflict regarding system RAM.",
+            key_differences: [
+              { aspect: "System RAM", description: "Technical spec defines 16 GB unified memory; marketing draft erroneously advertises 32 GB RAM." },
+              { aspect: "Uptime SLA", description: "Technical spec verifies 99.99% SLA; marketing draft uses colloquial 'always online' phrasing." }
+            ],
+            contradictions: [
+              {
+                claim_or_topic: "RAM Capacity",
+                document_a_statement: "16 GB unified RAM (Technical Spec)",
+                document_b_statement: "32 GB ultra RAM (Marketing Draft)",
+                verdict: "CONTRADICTION: Technical Spec is the authoritative source of truth."
+              }
+            ],
+            citations: [
+              { document_id: "doc-1", document_name: "NovaBook_Spec.docx", excerpt: "16 GB unified RAM", relevance_score: 0.99 },
+              { document_id: "doc-2", document_name: "Q4_Launch_Deck.pptx", excerpt: "32 GB ultra RAM", relevance_score: 0.95 }
+            ]
+          }));
+        }
+
+        // 13. Universal Documents Management (/documents)
+        if (req.url.startsWith("/documents") || req.url.startsWith("/api/documents")) {
+          if (req.url.includes("/upload") && req.method === "POST") {
+            const docId = `doc_${Date.now()}`;
+            res.statusCode = 200;
+            return res.end(JSON.stringify({
+              document_id: docId,
+              filename: "Uploaded_Document.pdf",
+              file_type: ".pdf",
+              file_size_bytes: 142500,
+              total_pages: 3,
+              is_scanned: false,
+              ocr_applied: false,
+              sections_count: 5,
+              extracted_preview: "ECLIPSE Enterprise Cloud Governance Architecture and Compliance Specification...",
+              status: "indexed",
+              message: "Document successfully parsed, text extracted, and indexed in RAG retrieval system."
+            }));
+          }
+
+          if (req.url.includes("/scan") && req.method === "POST") {
+            res.statusCode = 200;
+            return res.end(JSON.stringify({
+              document_id: "doc_current",
+              document_name: "NovaBook_X1_Specs.docx",
+              compliance_score: 68,
+              total_issues: 2,
+              critical_issues: 1,
+              warnings: 1,
+              verified_claims: 2,
+              unsupported_claims: 1,
+              findings: [
+                {
+                  id: "f-1",
+                  category: "factual_inaccuracy",
+                  severity: "critical",
+                  original_text: "32 GB RAM",
+                  explanation: "Hardware specification defines standard build as 16 GB unified RAM.",
+                  evidence_reference: "Approved Technical Spec v1.0, Sec 3.2",
+                  suggested_correction: "16 GB unified RAM",
+                  review_status: "flagged"
+                },
+                {
+                  id: "f-2",
+                  category: "unsupported_claim",
+                  severity: "warning",
+                  original_text: "100% bug-free",
+                  explanation: "Absolute guarantee cannot be substantiated legally.",
+                  evidence_reference: "Rule CLM-01: Prohibited Guarantees",
+                  suggested_correction: "enterprise-grade verified high-availability",
+                  review_status: "flagged"
+                }
+              ],
+              executive_summary: "ECLIPSE detected 1 critical hardware contradiction (RAM sizing) and 1 prohibited superlative claim requiring remediation prior to publication.",
+              reviewed_at: new Date().toISOString()
+            }));
+          }
+
+          res.statusCode = 200;
+          return res.end(JSON.stringify({
+            total_documents: 4,
+            documents: [
+              {
+                document_id: "doc-novabook-spec",
+                filename: "NovaBook_X1_Specs.docx",
+                file_type: ".docx",
+                file_size_bytes: 38400,
+                total_pages: 2,
+                sections_count: 4,
+                is_scanned: false,
+                ocr_applied: false,
+                uploaded_at: new Date().toISOString(),
+                status: "indexed"
+              },
+              {
+                document_id: "doc-brand-guidelines",
+                filename: "ECLIPSE_Brand_Guidelines_2026.pdf",
+                file_type: ".pdf",
+                file_size_bytes: 125000,
+                total_pages: 12,
+                sections_count: 18,
+                is_scanned: false,
+                ocr_applied: false,
+                uploaded_at: new Date(Date.now() - 3600000).toISOString(),
+                status: "indexed"
+              },
+              {
+                document_id: "doc-cloud-sla",
+                filename: "Enterprise_Cloud_Infrastructure.csv",
+                file_type: ".csv",
+                file_size_bytes: 14200,
+                total_pages: 1,
+                sections_count: 8,
+                is_scanned: false,
+                ocr_applied: false,
+                uploaded_at: new Date(Date.now() - 7200000).toISOString(),
+                status: "indexed"
+              },
+              {
+                document_id: "doc-launch-deck",
+                filename: "Q4_Product_Launch_Deck.pptx",
+                file_type: ".pptx",
+                file_size_bytes: 84000,
+                total_pages: 6,
+                sections_count: 6,
+                is_scanned: false,
+                ocr_applied: false,
+                uploaded_at: new Date(Date.now() - 10800000).toISOString(),
+                status: "indexed"
+              }
+            ]
+          }));
         }
 
         // Default Fallback

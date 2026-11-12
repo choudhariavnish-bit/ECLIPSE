@@ -28,3 +28,4 @@ def test_ocr_engine_execution():
     assert "text" in result
     assert "confidence" in result
     assert "engine" in result
+

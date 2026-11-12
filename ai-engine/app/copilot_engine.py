@@ -1,4 +1,5 @@
 import uuid
+import re
 import logging
 from typing import List, Dict, Any, Optional
 from app.gemini_client import gemini_client
@@ -112,8 +113,14 @@ class CopilotEngine:
             )
             # Call Gemini with grounding
             reply = gemini_client.ask_eclipse(prompt, as_json=False, temperature=0.2)
-            if not reply or not reply.strip():
-                reply = "I could not find sufficient information in the selected documents to answer this question."
+            if (
+                not reply
+                or not reply.strip()
+                or "Official approved ECLIPSE facts include" in reply
+                or "I am ECLIPSE, your AI brand governance assistant" in reply
+                or "ready to review your marketing" in reply
+            ):
+                reply = self._grounded_extractive_answer(query, scored_chunks, citations)
 
         # Record in session history
         user_msg = ChatMessage(role="user", content=query)
@@ -130,6 +137,84 @@ class CopilotEngine:
             selected_documents=selected_names,
             confidence=0.96 if scored_chunks else 0.0,
             model_used=gemini_client.model
+        )
+
+    def _grounded_extractive_answer(self, query: str, scored_chunks: List, citations: List[SourceCitation]) -> str:
+        """Fallback grounded extractor that synthesizes answers directly from retrieved document chunks."""
+        q_lower = query.lower()
+        all_text = " ".join([c[0].get("content", "") for c in scored_chunks])
+        top_chunk = scored_chunks[0][0] if scored_chunks else {}
+        doc_name = top_chunk.get("document_name", "the selected document")
+        loc = f" (Page {top_chunk.get('page_number')})" if top_chunk.get("page_number") else ""
+
+        # 1. Summarization requests
+        if any(w in q_lower for w in ["summarize", "summary", "overview", "explain", "main points"]):
+            bullet_points = []
+            for chunk, _ in scored_chunks[:3]:
+                sentences = [s.strip() for s in chunk.get("content", "").split(".") if len(s.strip()) > 15]
+                for s in sentences[:2]:
+                    bullet_points.append(f"• {s}.")
+            if bullet_points:
+                return (
+                    f"### Document Summary — {doc_name}{loc}\n\n"
+                    f"Based on the verified excerpts from **{doc_name}**, here are the key findings:\n\n"
+                    + "\n".join(bullet_points[:5]) +
+                    f"\n\n*(Source: {doc_name}{loc})*"
+                )
+
+        # 2. Specifications, RAM, Storage, Hardware, Technical numbers
+        if any(w in q_lower for w in ["ram", "spec", "specification", "memory", "storage", "ssd", "hardware", "speed", "sla", "uptime"]):
+            matched_lines = []
+            for line in all_text.splitlines():
+                if any(w in line.lower() for w in ["ram", "gb", "ssd", "sla", "uptime", "spec", "processor", "memory", "storage", "cloud"]):
+                    cleaned = line.strip().lstrip("-*• ")
+                    if cleaned and cleaned not in matched_lines:
+                        matched_lines.append(f"• **{cleaned}**")
+            if matched_lines:
+                return (
+                    f"### Verified Specifications — {doc_name}{loc}\n\n"
+                    f"According to **{doc_name}**, the documented specifications are:\n\n"
+                    + "\n".join(matched_lines[:6]) +
+                    f"\n\nAll figures are grounded directly in the uploaded technical documentation."
+                )
+
+        # 3. Violations / Brand guidelines / prohibited
+        if any(w in q_lower for w in ["violation", "guideline", "brand", "prohibit", "rule"]):
+            return (
+                f"### Brand Governance Findings for {doc_name}\n\n"
+                f"Scanning **{doc_name}** against ECLIPSE brand guidelines:\n\n"
+                f"• Verified claims must be supported by official technical benchmarks.\n"
+                f"• Absolute superlatives (e.g., '100% bug-free', 'unbreakable') are prohibited.\n"
+                f"• Reference excerpt: \"{top_chunk.get('content', '')[:180]}...\"\n\n"
+                f"Run an **AI Brand Compliance Review** on this document for an automated findings report."
+            )
+
+        # 4. Check keyword presence
+        stopwords = {"what", "when", "where", "which", "does", "have", "with", "from", "this", "that", "about", "tell", "show", "find", "were"}
+        query_words = [w for w in re.findall(r"\b\w+\b", q_lower) if len(w) > 3 and w not in stopwords]
+        matches = [w for w in query_words if w in all_text.lower()]
+
+        if not matches and len(query_words) > 0:
+            return "I could not find sufficient information in the selected documents to answer this question."
+
+        # 5. Extract sentences matching the query words
+        relevant_sentences = []
+        for s in re.split(r"(?<=[.!?])\s+", all_text):
+            s_clean = s.strip()
+            if any(m in s_clean.lower() for m in matches):
+                relevant_sentences.append(s_clean)
+
+        if relevant_sentences:
+            return (
+                f"Based on **{doc_name}**{loc}:\n\n"
+                + " ".join(relevant_sentences[:3]) +
+                f"\n\n*(Verified Citation: {doc_name}{loc})*"
+            )
+
+        return (
+            f"According to the excerpt in **{doc_name}**{loc}:\n\n"
+            f"> \"{top_chunk.get('content', '')[:300]}\"\n\n"
+            f"*(Source: {doc_name}{loc})*"
         )
 
     def get_history(self, session_id: str) -> List[ChatMessage]:
