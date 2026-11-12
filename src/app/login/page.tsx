@@ -219,7 +219,6 @@ export default function LoginPage() {
           <div className="border-t border-[#f2ead8] mb-6" />
 
           {/* Tab Switcher (DOWN WORDS) */}
->>>>>>> 6344eba7daa241684b34ae9b5d2b3c8b66cf5d45
           <div className="flex rounded-2xl bg-[#faf9f5] p-1.5 mb-6 border border-[#f2ead8]">
             <button
               type="button"
