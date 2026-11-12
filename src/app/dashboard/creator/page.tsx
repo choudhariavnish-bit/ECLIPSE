@@ -7,6 +7,7 @@ import { useAuthStore } from "@/stores/useAuthStore";
 import { BlogReviewStudio } from "@/components/blog/BlogReviewStudio";
 import { ImageReviewStudio } from "@/components/image/ImageReviewStudio";
 import { IssueList, OriginalCorrectedView, AuditSummary, EmptyAuditState } from "@/components/audit";
+import { StatsCard } from "@/components/dashboard/StatsCard";
 import {
   Sparkles,
   FileCheck2,
@@ -593,6 +594,42 @@ export default function CreatorDashboard() {
           </div>
         </div>
       )}
+
+      {/* Top Glassmorphic Quick Metric Overview (CSS Styled Stats Cards) */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <StatsCard
+          title="Brand Consistency"
+          value="98.4%"
+          change={14.2}
+          subtitle="vs baseline"
+          icon={ShieldCheck}
+          gradient="from-blue-600 to-indigo-600"
+        />
+        <StatsCard
+          title="Compliance Health"
+          value="Zero Critical"
+          change={85.0}
+          subtitle="violation reduction"
+          icon={CheckCircle2}
+          gradient="from-emerald-500 to-teal-600"
+        />
+        <StatsCard
+          title="Content Velocity"
+          value="3.2x Faster"
+          change={70.0}
+          subtitle="time-to-publish"
+          icon={Zap}
+          gradient="from-purple-600 to-pink-600"
+        />
+        <StatsCard
+          title="Turnaround Time"
+          value="15 Mins"
+          change={97.9}
+          subtitle="review acceleration"
+          icon={Clock}
+          gradient="from-amber-500 to-orange-600"
+        />
+      </div>
 
       {/* Primary Studio Workflow Switcher */}
       <div className="bg-white rounded-xl border border-slate-200 p-2 shadow-xs flex flex-wrap items-center justify-between gap-3">

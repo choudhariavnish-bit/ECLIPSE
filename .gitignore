@@ -46,3 +46,10 @@ cloudflared.exe
 database/*.sqlite
 database/*.sqlite-journal
 
+# Python Bytecode & Cache
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+
+

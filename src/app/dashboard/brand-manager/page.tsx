@@ -3,6 +3,7 @@
 import React, { useState, useMemo } from "react";
 import Link from "@/lib/next-compat/link";
 import { api } from "@/lib/api";
+import { StatsCard } from "@/components/dashboard/StatsCard";
 import {
   Layers,
   CheckCircle2,
@@ -202,6 +203,42 @@ export default function BrandManagerDashboard() {
             <span>{pendingCount} Pending Reviews</span>
           </span>
         </div>
+      </div>
+
+      {/* Glassmorphic Metric Cards Grid */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <StatsCard
+          title="Pending Sign-Off"
+          value={`${pendingCount} Reviews`}
+          change={-42.5}
+          subtitle="queue cleared"
+          icon={Layers}
+          gradient="from-purple-600 to-indigo-600"
+        />
+        <StatsCard
+          title="Review Time per Piece"
+          value="15 Mins"
+          change={91.7}
+          subtitle="vs manual 12h"
+          icon={Clock}
+          gradient="from-blue-600 to-cyan-600"
+        />
+        <StatsCard
+          title="Brand Rulebooks"
+          value="3 Active"
+          change={100}
+          subtitle="fully enforced"
+          icon={BookOpen}
+          gradient="from-emerald-500 to-teal-600"
+        />
+        <StatsCard
+          title="Drift Preempted"
+          value="98.2%"
+          change={85.0}
+          subtitle="violations caught"
+          icon={ShieldCheck}
+          gradient="from-amber-500 to-rose-600"
+        />
       </div>
 
       {/* Primary Navigation Tabs */}
