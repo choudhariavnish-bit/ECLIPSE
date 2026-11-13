@@ -198,10 +198,10 @@ export default function LoginPage() {
               <button
                 type="button"
                 onClick={() => handleDemoLogin("brand-manager")}
-                className="flex flex-col items-center justify-center p-2.5 rounded-xl border border-[#f2cb7e] bg-[#ffebbb] hover:bg-[#fde1a6] text-stone-950 text-[11px] font-bold transition-all shadow-2xs group"
+                className="flex flex-col items-center justify-center p-2.5 rounded-xl border border-[#f2cb7e] bg-[#ffebbb] hover:bg-[#fde1a6] text-stone-950 text-[11px] font-bold transition-all shadow-2xs group text-center"
               >
                 <Layers className="h-4 w-4 mb-1 text-amber-800 group-hover:scale-110 transition-transform" />
-                <span>Brand Mgr</span>
+                <span className="leading-tight">Brand Manager</span>
               </button>
 
               <button
