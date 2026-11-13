@@ -139,7 +139,27 @@ npm run dev
 
 ---
 
-## 8. Known Limitations & Edge Cases
+## 8. Continuous Deployment to Netlify
+
+[![Deploy to Netlify](https://www.netlify.com/img/deploy/button.svg)](https://app.netlify.com/start/deploy?repository=https://github.com/choudhariavnish-bit/ECLIPSE&branch=pratik)
+
+ECLIPSE is pre-configured with continuous automated deployment via [`netlify.toml`](./netlify.toml):
+- **Build Command**: `npm run build`
+- **Publish Directory**: `dist`
+- **Node Runtime**: Node.js 22 (via [`.nvmrc`](./.nvmrc))
+- **SPA Fallback Routing**: `/* -> /index.html 200`
+- **Security Headers**: HSTS, X-Frame-Options, XSS protection, MIME sniffing protection.
+
+### How to Connect & Deploy:
+1. Visit [app.netlify.com](https://app.netlify.com) and click **"Add new site" > "Import an existing project"**.
+2. Select **GitHub** and authorize repo **`choudhariavnish-bit/ECLIPSE`**.
+3. Choose branch: **`pratik`**.
+4. Click **"Deploy site"**. Netlify will automatically build and publish your site with a live URL.
+5. All future `git push origin pratik` commits will automatically trigger incremental atomic production deployments.
+
+---
+
+## 9. Known Limitations & Edge Cases
 
 1. **Password-Protected Documents**: Encrypted PDFs or password-protected DOCX/XLSX files require decryption before ingestion.
 2. **Complex Embedded Macros**: Proprietary VBA macros in legacy `.doc` and `.xls` formats are safely stripped to prevent remote code execution.
