@@ -465,7 +465,7 @@ export function UniversalDocumentStudio() {
         </div>
 
         {/* Tab Switcher */}
-        <div className="flex rounded-lg border border-slate-200 bg-slate-50 p-1 text-xs font-medium">
+        <div className="flex flex-wrap items-center gap-1 rounded-lg border border-slate-200 bg-slate-50 p-1 text-xs font-medium">
           <button
             onClick={() => setActiveTab("upload")}
             className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md transition-all ${
