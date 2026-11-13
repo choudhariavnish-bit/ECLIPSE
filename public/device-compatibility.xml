@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<device-profile app="ECLIPSE AI" version="1.0.0">
+    <!-- ECLIPSE AI Universal Device Compatibility Profile -->
+    <target-devices>
+        <device type="smartphone" min-screen-width="320" max-screen-width="480" orientation="all" touch-enabled="true" />
+        <device type="phablet" min-screen-width="481" max-screen-width="767" orientation="all" touch-enabled="true" />
+        <device type="tablet-portrait" min-screen-width="768" max-screen-width="1024" orientation="all" touch-enabled="true" />
+        <device type="tablet-landscape" min-screen-width="1025" max-screen-width="1280" orientation="all" touch-enabled="true" />
+        <device type="laptop-desktop" min-screen-width="1281" max-screen-width="3840" orientation="landscape" touch-enabled="optional" />
+        <device type="foldable" screen-features="hinge-dual-screen" orientation="all" touch-enabled="true" />
+    </target-devices>
+    <screen-densities>
+        <density name="ldpi" factor="0.75" />
+        <density name="mdpi" factor="1.0" />
+        <density name="hdpi" factor="1.5" />
+        <density name="xhdpi" factor="2.0" />
+        <density name="xxhdpi" factor="3.0" />
+        <density name="xxxhdpi" factor="4.0" />
+    </screen-densities>
+    <viewport-settings>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes" />
+        <meta name="HandheldFriendly" content="True" />
+        <meta name="MobileOptimized" content="320" />
+    </viewport-settings>
+</device-profile>

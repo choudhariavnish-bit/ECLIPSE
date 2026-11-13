@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<browserconfig>
+    <!-- Universal Device & Screen Compatibility Configuration -->
+    <!-- Compatible with: Windows Phone, Tablets (Surface Pro/Go), Laptops, Desktop Displays -->
+    <msapplication>
+        <tile>
+            <square70x70logo src="/favicon.svg"/>
+            <square150x150logo src="/favicon.svg"/>
+            <wide310x150logo src="/favicon.svg"/>
+            <square310x310logo src="/favicon.svg"/>
+            <TileColor>#fafaf6</TileColor>
+        </tile>
+        <notification>
+            <polling-uri src="/api/health"/>
+            <frequency>30</frequency>
+            <cycle>1</cycle>
+        </notification>
+    </msapplication>
+</browserconfig>

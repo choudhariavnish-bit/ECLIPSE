@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<widget id="ai.eclipse.governance" version="1.0.0" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
+    <name>ECLIPSE AI</name>
+    <description>Universal Document Intelligence, Brand Governance and Copilot Platform</description>
+    <author email="support@eclipse.ai" href="https://eclipse-ai.netlify.app">ECLIPSE Governance Team</author>
+    <content src="index.html" />
+
+    <!-- Universal Multi-Device Compatibility Configuration -->
+    <!-- Ensures smooth adaptive rendering across Mobile Phones, Tablets, Foldables, and Desktops -->
+    <preference name="target-device" value="universal" /> <!-- phone, tablet, or universal -->
+    <preference name="Orientation" value="all" /> <!-- portrait, landscape, upside-down -->
+    <preference name="EnableViewportScale" value="true" />
+    <preference name="ResizeOnFullScreen" value="true" />
+    <preference name="KeepRunning" value="true" />
+    <preference name="DisallowOverscroll" value="true" />
+    <preference name="StatusBarOverlaysWebView" value="false" />
+    <preference name="StatusBarStyle" value="default" />
+    <preference name="BackgroundColor" value="#fafaf6" />
+    <preference name="HideKeyboardFormAccessoryBar" value="false" />
+    <preference name="KeyboardDisplayRequiresUserAction" value="false" />
+    <preference name="SuppressesIncrementalRendering" value="false" />
+    <preference name="MediaPlaybackRequiresUserAction" value="false" />
+    <preference name="AllowInlineMediaPlayback" value="true" />
+
+    <!-- Platform Screen Specifications: Android Devices (Phones & Tablets) -->
+    <platform name="android">
+        <preference name="AndroidXEnabled" value="true" />
+        <preference name="android-minSdkVersion" value="24" />
+        <preference name="android-targetSdkVersion" value="34" />
+        <preference name="AndroidWindowSplashScreenAnimatedIcon" value="public/favicon.svg" />
+        <preference name="AndroidWindowSplashScreenBackground" value="#fafaf6" />
+    </platform>
+
+    <!-- Platform Screen Specifications: iOS Devices (iPhone & iPad Universal) -->
+    <platform name="ios">
+        <preference name="target-device" value="universal" /> <!-- iPhone, iPad, iPad Pro -->
+        <preference name="deployment-target" value="15.0" />
+        <preference name="CordovaWebViewEngine" value="CDVWKWebViewEngine" />
+    </platform>
+
+    <!-- Network & Resource Access Policy -->
+    <access origin="*" />
+    <allow-navigation href="*" />
+    <allow-intent href="http://*/*" />
+    <allow-intent href="https://*/*" />
+</widget>
