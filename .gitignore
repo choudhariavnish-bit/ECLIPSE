@@ -52,7 +52,9 @@ __pycache__/
 *$py.class
 .pytest_cache/
 
-# Dynamic document uploads and extracted caches
+# Netlify
+.netlify/
+
 ai-engine/knowledge/uploads/*
 !ai-engine/knowledge/uploads/.gitkeep
 ai-engine/knowledge/extracted/*
