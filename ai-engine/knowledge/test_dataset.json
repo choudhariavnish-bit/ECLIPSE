@@ -1,0 +1,243 @@
+[
+  {
+    "id": "draft_001",
+    "category": "correct_content",
+    "content": "ECLIPSE provides real-time brand governance intelligence with a 99.99% uptime SLA for enterprise teams.",
+    "is_violation": false,
+    "expected_category": null,
+    "valid_evidence_ids": ["FACT-001"]
+  },
+  {
+    "id": "draft_002",
+    "category": "correct_content",
+    "content": "Over 10,000 enterprise teams trust ECLIPSE across 45 countries to protect brand consistency.",
+    "is_violation": false,
+    "expected_category": null,
+    "valid_evidence_ids": ["FACT-002"]
+  },
+  {
+    "id": "draft_003",
+    "category": "correct_content",
+    "content": "ECLIPSE is certified SOC 2 Type II and ISO 27001 compliant, ensuring high security standards.",
+    "is_violation": false,
+    "expected_category": null,
+    "valid_evidence_ids": ["FACT-003"]
+  },
+  {
+    "id": "draft_004",
+    "category": "correct_content",
+    "content": "Organizations using ECLIPSE reduce brand review turnaround times by an average of 78%.",
+    "is_violation": false,
+    "expected_category": null,
+    "valid_evidence_ids": ["FACT-004"]
+  },
+  {
+    "id": "draft_005",
+    "category": "correct_content",
+    "content": "ECLIPSE integrates seamlessly with Slack, Google Workspace, and Figma to accelerate review workflows.",
+    "is_violation": false,
+    "expected_category": null,
+    "valid_evidence_ids": ["FACT-006"]
+  },
+  {
+    "id": "draft_006",
+    "category": "wrong_terminology",
+    "content": "Our new cloud security infrastructure is completely unbreakable against cyber attacks.",
+    "is_violation": true,
+    "expected_category": "terminology",
+    "prohibited_term": "unbreakable"
+  },
+  {
+    "id": "draft_007",
+    "category": "wrong_terminology",
+    "content": "Deploy your campaigns with 100% bug-free automation guaranteed on every push.",
+    "is_violation": true,
+    "expected_category": "terminology",
+    "prohibited_term": "100% bug-free"
+  },
+  {
+    "id": "draft_008",
+    "category": "wrong_terminology",
+    "content": "Get cheap subscription pricing starting today with no hidden charges.",
+    "is_violation": true,
+    "expected_category": "terminology",
+    "prohibited_term": "cheap"
+  },
+  {
+    "id": "draft_009",
+    "category": "wrong_terminology",
+    "content": "Sign up for our partner program for guaranteed profit within thirty days.",
+    "is_violation": true,
+    "expected_category": "terminology",
+    "prohibited_term": "guaranteed profit"
+  },
+  {
+    "id": "draft_010",
+    "category": "wrong_terminology",
+    "content": "Experience our miracle solution for instant marketing compliance.",
+    "is_violation": true,
+    "expected_category": "terminology",
+    "prohibited_term": "miracle solution"
+  },
+  {
+    "id": "draft_011",
+    "category": "unsupported_claim",
+    "content": "ECLIPSE is officially voted India's No. 1 brand governance software by marketing leaders.",
+    "is_violation": true,
+    "expected_category": "claim",
+    "flagged_claim": "India's No. 1"
+  },
+  {
+    "id": "draft_012",
+    "category": "unsupported_claim",
+    "content": "Ranked #1 in the world for automated content auditing across every Fortune 500 company.",
+    "is_violation": true,
+    "expected_category": "claim",
+    "flagged_claim": "#1 in the world"
+  },
+  {
+    "id": "draft_013",
+    "category": "unsupported_claim",
+    "content": "Our proprietary NLP model is proven 500% faster than any other model in existence.",
+    "is_violation": true,
+    "expected_category": "claim",
+    "flagged_claim": "500% faster"
+  },
+  {
+    "id": "draft_014",
+    "category": "unsupported_claim",
+    "content": "Endorsed by top celebrity CMOs as the world's best compliance platform.",
+    "is_violation": true,
+    "expected_category": "claim",
+    "flagged_claim": "world's best"
+  },
+  {
+    "id": "draft_015",
+    "category": "unsupported_claim",
+    "content": "Adopted by 500,000 enterprise brands worldwide in just three months.",
+    "is_violation": true,
+    "expected_category": "claim",
+    "flagged_claim": "500,000 enterprise brands"
+  },
+  {
+    "id": "draft_016",
+    "category": "wrong_tone",
+    "content": "We destroy our competitors and expose how pathetic their legacy systems are.",
+    "is_violation": true,
+    "expected_category": "tone",
+    "prohibited_term": "destroy our competitors"
+  },
+  {
+    "id": "draft_017",
+    "category": "wrong_tone",
+    "content": "If you don't use ECLIPSE, your marketing team is incompetent and wasting money.",
+    "is_violation": true,
+    "expected_category": "tone",
+    "flagged_tone": "aggressive / condescending"
+  },
+  {
+    "id": "draft_018",
+    "category": "wrong_tone",
+    "content": "Other compliance tools are complete garbage built by amateurs who don't care.",
+    "is_violation": true,
+    "expected_category": "tone",
+    "flagged_tone": "bellicose / competitor-bashing"
+  },
+  {
+    "id": "draft_019",
+    "category": "wrong_tone",
+    "content": "SHOCKING SECRET: Marketing bosses don't want you to discover this crazy AI trick!",
+    "is_violation": true,
+    "expected_category": "tone",
+    "flagged_tone": "sensationalist clickbait"
+  },
+  {
+    "id": "draft_020",
+    "category": "wrong_tone",
+    "content": "We obliterate existing compliance bottlenecks leaving legacy vendors in the dust.",
+    "is_violation": true,
+    "expected_category": "tone",
+    "flagged_tone": "hyper-aggressive"
+  },
+  {
+    "id": "draft_021",
+    "category": "incorrect_fact",
+    "content": "ECLIPSE offers a 100% uptime SLA guarantee on our standard tier.",
+    "is_violation": true,
+    "expected_category": "fact",
+    "refuted_detail": "Approved SLA is 99.99%, not 100%."
+  },
+  {
+    "id": "draft_022",
+    "category": "incorrect_fact",
+    "content": "ECLIPSE is fully certified under HIPAA BAA for healthcare provider storage.",
+    "is_violation": true,
+    "expected_category": "fact",
+    "refuted_detail": "HIPAA BAA certification is pending formal audit."
+  },
+  {
+    "id": "draft_023",
+    "category": "incorrect_fact",
+    "content": "ECLIPSE has active server infrastructure deployed in over 180 countries.",
+    "is_violation": true,
+    "expected_category": "fact",
+    "refuted_detail": "Approved fact states 45 countries."
+  },
+  {
+    "id": "draft_024",
+    "category": "incorrect_fact",
+    "content": "Independent benchmarks demonstrate a 99% reduction in turnaround times with ECLIPSE.",
+    "is_violation": true,
+    "expected_category": "fact",
+    "refuted_detail": "Approved Forrester TEI metric is 78% reduction."
+  },
+  {
+    "id": "draft_025",
+    "category": "incorrect_fact",
+    "content": "ECLIPSE natively connects with Salesforce Marketing Cloud and Marketo.",
+    "is_violation": true,
+    "expected_category": "fact",
+    "refuted_detail": "Approved native integrations are Slack, Google Workspace, Figma, HubSpot, Webflow."
+  },
+  {
+    "id": "draft_026",
+    "category": "ambiguous_claim",
+    "content": "Our solution practically guarantees unmatched marketing compliance for growing startups.",
+    "is_violation": true,
+    "expected_category": "ambiguous",
+    "flagged_note": "Needs human review: 'practically guarantees' is legally ambiguous."
+  },
+  {
+    "id": "draft_027",
+    "category": "ambiguous_claim",
+    "content": "Save endless hours each week by switching your review process to AI.",
+    "is_violation": true,
+    "expected_category": "ambiguous",
+    "flagged_note": "Vague metric: 'endless hours' lacks precise measurable proof."
+  },
+  {
+    "id": "draft_028",
+    "category": "ambiguous_claim",
+    "content": "Virtually every top modern brand relies on automated governance systems.",
+    "is_violation": true,
+    "expected_category": "ambiguous",
+    "flagged_note": "Unquantified generalization requiring clarification."
+  },
+  {
+    "id": "draft_029",
+    "category": "ambiguous_claim",
+    "content": "ECLIPSE might be the fastest growing governance tool on the market today.",
+    "is_violation": true,
+    "expected_category": "ambiguous",
+    "flagged_note": "Speculative promotional statement without comparative audit."
+  },
+  {
+    "id": "draft_030",
+    "category": "ambiguous_claim",
+    "content": "Experience near-instant compliance approvals on almost every social post.",
+    "is_violation": true,
+    "expected_category": "ambiguous",
+    "flagged_note": "Hedging language ('near-instant', 'almost every') creates ambiguity."
+  }
+]
+

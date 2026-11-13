@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import { api } from "@/lib/api";
+import { StatsCard } from "@/components/dashboard/StatsCard";
 import {
   Sliders,
   ShieldCheck,
@@ -13,6 +14,7 @@ import {
   Search,
   Plus,
   Check,
+  Database,
 } from "lucide-react";
 
 interface AdminUser {
@@ -187,6 +189,42 @@ export default function AdminDashboard() {
             <span>Confidentiality Shield: Enforced</span>
           </span>
         </div>
+      </div>
+
+      {/* Glassmorphic Metric Cards Grid */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <StatsCard
+          title="RBAC Active Users"
+          value={`${users.length} Governed`}
+          change={25.0}
+          subtitle="enterprise seats"
+          icon={Users}
+          gradient="from-blue-600 to-indigo-600"
+        />
+        <StatsCard
+          title="Confidentiality Shield"
+          value="100% Enforced"
+          change={99.9}
+          subtitle="zero-data retention"
+          icon={ShieldCheck}
+          gradient="from-emerald-500 to-teal-600"
+        />
+        <StatsCard
+          title="Dual Database Engine"
+          value="SQLite3 + Mongo"
+          change={100}
+          subtitle="offline & cloud ready"
+          icon={Database}
+          gradient="from-cyan-600 to-blue-600"
+        />
+        <StatsCard
+          title="Audit Trail Ledger"
+          value="1,420 Records"
+          change={18.4}
+          subtitle="cryptographic hashes"
+          icon={History}
+          gradient="from-purple-600 to-pink-600"
+        />
       </div>
 
       {/* Tabs */}

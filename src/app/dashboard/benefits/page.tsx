@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import { motion } from "framer-motion";
 import Link from "@/lib/next-compat/link";
 import {
   ShieldCheck,
@@ -156,7 +157,11 @@ export default function ImpactAndBenefitsPage() {
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           {/* Metric 1: Brand Consistency */}
-          <div className="rounded-xl border border-slate-200 bg-slate-50/70 p-4 hover:border-blue-300 hover:bg-blue-50/20 transition-all flex items-center gap-3.5">
+          <motion.div
+            whileHover={{ y: -5 }}
+            transition={{ duration: 0.2 }}
+            className="rounded-xl border border-slate-200 bg-slate-50/80 p-4 hover:border-blue-300 hover:shadow-lg transition-all flex items-center gap-3.5 cursor-default"
+          >
             <div className="relative flex items-center justify-center shrink-0">
               <svg className="h-14 w-14 -rotate-90" viewBox="0 0 36 36">
                 <circle
@@ -195,10 +200,14 @@ export default function ImpactAndBenefitsPage() {
                 consistent across all channels
               </div>
             </div>
-          </div>
+          </motion.div>
 
           {/* Metric 2: Compliance Risk */}
-          <div className="rounded-xl border border-slate-200 bg-slate-50/70 p-4 hover:border-blue-300 hover:bg-blue-50/20 transition-all flex items-center gap-3.5">
+          <motion.div
+            whileHover={{ y: -5 }}
+            transition={{ duration: 0.2 }}
+            className="rounded-xl border border-slate-200 bg-slate-50/80 p-4 hover:border-blue-300 hover:shadow-lg transition-all flex items-center gap-3.5 cursor-default"
+          >
             <div className="h-12 w-12 rounded-xl bg-blue-100/80 border border-blue-200 text-blue-700 flex items-center justify-center shrink-0 shadow-xs">
               <ShieldCheck className="h-6 w-6" />
             </div>
@@ -213,10 +222,14 @@ export default function ImpactAndBenefitsPage() {
                 in regulatory & tone violations
               </div>
             </div>
-          </div>
+          </motion.div>
 
           {/* Metric 3: Approval Time */}
-          <div className="rounded-xl border border-slate-200 bg-slate-50/70 p-4 hover:border-emerald-300 hover:bg-emerald-50/20 transition-all flex items-center gap-3.5">
+          <motion.div
+            whileHover={{ y: -5 }}
+            transition={{ duration: 0.2 }}
+            className="rounded-xl border border-slate-200 bg-slate-50/80 p-4 hover:border-emerald-300 hover:shadow-lg transition-all flex items-center gap-3.5 cursor-default"
+          >
             <div className="h-12 w-12 rounded-xl bg-emerald-100/80 border border-emerald-200 text-emerald-700 flex items-center justify-center shrink-0 shadow-xs">
               <Clock className="h-6 w-6" />
             </div>
@@ -232,10 +245,14 @@ export default function ImpactAndBenefitsPage() {
                 97.9% workflow acceleration
               </div>
             </div>
-          </div>
+          </motion.div>
 
           {/* Metric 4: Content Velocity */}
-          <div className="rounded-xl border border-slate-200 bg-slate-50/70 p-4 hover:border-indigo-300 hover:bg-indigo-50/20 transition-all flex items-center gap-3.5">
+          <motion.div
+            whileHover={{ y: -5 }}
+            transition={{ duration: 0.2 }}
+            className="rounded-xl border border-slate-200 bg-slate-50/80 p-4 hover:border-indigo-300 hover:shadow-lg transition-all flex items-center gap-3.5 cursor-default"
+          >
             <div className="h-12 w-12 rounded-xl bg-indigo-100/80 border border-indigo-200 text-indigo-700 flex items-center justify-center shrink-0 shadow-xs">
               <Rocket className="h-6 w-6" />
             </div>
@@ -250,7 +267,7 @@ export default function ImpactAndBenefitsPage() {
                 publication speed to market
               </div>
             </div>
-          </div>
+          </motion.div>
         </div>
       </div>
 

@@ -177,3 +177,19 @@ body {
 .eclipse-pastel-bg {
   background: linear-gradient(135deg, rgba(224, 255, 205, 0.35) 0%, rgba(253, 255, 205, 0.3) 30%, rgba(255, 235, 187, 0.3) 65%, rgba(255, 202, 176, 0.35) 100%) !important;
 }
+
+/* Dark Glassmorphism Stats Cards (Framer Motion Hover Compatible) */
+.glass-card {
+  background: rgba(15, 23, 42, 0.78);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37), inset 0 1px 0 0 rgba(255, 255, 255, 0.15);
+  transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1), border-color 0.25s ease, box-shadow 0.25s ease;
+}
+
+.glass-card:hover {
+  border-color: rgba(255, 255, 255, 0.25);
+  box-shadow: 0 16px 40px -8px rgba(0, 0, 0, 0.55), 0 0 24px -4px rgba(124, 58, 237, 0.25), inset 0 1px 0 0 rgba(255, 255, 255, 0.25);
+}
+

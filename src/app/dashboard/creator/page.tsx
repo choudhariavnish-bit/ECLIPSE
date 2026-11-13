@@ -6,7 +6,9 @@ import { api } from "@/lib/api";
 import { useAuthStore } from "@/stores/useAuthStore";
 import { BlogReviewStudio } from "@/components/blog/BlogReviewStudio";
 import { ImageReviewStudio } from "@/components/image/ImageReviewStudio";
+import { UniversalDocumentStudio } from "@/components/documents/UniversalDocumentStudio";
 import { IssueList, OriginalCorrectedView, AuditSummary, EmptyAuditState } from "@/components/audit";
+import { StatsCard } from "@/components/dashboard/StatsCard";
 import {
   Sparkles,
   FileCheck2,
@@ -192,7 +194,7 @@ export default function CreatorDashboard() {
   }, [userName]);
   const userDepartment = currentUser?.department || "Content & Communications";
 
-  const [studioMode, setStudioMode] = useState<"image" | "social" | "blog">("image");
+  const [studioMode, setStudioMode] = useState<"image" | "social" | "blog" | "documents">("image");
   const [inputText, setInputText] = useState(TEMPLATES[0].text);
   const [selectedChannel, setSelectedChannel] = useState("LinkedIn & Social");
   const [contentFormat, setContentFormat] = useState<"text" | "graphic">("text");
@@ -594,6 +596,42 @@ export default function CreatorDashboard() {
         </div>
       )}
 
+      {/* Top Glassmorphic Quick Metric Overview (CSS Styled Stats Cards) */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <StatsCard
+          title="Brand Consistency"
+          value="98.4%"
+          change={14.2}
+          subtitle="vs baseline"
+          icon={ShieldCheck}
+          gradient="from-blue-600 to-indigo-600"
+        />
+        <StatsCard
+          title="Compliance Health"
+          value="Zero Critical"
+          change={85.0}
+          subtitle="violation reduction"
+          icon={CheckCircle2}
+          gradient="from-emerald-500 to-teal-600"
+        />
+        <StatsCard
+          title="Content Velocity"
+          value="3.2x Faster"
+          change={70.0}
+          subtitle="time-to-publish"
+          icon={Zap}
+          gradient="from-purple-600 to-pink-600"
+        />
+        <StatsCard
+          title="Turnaround Time"
+          value="15 Mins"
+          change={97.9}
+          subtitle="review acceleration"
+          icon={Clock}
+          gradient="from-amber-500 to-orange-600"
+        />
+      </div>
+
       {/* Primary Studio Workflow Switcher */}
       <div className="bg-white rounded-xl border border-slate-200 p-2 shadow-xs flex flex-wrap items-center justify-between gap-3">
         <div className="flex rounded-lg border border-slate-200 bg-slate-100 p-1 text-xs font-bold w-full sm:w-auto">
@@ -610,9 +648,6 @@ export default function CreatorDashboard() {
           >
             <Scan className="h-4 w-4 text-indigo-300" />
             <span>Image & Poster Studio</span>
-            <span className="px-1.5 py-0.2 rounded bg-indigo-500/30 text-indigo-100 text-[10px] font-mono uppercase">
-              Vision OCR
-            </span>
           </button>
           <button
             onClick={() => {
@@ -641,9 +676,20 @@ export default function CreatorDashboard() {
           >
             <BookOpen className="h-4 w-4 text-purple-300" />
             <span>Blog & Article Studio</span>
-            <span className="px-1.5 py-0.2 rounded bg-purple-500/30 text-purple-200 text-[10px] font-mono uppercase">
-              Reasoning Engine
-            </span>
+          </button>
+          <button
+            onClick={() => {
+              setStudioMode("documents");
+              if (typeof window !== "undefined") localStorage.setItem("eclipse_creator_mode", "documents");
+            }}
+            className={`flex items-center justify-center gap-2 px-3.5 py-2 rounded-md transition-all flex-1 sm:flex-none ${
+              studioMode === "documents"
+                ? "bg-blue-700 text-white shadow-xs"
+                : "text-slate-600 hover:text-slate-900"
+            }`}
+          >
+            <FileText className="h-4 w-4 text-blue-300" />
+            <span>Document Intelligence</span>
           </button>
         </div>
 
@@ -653,7 +699,9 @@ export default function CreatorDashboard() {
         </div>
       </div>
 
-      {studioMode === "image" ? (
+      {studioMode === "documents" ? (
+        <UniversalDocumentStudio />
+      ) : studioMode === "image" ? (
         <ImageReviewStudio
           initialDraftId={activeDraftInfo?.id}
           initialHeadline={activeDraftInfo?.title}

@@ -180,8 +180,8 @@ export default function LoginPage() {
             <div className="third-color h-full" />
             <div className="fourth-color h-full" />
           </div>
-          {/* Quick Persona Demo Logins (UP SIDE) */}
-          <div className="mb-6 pt-2">
+          {/* Quick Persona Demo Logins (Up Side) */}
+          <div className="pb-6 border-b border-[#f2ead8] mb-6 pt-2">
             <span className="block text-[11px] font-mono text-stone-500 uppercase tracking-wider text-center mb-3 font-semibold">
               Demo Login
             </span>
@@ -215,10 +215,7 @@ export default function LoginPage() {
             </div>
           </div>
 
-          {/* Divider */}
-          <div className="border-t border-[#f2ead8] mb-6" />
-
-          {/* Tab Switcher (DOWN WORDS) */}
+          {/* Tab Switcher */}
           <div className="flex rounded-2xl bg-[#faf9f5] p-1.5 mb-6 border border-[#f2ead8]">
             <button
               type="button"
